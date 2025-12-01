@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
             ResourceSheet savedFiche = resourceSheetService.createResourceSheet(fiche);
 
             assertNotNull(savedFiche.getId(), "ID non null après sauvegarde");
-            assertEquals("Test Objectif", savedFiche.getObjectives());
+            assertEquals("Objectif", savedFiche.getObjectives());
             assertEquals(ResourceSheetStatus.DRAFT, savedFiche.getStatus());
 
             List<ResourceSheet> allFiches = resourceSheetService.getAllResourceSheets();

@@ -19,9 +19,6 @@ public class Ue {
     @JoinColumn(name = "department_id")
     private Department department;
 
-    @Column(nullable = false, length = 50)
-    private String code;
-
     @Column(nullable = false)
     private String title;
 
@@ -29,16 +26,15 @@ public class Ue {
     private int semester;
 
     @Column(columnDefinition = "TEXT")
-    private String objectifs;
+    private String objectives;
 
     public Ue() {
     }
 
-    public Ue(Department department, String code, String title, int semester, String objectifs) {
+    public Ue(Department department, String code, String title, int semester, String objectives) {
         this.department = department;
-        this.code = code;
         this.title = title;
         this.semester = semester;
-        this.objectifs = objectifs;
+        this.objectives = objectives;
     }
 }

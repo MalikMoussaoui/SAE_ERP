@@ -1,95 +1,96 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE department (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  code VARCHAR(50) UNIQUE NOT NULL,
-  label TEXT NOT NULL,
-  parent_id UUID
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    label TEXT NOT NULL,
+    owner_id UUID
 );
 
 CREATE TABLE app_user (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  email TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL,
-  display_name TEXT NOT NULL,
-  phone TEXT,
-  role TEXT NOT NULL,
-  status TEXT NOT NULL DEFAULT 'ACTIF',
-  department_id UUID REFERENCES department(id),
-  created_at TIMESTAMP NOT NULL DEFAULT now()
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    display_name TEXT NOT NULL,
+    phone TEXT,
+    role TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'ACTIF',
+    department_id UUID REFERENCES department(id),
+    created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
 CREATE TABLE competency (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  code VARCHAR(50) UNIQUE NOT NULL,
-  title TEXT NOT NULL
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    title TEXT NOT NULL
 );
 
 CREATE TABLE ue (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  department_id UUID REFERENCES department(id),
-  code VARCHAR(50) NOT NULL,
-  title TEXT NOT NULL,
-  semester INT NOT NULL,
-  objectifs TEXT
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    department_id UUID REFERENCES department(id),
+    title TEXT NOT NULL,
+    semester INT NOT NULL,
+    objectives TEXT
 );
 
-CREATE TABLE ec (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  ue_id UUID REFERENCES ue(id),
-  title TEXT NOT NULL,
-  cm_hours INT DEFAULT 0,
-  td_hours INT DEFAULT 0,
-  tp_hours INT DEFAULT 0,
-  cm_hours_alt INT,
-  td_hours_alt INT,
-  tp_hours_alt INT
+CREATE TABLE resource (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ue_id UUID REFERENCES ue(id),
+    title TEXT NOT NULL,
+    hours_cm INT DEFAULT 0,
+    hours_td INT DEFAULT 0,
+    hours_tp INT DEFAULT 0
 );
 
 CREATE TABLE sae (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  ue_id UUID REFERENCES ue(id),
-  title TEXT NOT NULL,
-  description TEXT
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    ue_id UUID REFERENCES ue(id),
+    title TEXT NOT NULL,
+    description TEXT,
+    total_hours INT NOT NULL
 );
 
 CREATE TABLE resource_sheet (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  department_id UUID REFERENCES department(id),
-  ue_id UUID REFERENCES ue(id),
-  ec_id UUID REFERENCES ec(id),
-  sae_id UUID REFERENCES sae(id),
-  status TEXT NOT NULL DEFAULT 'DRAFT',
-  objectives TEXT NOT NULL,
-  prerequisites TEXT NOT NULL,
-  modalities TEXT NOT NULL,
-  hours_cm INT NOT NULL DEFAULT 0,
-  hours_td INT NOT NULL DEFAULT 0,
-  hours_tp INT NOT NULL DEFAULT 0,
-  responsible_id UUID REFERENCES app_user(id),
-  archivable_year INT,
-  version INT NOT NULL DEFAULT 0,
-  created_at TIMESTAMP NOT NULL DEFAULT now(),
-  updated_at TIMESTAMP NOT NULL DEFAULT now()
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    department_id UUID REFERENCES department(id),
+    ue_id UUID REFERENCES ue(id),
+    resource_id UUID REFERENCES resource(id),
+    sae_id UUID REFERENCES sae(id),
+    status TEXT NOT NULL DEFAULT 'DRAFT',
+    objectives TEXT NOT NULL,
+    prerequisites TEXT NOT NULL,
+    modalities TEXT NOT NULL,
+    hours_cm INT NOT NULL DEFAULT 0,
+    hours_td INT NOT NULL DEFAULT 0,
+    hours_tp INT NOT NULL DEFAULT 0,
+    responsible_id UUID REFERENCES app_user(id),
+    version INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
 CREATE TABLE resource_sheet_competency (
-  resource_sheet_id UUID REFERENCES resource_sheet(id) ON DELETE CASCADE,
-  competency_id UUID REFERENCES competency(id),
-  PRIMARY KEY (resource_sheet_id, competency_id)
+    resource_sheet_id UUID REFERENCES resource_sheet(id) ON DELETE CASCADE,
+    competency_id UUID REFERENCES competency(id) ON DELETE CASCADE,
+    PRIMARY KEY (resource_sheet_id, competency_id)
 );
 
 CREATE TABLE tac_entry (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  department_id UUID REFERENCES department(id),
-  date DATE NOT NULL,
-  observation TEXT NOT NULL,
-  origine TEXT,
-  thematique TEXT,
-  correction TEXT,
-  analyse_causes TEXT,
-  action TEXT,
-  echeance DATE,
-  statut TEXT,
-  commentaire TEXT
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    department_id UUID REFERENCES department(id),
+    date DATE NOT NULL,
+    observation TEXT NOT NULL,
+    origin TEXT,
+    thematic TEXT,
+    correction TEXT,
+    analyse_causes TEXT,
+    action TEXT,
+    due_date DATE,
+    status TEXT,
+    commentary TEXT
+);
+
+CREATE TABLE feedback (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    author_id UUID REFERENCES app_user(id),
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
+    commentary TEXT NOT NULL
 );

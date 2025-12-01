@@ -49,7 +49,8 @@ public class AppUser {
     public AppUser() {
     }
 
-    public AppUser(String email, String passwordHash, String displayName, String phone, UserRole role, UserStatus status, Department department) {
+    public AppUser(UUID id,String email, String passwordHash, String displayName, String phone, UserRole role, UserStatus status, Department department, Instant createdAt) {
+        this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
         this.displayName = displayName;
@@ -57,6 +58,7 @@ public class AppUser {
         this.role = role;
         this.status = status;
         this.department = department;
+        this.createdAt = createdAt;
     }
 
 

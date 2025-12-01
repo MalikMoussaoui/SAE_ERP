@@ -20,9 +20,6 @@ public class Competency {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(unique = true, nullable = false, length = 50)
-    private String code;
-
     @Column(nullable = false)
     private String title;
 
@@ -32,8 +29,8 @@ public class Competency {
     public Competency() {
     }
 
-    public Competency(String code, String title) {
-        this.code = code;
+    public Competency(UUID id, String title) {
+        this.id = id;
         this.title = title;
     }
 }

@@ -27,10 +27,10 @@ public class Tac {
     private String observation;
 
     @Column(columnDefinition = "TEXT")
-    private String origine;
+    private String origin;
 
     @Column(columnDefinition = "TEXT")
-    private String thematique;
+    private String thematic;
 
     @Column(columnDefinition = "TEXT")
     private String correction;
@@ -41,13 +41,13 @@ public class Tac {
     @Column(columnDefinition = "TEXT")
     private String action;
 
-    private LocalDate echeance;
+    private LocalDate dueDate;
 
     @Column(columnDefinition = "TEXT")
-    private String statut;
+    private String status;
 
     @Column(columnDefinition = "TEXT")
-    private String commentaire;
+    private String commentary;
 
     public Tac() {
     }
@@ -56,25 +56,25 @@ public class Tac {
             Department department,
             LocalDate date,
             String observation,
-            String origine,
-            String thematique,
+            String origin,
+            String thematic,
             String correction,
             String analyseCauses,
             String action,
-            LocalDate echeance,
-            String statut,
-            String commentaire
+            LocalDate dueDate,
+            String status,
+            String commentary
     ) {
         this.department = department;
         this.date = date;
         this.observation = observation;
-        this.origine = origine;
-        this.thematique = thematique;
+        this.origin = origin;
+        this.thematic = thematic;
         this.correction = correction;
         this.analyseCauses = analyseCauses;
         this.action = action;
-        this.echeance = echeance;
-        this.statut = statut;
-        this.commentaire = commentaire;
+        this.dueDate = dueDate;
+        this.status = status;
+        this.commentary = commentary;
     }
 }
