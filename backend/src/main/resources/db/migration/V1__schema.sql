@@ -3,7 +3,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE department (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     label TEXT NOT NULL,
-    owner_id UUID
 );
 
 CREATE TABLE app_user (

@@ -17,16 +17,11 @@ public class Department {
     @Column(nullable = false)
     private String label;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id")
-    private Department owner;
-
     public Department() {
     }
 
-    public Department(UUID id, String label, Department owner) {
+    public Department(UUID id, String label) {
         this.id = id;
         this.label = label;
-        this.owner = owner;
     }
 }
