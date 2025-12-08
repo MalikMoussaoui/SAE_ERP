@@ -47,7 +47,7 @@
         <li>
           <a href="#" @click.prevent="$router.push('/gestion-utilisateurs')">
             <img src="@/assets/GestionRole.png" alt="Gestion des rôles" class="nav-icon" />
-            <span class="nav-text">Gestion des rôle</span>
+            <span class="nav-text">Gestion des rôles</span>
           </a>
         </li>
         
@@ -125,7 +125,7 @@ export default {
   --color-text: #555;
   --color-border: #eee;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
-  --sidebar-width-open: 260px;
+  --sidebar-width-open: 300px;
   --sidebar-width-closed: 80px;
   --sidebar-transition-duration: 0.3s;
 
