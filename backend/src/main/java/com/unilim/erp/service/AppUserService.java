@@ -19,8 +19,6 @@ public class AppUserService {
         this.repository = repository;
     }
 
-    // --- Méthodes requises par le CRUD du Contrôleur ---
-
     public List<AppUser> getAllAppUsers() {
         return repository.findAll();
     }
@@ -30,7 +28,7 @@ public class AppUserService {
     }
 
     public AppUser createAppUser(AppUser appUser) {
-        // Vous pouvez ajouter ici le hachage du mot de passe avant la sauvegarde
+
         return repository.save(appUser);
     }
 
@@ -46,8 +44,6 @@ public class AppUserService {
     public void deleteAppUser(UUID id) {
         repository.deleteById(id);
     }
-
-    // --- Vos méthodes métiers spécifiques (conservées) ---
 
     public Optional<AppUser> findByEmail(String email) {
         return repository.findByEmail(email);

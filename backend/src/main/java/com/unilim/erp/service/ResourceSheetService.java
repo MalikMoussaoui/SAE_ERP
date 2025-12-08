@@ -18,17 +18,14 @@ public class ResourceSheetService {
         this.resourceSheetRepository = resourceSheetRepository;
     }
 
-    // Récupérer toutes les fiches
     public List<ResourceSheet> getAllResourceSheets() {
         return resourceSheetRepository.findAll();
     }
 
-    // Récupérer une fiche par son ID
     public Optional<ResourceSheet> getResourceSheetById(UUID id) {
         return resourceSheetRepository.findById(id);
     }
 
-    // Créer une nouvelle fiche
     public ResourceSheet createResourceSheet(ResourceSheet resourceSheet) {
         return resourceSheetRepository.save(resourceSheet);
     }
@@ -48,7 +45,6 @@ public class ResourceSheetService {
                 .orElseThrow(() -> new RuntimeException("Fiche introuvable avec l'ID : " + id));
     }
 
-    // Supprimer une fiche par son ID
     public void deleteResourceSheet(UUID id) {
         resourceSheetRepository.deleteById(id);
     }

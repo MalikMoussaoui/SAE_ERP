@@ -24,7 +24,6 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<AppUser> register(@RequestBody RegistrationRequest request) {
         try {
-            // On passe l'objet RegistrationRequest au service
             AppUser createdUser = service.register(request);
             return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
         } catch (RuntimeException e) {
@@ -35,9 +34,8 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody AuthRequest request) {
         try {
-            // On récupère le token via la méthode login du service
             String token = service.login(request);
-            // On renvoie le token sous format JSON : { "token": "..." }
+
             return new ResponseEntity<>(Collections.singletonMap("token", token), HttpStatus.OK);
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
