@@ -6,10 +6,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "ec")
+@Table(name = "resource")
 @Setter
 @Getter
-public class Ec {
+public class Resource {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -31,19 +31,11 @@ public class Ec {
     @Column(name = "tp_hours")
     private int tpHours;
 
-    @Column(name = "cm_hours_alt")
-    private int cmHoursAlt;
-
-    @Column(name = "td_hours_alt")
-    private int tdHoursAlt;
-
-    @Column(name = "tp_hours_alt")
-    private int tpHoursAlt;
-
-    public Ec() {
+    public Resource() {
     }
 
-    public Ec(Ue ue, String title, int cmHours, int tdHours, int tpHours) {
+    public Resource(UUID id, Ue ue, String title, int cmHours, int tdHours, int tpHours) {
+        this.id = id;
         this.ue = ue;
         this.title = title;
         this.cmHours = cmHours;

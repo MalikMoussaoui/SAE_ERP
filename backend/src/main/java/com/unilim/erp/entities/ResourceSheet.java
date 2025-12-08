@@ -29,8 +29,8 @@ public class ResourceSheet{
     private Ue ue;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="ec_id")
-    private Ec ec;
+    @JoinColumn(name="resource_id")
+    private Resource resource;
 
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name="sae_id")
@@ -61,9 +61,6 @@ public class ResourceSheet{
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "responsible_id")
     private AppUser responsible;
-
-    @Column(name = "archivable_year")
-    private Integer archivableYear;
 
     @Version
     @Column(nullable=false)

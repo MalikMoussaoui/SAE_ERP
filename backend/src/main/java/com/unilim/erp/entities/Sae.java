@@ -25,12 +25,16 @@ public class Sae {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "total_hours", nullable = false)
+    private int totalHours;
+
     public Sae() {
     }
 
-    public Sae(Ue ue, String title, String description) {
+    public Sae(Ue ue, String title, String description, int totalHours) {
         this.ue = ue;
         this.title = title;
         this.description = description;
+        this.totalHours = 0;
     }
 }
