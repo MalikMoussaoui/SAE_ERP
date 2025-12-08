@@ -5,10 +5,7 @@
       <div class="sidebar-header">
         <img src="@/assets/Logo_G.png" alt="Logo GestIUT" class="sidebar-logo" />
         <h3 class="sidebar-title">IUT Gestion</h3>
-
-        <button @click="toggleSidebar" class="toggle-button">
-          «
-        </button>
+        <button @click="toggleSidebar" class="toggle-button">«</button>
       </div>
 
       <ul class="nav-links">
@@ -18,36 +15,42 @@
             <span class="nav-text">Tableau de bord</span>
           </a>
         </li>
-        <li>
-          <a href="#" @click.prevent="$router.push('/gestion-utilisateurs')">
-            <img src="@/assets/GestionRole.png" alt="Gestion des rôles" class="nav-icon" />
-            <span class="nav-text">Gestion des rôle</span>
-          </a>
-        </li>
+        
         <li>
           <a href="#">
             <img src="@/assets/FicheRessource.png" alt="Fiches ressources" class="nav-icon" />
             <span class="nav-text">Fiches ressources</span>
           </a>
         </li>
+        
         <li>
           <a href="#">
             <img src="@/assets/MCC.png" alt="MCCC" class="nav-icon" />
             <span class="nav-text">MCCC</span>
           </a>
         </li>
+        
         <li>
           <a href="#">
             <img src="@/assets/TAC.png" alt="TAC" class="nav-icon" />
             <span class="nav-text">TAC</span>
           </a>
         </li>
+        
         <li>
           <a href="#">
             <img src="@/assets/EnseignantVacataire.png" alt="Enseignants & Vacataires" class="nav-icon" />
             <span class="nav-text">Enseignants & Vacataires</span>
           </a>
         </li>
+
+        <li>
+          <a href="#" @click.prevent="$router.push('/gestion-utilisateurs')">
+            <img src="@/assets/GestionRole.png" alt="Gestion des rôles" class="nav-icon" />
+            <span class="nav-text">Gestion des rôle</span>
+          </a>
+        </li>
+        
         <li>
           <a href="#">
             <img src="@/assets/Parametre.png" alt="Paramètres" class="nav-icon" />
