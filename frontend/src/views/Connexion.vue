@@ -50,15 +50,15 @@ export default {
       try {
         // --- SIMULATION (puisqu'il n'y a pas de back-end) ---
         
-        // On simule une petite attente (500ms) pour que le spinner s'affiche
-        await new Promise(resolve => setTimeout(resolve, 500)); 
-
         if (this.username === 'admin' && this.password === 'password') {
-          
+          // Connexion réussie : pas de délai pour une meilleure expérience utilisateur.
           localStorage.setItem('user-token', 'fake-token-for-simulation');
           this.$router.push('/dashboard');
 
         } else {
+          // On simule une attente seulement en cas d'erreur
+          // pour afficher le spinner et décourager les tentatives rapides.
+          await new Promise(resolve => setTimeout(resolve, 500));
           throw new Error(this.$t('login.error'));
         }
 
