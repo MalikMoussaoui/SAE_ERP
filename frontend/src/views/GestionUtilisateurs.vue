@@ -1,142 +1,79 @@
 <template>
-  <div class="dashboard-layout" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
+  <DashboardLayout>
+    <template #header>
+      <div class="header-welcome">
+        <h1 class="page-title">{{ $t('roleManagement.title') }}</h1>
+      </div>
+    </template>
 
-    <nav class="sidebar">
-      <div class="sidebar-header">
-        <img src="@/assets/Logo_G.png" alt="Logo GestIUT" class="sidebar-logo" />
-        <h3 class="sidebar-title">IUT Gestion</h3>
-        <button @click="toggleSidebar" class="toggle-button">«</button>
+    <div class="toolbar">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" :placeholder="$t('roleManagement.searchPlaceholder')" class="search-input" v-model="searchQuery" />
       </div>
 
-      <ul class="nav-links">
-        <li>
-          <a href="#" @click.prevent="$router.push('/dashboard')">
-            <img src="@/assets/TableauDeBord.png" class="nav-icon" />
-            <span class="nav-text">Tableau de bord</span>
-          </a>
-        </li>
-        
-        <li>
-          <a href="#">
-            <img src="@/assets/FicheRessource.png" class="nav-icon" />
-            <span class="nav-text">Fiches ressources</span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="@/assets/MCC.png" class="nav-icon" />
-            <span class="nav-text">MCCC</span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="@/assets/TAC.png" class="nav-icon" />
-            <span class="nav-text">TAC</span>
-          </a>
-        </li>
-        <li>
-          <a href="#">
-            <img src="@/assets/EnseignantVacataire.png" class="nav-icon" />
-            <span class="nav-text">Enseignants & Vacataires</span>
-          </a>
-        </li>
-
-        <li>
-          <a href="#" class="active">
-            <img src="@/assets/GestionRole.png" class="nav-icon" />
-            <span class="nav-text">Gestion des rôles</span>
-          </a>
-        </li>
-        
-        <li>
-          <a href="#">
-            <img src="@/assets/parametre.png" class="nav-icon" />
-            <span class="nav-text">Paramètres</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-
-    <main class="main-content">
-      <header class="header">
-        <div class="header-welcome">
-          <h1 class="page-title">Gestionnaire</h1>
-        </div>
-        <div class="user-info">
-          <span>
-            <img src="@/assets/Bonhomme.png" alt="Admin" class="user-icon" />
-            Administrateur
-          </span>
-          <a href="#" @click.prevent="logout">Déconnexion</a>
-        </div>
-      </header>
-
-      <div class="toolbar">
-        <div class="search-wrapper">
-          <span class="search-icon">🔍</span>
-          <input type="text" placeholder="Recherchez par prénom, nom, etc" class="search-input" v-model="searchQuery" />
-        </div>
-
-        <div class="filters-wrapper">
-          <select class="filter-select" v-model="selectedPoste">
-            <option value="">Filtrer par poste</option>
-            <option value="Professeur">Professeur</option>
-            <option value="Vacataire">Vacataire</option>
-          </select>
-          <select class="filter-select" v-model="selectedDept">
-            <option value="">Filtrer par département</option>
-            <option value="INFO">INFO</option>
-            <option value="GEA">GEA</option>
-            <option value="TC">TC</option>
-          </select>
-        </div>
+      <div class="filters-wrapper">
+        <select class="filter-select" v-model="selectedPoste">
+          <option value="">{{ $t('roleManagement.filterByPosition') }}</option>
+          <option value="Professeur">{{ $t('roleManagement.professor') }}</option>
+          <option value="Vacataire">{{ $t('roleManagement.contractor') }}</option>
+        </select>
+        <select class="filter-select" v-model="selectedDept">
+          <option value="">{{ $t('roleManagement.filterByDept') }}</option>
+          <option value="INFO">INFO</option>
+          <option value="GEA">GEA</option>
+          <option value="TC">TC</option>
+        </select>
       </div>
+    </div>
 
-      <div class="table-card">
-        <div class="table-scroll">
-          <table>
-            <thead>
-              <tr>
-                <th>Prénom/Nom</th>
-                <th>Départements</th>
-                <th>Poste</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(user, index) in filteredUsers" :key="index">
-                <td>{{ user.name }}</td>
-                <td>{{ user.dept }}</td>
-                <td>{{ user.poste }}</td>
-                <td class="actions">
-                  <a href="#" class="action-link">[Modifier]</a>
-                  <a href="#" class="action-link">[Supprimer]</a>
-                </td>
-              </tr>
-              <tr v-if="filteredUsers.length === 0">
-                <td colspan="4" style="text-align:center; padding: 20px; color: #888;">
-                  Aucun utilisateur trouvé.
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>{{ $t('roleManagement.table.name') }}</th>
+              <th>{{ $t('roleManagement.table.departments') }}</th>
+              <th>{{ $t('roleManagement.table.position') }}</th>
+              <th>{{ $t('roleManagement.table.action') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(user, index) in filteredUsers" :key="index">
+              <td>{{ user.name }}</td>
+              <td>{{ user.dept }}</td>
+              <td>{{ user.poste === 'Professeur' ? $t('roleManagement.professor') : $t('roleManagement.contractor') }}</td>
+              <td class="actions">
+                <a href="#" class="action-link">{{ $t('roleManagement.table.edit') }}</a>
+                <a href="#" class="action-link">{{ $t('roleManagement.table.delete') }}</a>
+              </td>
+            </tr>
+            <tr v-if="filteredUsers.length === 0">
+              <td colspan="4" style="text-align:center; padding: 20px; color: #888;">
+                {{ $t('roleManagement.table.noUserFound') }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
+    </div>
 
-      <div class="footer-actions">
-        <button class="btn-add" @click="$router.push('/gestion-utilisateurs/ajouter')">Ajouter un utilisateur</button>
-      </div>
-
-    </main>
-  </div>
+    <div class="footer-actions">
+      <button class="btn-add" @click="$router.push('/gestion-utilisateurs/ajouter')">{{ $t('roleManagement.addUser') }}</button>
+    </div>
+  </DashboardLayout>
 </template>
 
 <script>
+import DashboardLayout from '@/components/DashboardLayout.vue';
+
 export default {
   name: 'GestionUtilisateurs',
+  components: {
+    DashboardLayout
+  },
   data() {
     return {
-      isSidebarCollapsed: false,
       searchQuery: '',
       selectedPoste: '',
       selectedDept: '',
@@ -169,103 +106,49 @@ export default {
         return matchesSearch && matchesPoste && matchesDept;
       });
     }
-  },
-  methods: {
-    toggleSidebar() {
-      this.isSidebarCollapsed = !this.isSidebarCollapsed;
-    },
-    logout() {
-      localStorage.removeItem('user-token');
-      this.$router.push('/connexion');
-    }
   }
 }
 </script>
 
 <style scoped>
-/* --- Variables CSS --- */
-.dashboard-layout {
-  --font-primary: 'Poppins', sans-serif;
-  --font-secondary: 'Montserrat', sans-serif;
-  --color-primary: #C00000;
-  --color-primary-dark: #a00000;
-  --color-grey-light: #f8f9fa;
-  --color-grey-dark: #333;
-  --color-text: #555;
-  --color-border: #eee;
-  --shadow: 0 4px 6px rgba(0,0,0,0.05);
-  --sidebar-width-open: 260px;
-  --sidebar-width-closed: 80px;
-  --sidebar-transition: 0.3s ease;
-
-  display: flex;
-  min-height: 100vh;
-  background-color: #fcfcfc;
-  font-family: var(--font-secondary);
-  overflow-x: hidden;
+/* Les styles spécifiques à la page restent ici */
+.page-title {
+  font-family: var(--font-primary, 'Poppins', sans-serif);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text-header, #222);
+  margin: 0;
 }
-
-/* --- Styles Sidebar --- */
-.sidebar { width: var(--sidebar-width-open); flex-shrink: 0; background: var(--color-grey-light); border-right: 1px solid var(--color-border); padding: 1.5rem; position: relative; transition: width var(--sidebar-transition), padding var(--sidebar-transition); }
-.sidebar-header { display: flex; align-items: center; gap: 15px; padding-bottom: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--color-border); position: relative; }
-.sidebar-logo { height: 45px; width: auto; flex-shrink: 0; }
-.sidebar-title { margin: 0; font-family: var(--font-primary); font-size: 1.4rem; font-weight: 700; color: #333; white-space: nowrap; overflow: hidden; }
-.toggle-button { position: absolute; top: 50%; right: -25px; transform: translateY(-50%); background: white; border: 1px solid var(--color-border); border-left: none; border-radius: 0 50% 50% 0; width: 25px; height: 40px; cursor: pointer; z-index: 10; }
-.nav-links { list-style: none; padding: 0; margin: 0; }
-.nav-links li { margin-bottom: 0.5rem; }
-.nav-links a { display: flex; align-items: center; padding: 0.75rem 1rem; text-decoration: none; color: var(--color-text); font-weight: 500; border-radius: 8px; transition: 0.2s; white-space: nowrap; overflow: hidden; }
-.nav-icon { width: 24px; height: 24px; object-fit: contain; margin-right: 12px; flex-shrink: 0; }
-.nav-links a:hover { background-color: #e9ecef; }
-.nav-links a.active { background-color: #e6f0ff; color: #0056b3; font-weight: 600; }
-
-.dashboard-layout.sidebar-collapsed .sidebar { width: var(--sidebar-width-closed); padding-left: 1rem; padding-right: 1rem; }
-.dashboard-layout.sidebar-collapsed .sidebar-title, .dashboard-layout.sidebar-collapsed .nav-text { opacity: 0; width: 0; }
-.dashboard-layout.sidebar-collapsed .nav-links a { justify-content: center; padding-left: 0.5rem; padding-right: 0.5rem; }
-.dashboard-layout.sidebar-collapsed .nav-icon { margin-right: 0; }
-.dashboard-layout.sidebar-collapsed .toggle-button { transform: translateY(-50%) rotate(180deg); right: -25px; border-left: 1px solid var(--color-border); }
-
-/* --- Main Content --- */
-.main-content {
-  flex-grow: 1;
-  padding: 2rem 3rem;
-  width: 100%;
-}
-
-.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
-.page-title { font-family: var(--font-primary); font-size: 2.5rem; font-weight: 700; color: #222; margin: 0; }
-.user-info { display: flex; align-items: center; font-size: 0.9rem; color: var(--color-text); gap: 1.5rem; }
-.user-info span { display: flex; align-items: center; gap: 8px; }
-.user-icon { width: 20px; height: 20px; object-fit: contain; }
-.user-info a { color: var(--color-primary); text-decoration: none; font-weight: 600; }
 
 /* --- Barre d'outils --- */
 .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
 .search-wrapper { position: relative; width: 350px; }
-.search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 0.9rem; }
-.search-input { width: 100%; padding: 10px 15px 10px 40px; border-radius: 25px; border: 1px solid #ccc; outline: none; font-family: var(--font-secondary); font-size: 0.9rem; color: #555; }
-.search-input::placeholder { color: #bbb; }
+.search-icon { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: var(--color-text-muted, #aaa); font-size: 0.9rem; }
+.search-input { width: 100%; padding: 10px 15px 10px 40px; border-radius: 25px; border: 1px solid var(--color-border, #ccc); background-color: var(--color-card-bg, white); outline: none; font-family: var(--font-secondary); font-size: 0.9rem; color: var(--color-text-body, #555); }
+.search-input::placeholder { color: var(--color-text-muted, #bbb); }
 .filters-wrapper { display: flex; gap: 10px; }
-.filter-select { padding: 8px 12px; border: 1px solid #ccc; border-radius: 5px; background-color: white; color: #555; font-family: var(--font-secondary); cursor: pointer; outline: none; min-width: 180px; }
+.filter-select { padding: 8px 12px; border: 1px solid var(--color-border, #ccc); border-radius: 5px; background-color: var(--color-card-bg, white); color: var(--color-text-body, #555); font-family: var(--font-secondary, 'Montserrat', sans-serif); cursor: pointer; outline: none; min-width: 180px; }
 
 /* --- Carte Tableau --- */
-.table-card { background: white; border: 1px solid #ddd; border-radius: 12px; padding: 0; box-shadow: var(--shadow); overflow: hidden; margin-bottom: 2rem; }
+.table-card { background: var(--color-card-bg, white); border: 1px solid var(--color-border, #ddd); border-radius: 12px; padding: 0; box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05)); overflow: hidden; margin-bottom: 2rem; }
 .table-scroll { max-height: 450px; overflow-y: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-th { background-color: #f1f1f1; color: #333; font-weight: 600; text-align: left; padding: 15px 20px; position: sticky; top: 0; z-index: 1; }
-td { padding: 12px 20px; border-bottom: 1px solid #eee; color: #444; }
-tr:nth-child(even) { background-color: #fafafa; }
-tr:hover { background-color: #fdfdfd; }
+th { background-color: var(--color-sidebar-bg, #f1f1f1); color: var(--color-text-header, #333); font-weight: 600; text-align: left; padding: 15px 20px; position: sticky; top: 0; z-index: 1; }
+td { padding: 12px 20px; border-bottom: 1px solid var(--color-border, #eee); color: var(--color-text-body, #444); }
+tr:nth-child(even) { background-color: rgba(0,0,0,0.02); }
+html[data-theme="dark"] tr:nth-child(even) { background-color: rgba(255,255,255,0.02); }
+tr:hover { background-color: var(--color-hover-bg, #fdfdfd); }
 .actions { text-align: right; }
-.action-link { color: var(--color-primary); text-decoration: none; margin-left: 10px; font-size: 0.9rem; font-weight: 500; }
+.action-link { color: var(--color-primary, #C00000); text-decoration: none; margin-left: 10px; font-size: 0.9rem; font-weight: 500; }
 .action-link:hover { text-decoration: underline; }
 
 /* --- Bouton Ajouter --- */
 .footer-actions { display: flex; justify-content: center; padding-bottom: 2rem; }
-.btn-add { background-color: var(--color-primary); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1rem; font-family: var(--font-primary); font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(192, 0, 0, 0.2); transition: background 0.3s; }
-.btn-add:hover { background-color: var(--color-primary-dark); }
+.btn-add { background-color: var(--color-primary, #C00000); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1rem; font-family: var(--font-primary, 'Poppins', sans-serif); font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(192, 0, 0, 0.2); transition: background 0.3s; }
+.btn-add:hover { background-color: var(--color-primary-dark, #a00000); }
 
 .table-scroll::-webkit-scrollbar { width: 8px; }
-.table-scroll::-webkit-scrollbar-track { background: #f1f1f1; }
-.table-scroll::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
-.table-scroll::-webkit-scrollbar-thumb:hover { background: #aaa; }
+.table-scroll::-webkit-scrollbar-track { background: var(--color-sidebar-bg, #f1f1f1); }
+.table-scroll::-webkit-scrollbar-thumb { background: var(--color-text-muted, #ccc); border-radius: 4px; }
+.table-scroll::-webkit-scrollbar-thumb:hover { background: var(--color-text-body, #aaa); }
 </style>

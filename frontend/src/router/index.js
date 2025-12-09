@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import ConnexionView from '../views/Connexion.vue'
 import DashboardView from '../views/Dashboard.vue' 
 import GestionUtilisateurs from '../views/GestionUtilisateurs.vue'
+import Parametres from '../views/Parametres.vue'
 
 
 const router = createRouter({
@@ -28,6 +29,12 @@ const router = createRouter({
       path: '/gestion-utilisateurs',
       name: 'gestion-utilisateurs',
       component: GestionUtilisateurs
+    },
+
+    {
+      path: '/parametres',
+      name: 'Parametres',
+      component: Parametres
     }
 
   ]

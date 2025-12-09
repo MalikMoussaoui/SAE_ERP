@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "resourceSheets": "Fiches ressources",
+    "mccc": "MCCC",
+    "tac": "TAC",
+    "teachers": "Enseignants & Vacataires",
+    "roleManagement": "Gestion des rôles",
+    "settings": "Paramètres"
+  },
+  "header": {
+    "admin": "Administrateur",
+    "logout": "Déconnexion"
+  },
+  "dashboard": {
+    "greeting": "Bonjour, [Nom] [Prenom]",
+    "title": "Tableau de bord",
+    "fillSheet": "Remplir la fiche",
+    "subject": "Algorithmique avancée",
+    "semester": "Semestre 3",
+    "complete": "Compléter",
+    "notifications": "Notifications",
+    "noNotifications": "Aucune notification"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "appearance": "Apparence",
+    "appTheme": "Thème de l'application",
+    "themeSubtitle": "Choisissez un thème clair ou sombre pour l'interface.",
+    "light": "Clair",
+    "dark": "Sombre",
+    "language": "Langue",
+    "appLanguage": "Langue de l'application",
+    "languageSubtitle": "Choisissez la langue de l'interface.",
+    "french": "Français",
+    "english": "English"
+  },
+  "roleManagement": {
+    "title": "Gestionnaire",
+    "searchPlaceholder": "Recherchez par prénom, nom, etc",
+    "filterByPosition": "Filtrer par poste",
+    "professor": "Professeur",
+    "contractor": "Vacataire",
+    "filterByDept": "Filtrer par département",
+    "table": {
+      "name": "Prénom/Nom",
+      "departments": "Départements",
+      "position": "Poste",
+      "action": "Action",
+      "edit": "[Modifier]",
+      "delete": "[Supprimer]",
+      "noUserFound": "Aucun utilisateur trouvé."
+    },
+    "addUser": "Ajouter un utilisateur"
+  },
+  "login": {
+    "title": "Veuillez vous authentifier",
+    "usernamePlaceholder": "Nom d'utilisateur",
+    "passwordPlaceholder": "Mot de passe",
+    "connect": "Se Connecter",
+    "error": "Nom d'utilisateur ou mot de passe incorrect."
+  }
+}
+

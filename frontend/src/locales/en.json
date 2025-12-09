@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "resourceSheets": "Resource Sheets",
+    "mccc": "MCCC",
+    "tac": "TAC",
+    "teachers": "Teachers & Contractors",
+    "roleManagement": "Role Management",
+    "settings": "Settings"
+  },
+  "header": {
+    "admin": "Administrator",
+    "logout": "Logout"
+  },
+  "dashboard": {
+    "greeting": "Hello, [Nom] [Prenom]",
+    "title": "Dashboard",
+    "fillSheet": "Fill the sheet",
+    "subject": "Advanced Algorithms",
+    "semester": "Semester 3",
+    "complete": "Complete",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications"
+  },
+  "settings": {
+    "title": "Settings",
+    "appearance": "Appearance",
+    "appTheme": "Application Theme",
+    "themeSubtitle": "Choose a light or dark theme for the interface.",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language",
+    "appLanguage": "Application Language",
+    "languageSubtitle": "Choose the interface language.",
+    "french": "Français",
+    "english": "English"
+  },
+  "roleManagement": {
+    "title": "Manager",
+    "searchPlaceholder": "Search by first name, last name, etc.",
+    "filterByPosition": "Filter by position",
+    "professor": "Professor",
+    "contractor": "Contractor",
+    "filterByDept": "Filter by department",
+    "table": {
+      "name": "First/Last Name",
+      "departments": "Departments",
+      "position": "Position",
+      "action": "Action",
+      "edit": "[Edit]",
+      "delete": "[Delete]",
+      "noUserFound": "No user found."
+    },
+    "addUser": "Add a user"
+  },
+  "login": {
+    "title": "Please authenticate",
+    "usernamePlaceholder": "Username",
+    "passwordPlaceholder": "Password",
+    "connect": "Login",
+    "error": "Incorrect username or password."
+  }
+}

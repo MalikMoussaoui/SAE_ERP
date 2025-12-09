@@ -9,21 +9,21 @@
       </div>
       <img src="@/assets/GestIUT_logo.png" alt="Logo GestIUT" class="app-title-logo" />
 
-      <h2>Veuillez vous authentifier</h2>
+      <h2>{{ $t('login.title') }}</h2>
 
       <form @submit.prevent="handleLogin">
         
         <div class="input-group">
           <img src="@/assets/Bonhomme.png" alt="Utilisateur" class="icon-img" />
-          <input v-model="username" type="text" placeholder="Nom d'utilisateur" required />
+          <input v-model="username" type="text" :placeholder="$t('login.usernamePlaceholder')" required />
         </div>
         
         <div class="input-group">
           <img src="@/assets/Cadenas.png" alt="Mot de passe" class="icon-img" />
-          <input v-model="password" type="password" placeholder="Mot de passe" required />
+          <input v-model="password" type="password" :placeholder="$t('login.passwordPlaceholder')" required />
         </div>
 
-        <button type="submit">Se Connecter</button>
+        <button type="submit">{{ $t('login.connect') }}</button>
       </form>
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
@@ -42,7 +42,7 @@ export default {
       errorMessage: '',
       isLoading: false // L'état pour afficher/cacher le spinner
     }; 
-  }, // <-- La virgule est importante ici
+  },
   
   methods: {
     async handleLogin() {
@@ -65,11 +65,11 @@ export default {
           }, 2000); // 2000ms = 2 secondes
 
         } else {
-          throw new Error('Nom d\'utilisateur ou mot de passe incorrect.');
+          throw new Error(this.$t('login.error'));
         }
 
       } catch (error) {
-        this.errorMessage = error.message;
+        this.errorMessage = this.$t('login.error');
         this.isLoading = false; // On cache le spinner si erreur
       }
     }
@@ -162,14 +162,13 @@ h2 {
   border-bottom-color: #C00000;
 }
 
-/* Style pour vos images d'icônes */
 .input-group .icon-img {
   position: absolute;
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px; 
-  height: 20px; 
+  width: 20px;
+  height: 20px;
   opacity: 1;
 }
 
