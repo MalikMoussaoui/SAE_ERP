@@ -111,7 +111,6 @@ export default {
 </script>
 
 <style scoped>
-/* Les styles spécifiques à la page restent ici */
 .page-title {
   font-family: var(--font-primary, 'Poppins', sans-serif);
   font-size: 2.5rem;

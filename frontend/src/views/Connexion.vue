@@ -31,8 +31,6 @@
 </template>
 
 <script>
-// import axios from 'axios'; // Pas besoin pour la simulation
-
 export default {
   name: 'LoginScreen',
   data() {
@@ -40,7 +38,7 @@ export default {
       username: '',
       password: '',
       errorMessage: '',
-      isLoading: false // L'état pour afficher/cacher le spinner
+      isLoading: false
     }; 
   },
   
@@ -58,11 +56,7 @@ export default {
         if (this.username === 'admin' && this.password === 'password') {
           
           localStorage.setItem('user-token', 'fake-token-for-simulation');
-          
-          // On attend 2 secondes AVANT de rediriger
-          setTimeout(() => {
-            this.$router.push('/dashboard'); 
-          }, 2000); // 2000ms = 2 secondes
+          this.$router.push('/dashboard');
 
         } else {
           throw new Error(this.$t('login.error'));
@@ -70,7 +64,7 @@ export default {
 
       } catch (error) {
         this.errorMessage = this.$t('login.error');
-        this.isLoading = false; // On cache le spinner si erreur
+        this.isLoading = false;
       }
     }
   }
@@ -78,9 +72,6 @@ export default {
 </script>
 
 <style scoped>
-/* Importez vos polices (ex: Google Fonts) dans votre index.html ou main.css */
-/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Montserrat:wght@500&display=swap'); */
-
 .page-container {
   display: flex;
   flex-direction: column;

@@ -68,7 +68,6 @@ export default {
   methods: {
     toggleSidebar() {
       this.isSidebarCollapsed = !this.isSidebarCollapsed;
-      // On sauvegarde le nouvel état dans le localStorage pour le conserver
       localStorage.setItem('sidebarCollapsed', this.isSidebarCollapsed);
     },
     logout() {
@@ -233,7 +232,6 @@ html[data-theme="dark"] .dashboard-layout {
 .dashboard-layout.sidebar-collapsed .nav-text { opacity: 0; width: 0; }
 .dashboard-layout.sidebar-collapsed .toggle-button { transform: translateY(-50%) rotate(180deg); border-left: 1px solid var(--color-border); }
 .dashboard-layout.sidebar-collapsed .nav-links a {
-  /* On ne centre plus l'icône, et on utilise le même padding qu'en mode ouvert pour une position stable */
   padding-left: 1rem;
   padding-right: 1rem;
 }

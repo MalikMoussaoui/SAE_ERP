@@ -66,27 +66,19 @@ export default {
   },
   data() {
     return {
-      // On lit le thème sauvegardé, avec 'light' comme valeur par défaut
       selectedTheme: localStorage.getItem('theme') || 'light',
-      // On lit la langue depuis le module i18n, qui la lit déjà du localStorage
       selectedLang: this.$i18n.locale
     };
   },
   watch: {
-    // Chaque fois que selectedTheme change, on met à jour le localStorage et l'attribut sur la balise <html>
     selectedTheme(newTheme) {
       localStorage.setItem('theme', newTheme);
       document.documentElement.setAttribute('data-theme', newTheme);
     },
-    // Chaque fois que la langue change, on met à jour le module i18n et le localStorage
     selectedLang(newLang) {
       this.$i18n.locale = newLang;
       localStorage.setItem('lang', newLang);
     }
-  },
-  mounted() {
-    // Applique le thème initial au chargement du composant
-    document.documentElement.setAttribute('data-theme', this.selectedTheme);
   }
 }
 </script>
