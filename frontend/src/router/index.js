@@ -23,18 +23,18 @@ const router = createRouter({
       component: DashboardView
     },
     {
-      path: '/gestion-utilisateurs',
-      name: 'gestion-utilisateurs',
+      path: '/user-management',
+      name: 'user-management',
       component: GestionUtilisateurs
     },
     {
-      path: '/gestion-utilisateurs/ajouter',
-      name: 'gestion-utilisateurs-ajouter',
+      path: '/user-management/add',
+      name: 'user-management-add',
       component: AjoutUtilisateur
     },
     {
-      path: '/parametres',
-      name: 'Parametres',
+      path: '/settings',
+      name: 'settings',
       component: Parametres
     }
   ]

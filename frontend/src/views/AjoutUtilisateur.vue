@@ -1,40 +1,40 @@
 <template>
   <DashboardLayout>
     <template #header>
-      <h1 class="page-title">Gestionnaire</h1>
+      <h1 class="page-title">{{ $t('addUser.headerTitle') }}</h1>
     </template>
 
     <section class="form-section">
       <div class="form-card">
-        <h2>Ajouter/Modifier un utilisateur</h2>
+        <h2>{{ $t('addUser.formTitle') }}</h2>
         <form @submit.prevent="submitForm">
           <div class="form-row">
             <div class="form-group">
-              <label for="prenom">Prenom</label>
-              <input id="prenom" v-model="form.prenom" type="text" placeholder="Entrer le prenom" />
+              <label for="firstName">{{ $t('addUser.firstName') }}</label>
+              <input id="firstName" v-model="form.firstName" type="text" :placeholder="$t('addUser.firstNamePlaceholder')" />
             </div>
             <div class="form-group">
-              <label for="poste">Poste</label>
-              <input id="poste" v-model="form.poste" type="text" placeholder="Entrer le poste" />
+              <label for="position">{{ $t('addUser.position') }}</label>
+              <input id="position" v-model="form.position" type="text" :placeholder="$t('addUser.positionPlaceholder')" />
             </div>
           </div>
           <div class="form-row">
             <div class="form-group">
-              <label for="nom">Nom</label>
-              <input id="nom" v-model="form.nom" type="text" placeholder="Entrer le nom" />
+              <label for="lastName">{{ $t('addUser.lastName') }}</label>
+              <input id="lastName" v-model="form.lastName" type="text" :placeholder="$t('addUser.lastNamePlaceholder')" />
             </div>
             <div class="form-group">
-              <label for="departement">Departements</label>
-              <input id="departement" v-model="form.departement" type="text" placeholder="Entrer le departement" />
+              <label for="department">{{ $t('addUser.department') }}</label>
+              <input id="department" v-model="form.department" type="text" :placeholder="$t('addUser.departmentPlaceholder')" />
             </div>
           </div>
           <div class="form-actions">
-            <button type="submit" class="btn-primary">Valider</button>
+            <button type="submit" class="btn-primary">{{ $t('addUser.validate') }}</button>
           </div>
         </form>
       </div>
       <div class="back-action">
-        <button class="btn-secondary" @click="$router.push('/gestion-utilisateurs')">Retour</button>
+        <button class="btn-secondary" @click="$router.push('/user-management')">{{ $t('addUser.back') }}</button>
       </div>
     </section>
   </DashboardLayout>
@@ -49,16 +49,16 @@ export default {
   data() {
     return {
       form: {
-        prenom: '',
-        nom: '',
-        poste: '',
-        departement: ''
+        firstName: '',
+        lastName: '',
+        position: '',
+        department: ''
       }
     };
   },
   methods: {
     submitForm() {
-      console.log('Utilisateur soumis :', this.form);
+      console.log('User submitted:', this.form);
     }
   }
 }

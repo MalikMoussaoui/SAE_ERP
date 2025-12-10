@@ -5,7 +5,7 @@
     "mccc": "MCCC",
     "tac": "TAC",
     "teachers": "Teachers & Contractors",
-    "roleManagement": "Role Management",
+    "roleManagement": "User Management",
     "settings": "Settings"
   },
   "header": {
@@ -13,10 +13,10 @@
     "logout": "Logout"
   },
   "dashboard": {
-    "greeting": "Hello, [Nom] [Prenom]",
+    "greeting": "Hello, [FirstName] [LastName]",
     "title": "Dashboard",
     "fillSheet": "Fill the sheet",
-    "subject": "Advanced Algorithms",
+    "subject": "Advanced-level algorithmics",
     "semester": "Semester 3",
     "complete": "Complete",
     "notifications": "Notifications",
@@ -36,7 +36,7 @@
     "english": "English"
   },
   "roleManagement": {
-    "title": "Manager",
+    "title": "User Management",
     "searchPlaceholder": "Search by first name, last name, etc.",
     "filterByPosition": "Filter by position",
     "professor": "Professor",
@@ -57,7 +57,21 @@
     "title": "Please authenticate",
     "usernamePlaceholder": "Username",
     "passwordPlaceholder": "Password",
-    "connect": "Login",
+    "connect": "Connect",
     "error": "Incorrect username or password."
+  },
+  "addUser": {
+    "headerTitle": "User Management",
+    "formTitle": "Add/Edit a user",
+    "firstName": "First Name",
+    "firstNamePlaceholder": "Enter first name",
+    "lastName": "Last Name",
+    "lastNamePlaceholder": "Enter last name",
+    "position": "Position",
+    "positionPlaceholder": "Enter position",
+    "department": "Departments",
+    "departmentPlaceholder": "Enter department",
+    "validate": "Validate",
+    "back": "Back"
   }
 }

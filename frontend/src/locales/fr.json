@@ -59,6 +59,19 @@
     "passwordPlaceholder": "Mot de passe",
     "connect": "Se Connecter",
     "error": "Nom d'utilisateur ou mot de passe incorrect."
+  },
+  "addUser": {
+    "headerTitle": "Gestionnaire",
+    "formTitle": "Ajouter/Modifier un utilisateur",
+    "firstName": "Prénom",
+    "firstNamePlaceholder": "Entrer le prénom",
+    "lastName": "Nom",
+    "lastNamePlaceholder": "Entrer le nom",
+    "position": "Poste",
+    "positionPlaceholder": "Entrer le poste",
+    "department": "Départements",
+    "departmentPlaceholder": "Entrer le département",
+    "validate": "Valider",
+    "back": "Retour"
   }
 }
-

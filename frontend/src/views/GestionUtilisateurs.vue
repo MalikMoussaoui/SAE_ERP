@@ -59,7 +59,7 @@
     </div>
 
     <div class="footer-actions">
-      <button class="btn-add" @click="$router.push('/gestion-utilisateurs/ajouter')">{{ $t('roleManagement.addUser') }}</button>
+      <button class="btn-add" @click="$router.push('/user-management/add')">{{ $t('roleManagement.addUser') }}</button>
     </div>
   </DashboardLayout>
 </template>

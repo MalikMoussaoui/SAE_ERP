@@ -60,8 +60,8 @@ export default {
         { path: '#', text: this.$t('nav.mccc'), icon: iconMcc }, // Chemin temporaire
         { path: '#', text: this.$t('nav.tac'), icon: iconTac }, // Chemin temporaire
         { path: '#', text: this.$t('nav.teachers'), icon: iconEnseignant }, // Chemin temporaire
-        { path: '/gestion-utilisateurs', text: this.$t('nav.roleManagement'), icon: iconRole },
-        { path: '/parametres', text: this.$t('nav.settings'), icon: iconParametre },
+        { path: '/user-management', text: this.$t('nav.roleManagement'), icon: iconRole },
+        { path: '/settings', text: this.$t('nav.settings'), icon: iconParametre },
       ]
     }
   },
