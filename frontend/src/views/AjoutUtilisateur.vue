@@ -78,6 +78,9 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 1.5rem;
+  width: 100%;
+  padding: 0 2.75rem;
+  box-sizing: border-box;
 }
 
 .form-card {
@@ -171,6 +174,9 @@ export default {
 @media (max-width: 768px) {
   .page-title {
     font-size: 2rem;
+  }
+  .form-section {
+    padding: 0 1.25rem;
   }
   .form-card {
     padding: 1.75rem 1.5rem;
