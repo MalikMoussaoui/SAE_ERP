@@ -6,6 +6,7 @@
       </div>
     </template>
 
+    <div class="page-surface">
     <div class="settings-section">
       <h2 class="section-title">{{ $t('settings.appearance') }}</h2>
       <div class="content-card">
@@ -53,6 +54,7 @@
         </div>
       </div>
     </div>
+    </div>
   </DashboardLayout>
 </template>
 
@@ -92,11 +94,19 @@ export default {
   margin: 0;
 }
 
+.page-surface {
+  background: var(--color-card-bg, white);
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
+}
+
 .content-card {
   background: var(--color-card-bg, white);
   border: 1px solid var(--color-border, #ddd);
-  border-radius: 12px;
-  padding: 2rem;
+  border-radius: 20px;
+  padding: 20px;
   box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
 }
 

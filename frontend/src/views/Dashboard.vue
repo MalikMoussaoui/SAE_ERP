@@ -7,21 +7,23 @@
       </div>
     </template>
 
-    <section class="content-cards">
-      <div class="card">
-        <h3>{{ $t('dashboard.fillSheet') }}</h3>
-        <p>{{ $t('dashboard.subject') }}</p>
-        <p class="subtitle">{{ $t('dashboard.semester') }}</p>
-        <button class="btn-primary">{{ $t('dashboard.complete') }}</button>
-      </div>
-      <div class="card card-notifications">
-        <div class="icon-success">
+    <div class="page-surface">
+      <section class="content-cards">
+        <div class="card">
+          <h3>{{ $t('dashboard.fillSheet') }}</h3>
+          <p>{{ $t('dashboard.subject') }}</p>
+          <p class="subtitle">{{ $t('dashboard.semester') }}</p>
+          <button class="btn-primary">{{ $t('dashboard.complete') }}</button>
+        </div>
+        <div class="card card-notifications">
+          <div class="icon-success">
           <span>✔</span>
         </div>
         <h3>{{ $t('dashboard.notifications') }}</h3>
         <p>{{ $t('dashboard.noNotifications') }}</p>
       </div>
-    </section>
+      </section>
+    </div>
   </DashboardLayout>
 </template>
 
@@ -50,6 +52,14 @@ export default {
   font-weight: 500;
   color: var(--color-text-body, #555);
   margin: 0;
+}
+
+.page-surface {
+  background: var(--color-card-bg, #ffffff);
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
 }
 
 .content-cards {

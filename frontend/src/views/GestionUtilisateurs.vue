@@ -6,8 +6,9 @@
       </div>
     </template>
 
-    <div class="toolbar">
-      <div class="search-wrapper">
+    <div class="page-surface">
+      <div class="toolbar">
+        <div class="search-wrapper">
         <span class="search-icon">🔍</span>
         <input type="text" :placeholder="$t('roleManagement.searchPlaceholder')" class="search-input" v-model="searchQuery" />
       </div>
@@ -61,6 +62,7 @@
     <div class="footer-actions">
       <button class="btn-add" @click="$router.push('/user-management/add')">{{ $t('roleManagement.addUser') }}</button>
     </div>
+    </div>
   </DashboardLayout>
 </template>
 
@@ -111,6 +113,14 @@ export default {
 </script>
 
 <style scoped>
+.page-surface {
+  background: var(--color-card-bg, white);
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
+}
+
 .page-title {
   font-family: var(--font-primary, 'Poppins', sans-serif);
   font-size: 2.5rem;
@@ -129,7 +139,7 @@ export default {
 .filter-select { padding: 8px 12px; border: 1px solid var(--color-border, #ccc); border-radius: 5px; background-color: var(--color-card-bg, white); color: var(--color-text-body, #555); font-family: var(--font-secondary, 'Montserrat', sans-serif); cursor: pointer; outline: none; min-width: 180px; }
 
 /* --- Carte Tableau --- */
-.table-card { background: var(--color-card-bg, white); border: 1px solid var(--color-border, #ddd); border-radius: 12px; padding: 0; box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05)); overflow: hidden; margin-bottom: 2rem; }
+.table-card { background: var(--color-card-bg, white); border: 1px solid var(--color-border, #ddd); border-radius: 20px; padding: 20px; box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05)); overflow: hidden; margin-bottom: 2rem; }
 .table-scroll { max-height: 450px; overflow-y: auto; }
 table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
 th { background-color: var(--color-sidebar-bg, #f1f1f1); color: var(--color-text-header, #333); font-weight: 600; text-align: left; padding: 15px 20px; position: sticky; top: 0; z-index: 1; }

@@ -4,39 +4,41 @@
       <h1 class="page-title">{{ $t('addUser.headerTitle') }}</h1>
     </template>
 
-    <section class="form-section">
-      <div class="form-card">
-        <h2>{{ $t('addUser.formTitle') }}</h2>
-        <form @submit.prevent="submitForm">
-          <div class="form-row">
-            <div class="form-group">
-              <label for="firstName">{{ $t('addUser.firstName') }}</label>
-              <input id="firstName" v-model="form.firstName" type="text" :placeholder="$t('addUser.firstNamePlaceholder')" />
+    <div class="page-surface">
+      <section class="form-section">
+        <div class="form-card">
+          <h2>{{ $t('addUser.formTitle') }}</h2>
+          <form @submit.prevent="submitForm">
+            <div class="form-row">
+              <div class="form-group">
+                <label for="firstName">{{ $t('addUser.firstName') }}</label>
+                <input id="firstName" v-model="form.firstName" type="text" :placeholder="$t('addUser.firstNamePlaceholder')" />
+              </div>
+              <div class="form-group">
+                <label for="position">{{ $t('addUser.position') }}</label>
+                <input id="position" v-model="form.position" type="text" :placeholder="$t('addUser.positionPlaceholder')" />
+              </div>
             </div>
-            <div class="form-group">
-              <label for="position">{{ $t('addUser.position') }}</label>
-              <input id="position" v-model="form.position" type="text" :placeholder="$t('addUser.positionPlaceholder')" />
+            <div class="form-row">
+              <div class="form-group">
+                <label for="lastName">{{ $t('addUser.lastName') }}</label>
+                <input id="lastName" v-model="form.lastName" type="text" :placeholder="$t('addUser.lastNamePlaceholder')" />
+              </div>
+              <div class="form-group">
+                <label for="department">{{ $t('addUser.department') }}</label>
+                <input id="department" v-model="form.department" type="text" :placeholder="$t('addUser.departmentPlaceholder')" />
+              </div>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="form-group">
-              <label for="lastName">{{ $t('addUser.lastName') }}</label>
-              <input id="lastName" v-model="form.lastName" type="text" :placeholder="$t('addUser.lastNamePlaceholder')" />
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">{{ $t('addUser.validate') }}</button>
             </div>
-            <div class="form-group">
-              <label for="department">{{ $t('addUser.department') }}</label>
-              <input id="department" v-model="form.department" type="text" :placeholder="$t('addUser.departmentPlaceholder')" />
-            </div>
-          </div>
-          <div class="form-actions">
-            <button type="submit" class="btn-primary">{{ $t('addUser.validate') }}</button>
-          </div>
-        </form>
-      </div>
-      <div class="back-action">
-        <button class="btn-secondary" @click="$router.push('/user-management')">{{ $t('addUser.back') }}</button>
-      </div>
-    </section>
+          </form>
+        </div>
+        <div class="back-action">
+          <button class="btn-secondary" @click="$router.push('/user-management')">{{ $t('addUser.back') }}</button>
+        </div>
+      </section>
+    </div>
   </DashboardLayout>
 </template>
 
@@ -73,6 +75,14 @@ export default {
   margin: 0;
 }
 
+.page-surface {
+  background: var(--color-card-bg, white);
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
+}
+
 .form-section {
   display: flex;
   flex-direction: column;
@@ -88,9 +98,9 @@ export default {
   max-width: 920px;
   background: var(--color-card-bg, white);
   border: 1px solid var(--color-border, #d7e0ff);
-  border-radius: 16px;
+  border-radius: 20px;
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.06);
-  padding: 2.25rem 2.5rem;
+  padding: 20px;
 }
 
 .form-card h2 {
