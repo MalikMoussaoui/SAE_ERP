@@ -40,10 +40,6 @@ public class AppUser {
     @Column(nullable=false)
     private UserStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="department_id")
-    private Department department;
-
     @Column(nullable = false,updatable = false)
     private Instant createdAt = Instant.now();
     public AppUser() {
@@ -57,7 +53,6 @@ public class AppUser {
         this.phone = phone;
         this.role = role;
         this.status = status;
-        this.department = department;
         this.createdAt = createdAt;
     }
 

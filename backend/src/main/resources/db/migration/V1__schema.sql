@@ -26,8 +26,7 @@ CREATE TABLE ue (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     department_id UUID REFERENCES department(id),
     title TEXT NOT NULL,
-    semester INT NOT NULL,
-    objectives TEXT
+    semester INT NOT NULL
 );
 
 CREATE TABLE resource (
@@ -44,27 +43,34 @@ CREATE TABLE sae (
     ue_id UUID REFERENCES ue(id),
     title TEXT NOT NULL,
     description TEXT,
-    total_hours INT NOT NULL
+    hours_sae INT NOT NULL
 );
 
 CREATE TABLE resource_sheet (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    department_id UUID REFERENCES department(id),
-    ue_id UUID REFERENCES ue(id),
-    resource_id UUID REFERENCES resource(id),
-    sae_id UUID REFERENCES sae(id),
     status TEXT NOT NULL DEFAULT 'DRAFT',
     objectives TEXT NOT NULL,
-    prerequisites TEXT NOT NULL,
     modalities TEXT NOT NULL,
     hours_cm INT NOT NULL DEFAULT 0,
     hours_td INT NOT NULL DEFAULT 0,
     hours_tp INT NOT NULL DEFAULT 0,
-    responsible_id UUID REFERENCES app_user(id),
     version INT NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
+
+CREATE TABLE course (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    sae_id UUID REFERENCES sae(id),
+    resource_id UUID REFERENCES resource(id),
+    hours INT NOT NULL DEFAULT 0
+)
+
+CREATE TABLE list_prof_course (
+    id_course UUID REFERENCES course(id) ON DELETE CASCADE,
+    id_prof UUID REFERENCES app_user(id) ON DELETE CASCADE,
+    PRIMARY KEY (id_course, id_prof)
+)
 
 CREATE TABLE resource_sheet_competency (
     resource_sheet_id UUID REFERENCES resource_sheet(id) ON DELETE CASCADE,
