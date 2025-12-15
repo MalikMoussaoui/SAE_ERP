@@ -5,7 +5,7 @@ spring:
     password: erp
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     open-in-view: false
     properties:
       hibernate.jdbc.time_zone: UTC
@@ -21,3 +21,7 @@ management:
     web:
       exposure:
         include: health,info
+
+jwt:
+  secret: votre_super_cle_secrete_a_changer_en_production_au_moins_512_bits
+  expiration: 86400000
