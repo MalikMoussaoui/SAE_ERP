@@ -1,32 +1,43 @@
 package com.unilim.erp.entities;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
 @Table(name = "course")
-@Getter
-@Setter
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
 public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(name = "hours", nullable = false)
+    private int hours;
 
-    @Column(name = "hour", nullable = false)
-    private int hour;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_resource_sheet")
     private ResourceSheet resourceSheet;
 
-    public Course() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sae_id")
+    private Sae sae;
 
-    public Course(int hour, ResourceSheet resourceSheet) {
-        this.hour = hour;
-        this.resourceSheet = resourceSheet;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "resource_id") // Attention : table 'resource' en SQL (sans S), 'Resource' en Java
+    private Resource resource;
+
+    @ManyToMany
+    @JoinTable(
+            name = "list_prof_course",
+            joinColumns = @JoinColumn(name = "id_course"),
+            inverseJoinColumns = @JoinColumn(name = "id_prof")
+    )
+    private Set<AppUser> teachers = new HashSet<>();
 }

@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE department (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    label TEXT NOT NULL,
+    label TEXT NOT NULL
 );
 
 CREATE TABLE app_user (
@@ -13,7 +13,6 @@ CREATE TABLE app_user (
     phone TEXT,
     role TEXT NOT NULL,
     status TEXT NOT NULL DEFAULT 'ACTIF',
-    department_id UUID REFERENCES department(id),
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
@@ -59,18 +58,21 @@ CREATE TABLE resource_sheet (
     updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+
 CREATE TABLE course (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id_resource_sheet UUID REFERENCES resource_sheet(id),
     sae_id UUID REFERENCES sae(id),
     resource_id UUID REFERENCES resource(id),
     hours INT NOT NULL DEFAULT 0
-)
+);
+
 
 CREATE TABLE list_prof_course (
-    id_course UUID REFERENCES course(id) ON DELETE CASCADE,
-    id_prof UUID REFERENCES app_user(id) ON DELETE CASCADE,
-    PRIMARY KEY (id_course, id_prof)
-)
+  id_course UUID REFERENCES course(id) ON DELETE CASCADE,
+  id_prof UUID REFERENCES app_user(id) ON DELETE CASCADE,
+  PRIMARY KEY (id_course, id_prof)
+);
 
 CREATE TABLE resource_sheet_competency (
     resource_sheet_id UUID REFERENCES resource_sheet(id) ON DELETE CASCADE,

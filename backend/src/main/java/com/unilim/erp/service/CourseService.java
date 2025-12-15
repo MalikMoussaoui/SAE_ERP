@@ -34,8 +34,11 @@ public class CourseService {
     public Course update(UUID id, Course courseDetails) {
         return courseRepository.findById(id)
                 .map(course -> {
-                    course.setHour(courseDetails.getHour());
+                    course.setHours(courseDetails.getHours());
                     course.setResourceSheet(courseDetails.getResourceSheet());
+                    course.setSae(courseDetails.getSae());
+                    course.setResource(courseDetails.getResource());
+
                     return courseRepository.save(course);
                 })
                 .orElseThrow(() -> new RuntimeException("Cours introuvable avec l'ID : " + id));

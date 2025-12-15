@@ -10,6 +10,8 @@ import lombok.Setter;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "app_user")
@@ -42,10 +44,14 @@ public class AppUser {
 
     @Column(nullable = false,updatable = false)
     private Instant createdAt = Instant.now();
+
+    @ManyToMany(mappedBy = "teachers")
+    private Set<Course> courses = new HashSet<>();
+
     public AppUser() {
     }
 
-    public AppUser(UUID id,String email, String passwordHash, String displayName, String phone, UserRole role, UserStatus status, Department department, Instant createdAt) {
+    public AppUser(UUID id,String email, String passwordHash, String displayName, String phone, UserRole role, UserStatus status, Instant createdAt) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;

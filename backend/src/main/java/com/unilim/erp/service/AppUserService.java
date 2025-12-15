@@ -1,23 +1,46 @@
 package com.unilim.erp.service;
 
-import com.unilim.erp.repositories.AppUserRepository;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import com.unilim.erp.entities.AppUser;
+import com.unilim.erp.repositories.AppUserRepository; // Vérifie si c'est 'repository' ou 'repositories' dans ton projet
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
 @Service
-public class AppUserService implements UserDetailsService {
+public class AppUserService {
 
-    private final AppUserRepository appUserRepository;
+    private final AppUserRepository repository;
 
-    public AppUserService(AppUserRepository appUserRepository) {
-        this.appUserRepository = appUserRepository;
+    public AppUserService(AppUserRepository repository) {
+        this.repository = repository;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return appUserRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    public List<AppUser> getAllAppUsers() {
+        return repository.findAll();
+    }
+
+    public Optional<AppUser> getAppUserById(UUID id) {
+        return repository.findById(id);
+    }
+
+    public AppUser createAppUser(AppUser appUser) {
+        return repository.save(appUser);
+    }
+
+    public AppUser updateAppUser(UUID id, AppUser userDetails) {
+        return repository.findById(id).map(existingUser -> {
+            existingUser.setEmail(userDetails.getEmail());
+            existingUser.setDisplayName(userDetails.getDisplayName());
+            existingUser.setPhone(userDetails.getPhone());
+            existingUser.setRole(userDetails.getRole());
+            existingUser.setStatus(userDetails.getStatus());
+
+            return repository.save(existingUser);
+        }).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + id));
+    }
+    public void deleteAppUser(UUID id) {
+        repository.deleteById(id);
     }
 }
