@@ -43,7 +43,7 @@ public class AuthService {
         user.setPhone(request.phone());
         user.setPasswordHash(request.password()); // Mot de passe en clair (Test)
 
-        user.setRole(request.role() != null ? request.role() : UserRole.ENSEIGNANT);
+        user.setRole(request.role() != null ? request.role() : UserRole.TEACHER);
         user.setStatus(UserStatus.ACTIVE);
         return appUserRepository.save(user);
     }

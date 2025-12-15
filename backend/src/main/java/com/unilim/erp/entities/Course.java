@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,14 +24,17 @@ public class Course {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_resource_sheet")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private ResourceSheet resourceSheet;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sae_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Sae sae;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resource_id") // Attention : table 'resource' en SQL (sans S), 'Resource' en Java
+    @JoinColumn(name = "resource_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Resource resource;
 
     @ManyToMany

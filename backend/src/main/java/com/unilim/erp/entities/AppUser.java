@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -46,6 +47,7 @@ public class AppUser {
     private Instant createdAt = Instant.now();
 
     @ManyToMany(mappedBy = "teachers")
+    @JsonIgnore
     private Set<Course> courses = new HashSet<>();
 
     public AppUser() {
