@@ -6,6 +6,7 @@ import com.unilim.erp.entities.*;
 import com.unilim.erp.repositories.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -19,19 +20,21 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final SaeRepository saeRepository;
     private final CourseRepository courseRepository;
     private final AppUserRepository appUserRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public DatabaseSeeder(DepartmentRepository departmentRepository,
                           UeRepository ueRepository,
                           ResourceRepository resourceRepository,
                           SaeRepository saeRepository,
                           CourseRepository courseRepository,
-                          AppUserRepository appUserRepository) {
+                          AppUserRepository appUserRepository,PasswordEncoder passwordEncoder) {
         this.departmentRepository = departmentRepository;
         this.ueRepository = ueRepository;
         this.resourceRepository = resourceRepository;
         this.saeRepository = saeRepository;
         this.courseRepository = courseRepository;
         this.appUserRepository = appUserRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -91,7 +94,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         AppUser user = new AppUser();
         user.setDisplayName(prenom + " " + nom);
         user.setEmail(email);
-        user.setPasswordHash("1234");
+        user.setPasswordHash(passwordEncoder.encode("1234"));
         user.setPhone("0601020304");
         user.setRole(role);
         user.setStatus(status);
