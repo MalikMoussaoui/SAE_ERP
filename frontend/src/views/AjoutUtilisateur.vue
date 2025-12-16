@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <DashboardLayout>
     <template #header>
       <h1 class="page-title">{{ $t('addUser.headerTitle') }}</h1>

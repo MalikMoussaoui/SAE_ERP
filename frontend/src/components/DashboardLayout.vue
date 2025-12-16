@@ -57,7 +57,7 @@ export default {
       return [
         { path: '/dashboard', text: this.$t('nav.dashboard'), icon: iconDashboard },
         { path: '#', text: this.$t('nav.resourceSheets'), icon: iconFiche }, // Chemin temporaire
-        { path: '#', text: this.$t('nav.mccc'), icon: iconMcc }, // Chemin temporaire
+        { path: '/mccc', text: this.$t('nav.mccc'), icon: iconMcc },
         { path: '#', text: this.$t('nav.tac'), icon: iconTac }, // Chemin temporaire
         { path: '#', text: this.$t('nav.teachers'), icon: iconEnseignant }, // Chemin temporaire
         { path: '/user-management', text: this.$t('nav.roleManagement'), icon: iconRole },

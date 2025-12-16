@@ -4,6 +4,7 @@ import DashboardView from '../views/Dashboard.vue'
 import GestionUtilisateurs from '../views/GestionUtilisateurs.vue'
 import Parametres from '../views/Parametres.vue'
 import AjoutUtilisateur from '../views/AjoutUtilisateur.vue'
+import McccView from '../views/Mccc.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,6 +32,11 @@ const router = createRouter({
       path: '/user-management/add',
       name: 'user-management-add',
       component: AjoutUtilisateur
+    },
+    {
+      path: '/mccc',
+      name: 'mccc',
+      component: McccView
     },
     {
       path: '/settings',
