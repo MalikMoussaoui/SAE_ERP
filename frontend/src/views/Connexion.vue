@@ -3,7 +3,7 @@
     <img src="@/assets/logo_iut.png" alt="Logo Université de Limoges" class="main-logo" />
 
     <div class="login-card">
-      
+
       <div v-if="isLoading" class="loading-overlay">
         <div class="spinner"></div>
       </div>
@@ -12,12 +12,12 @@
       <h2>Veuillez vous authentifier</h2>
 
       <form @submit.prevent="handleLogin">
-        
+
         <div class="input-group">
           <img src="@/assets/Bonhomme.png" alt="Utilisateur" class="icon-img" />
-          <input v-model="username" type="text" placeholder="Nom d'utilisateur" required />
+          <input v-model="username" type="text" placeholder="Nom d'utilisateur (email)" required />
         </div>
-        
+
         <div class="input-group">
           <img src="@/assets/Cadenas.png" alt="Mot de passe" class="icon-img" />
           <input v-model="password" type="password" placeholder="Mot de passe" required />
@@ -31,7 +31,7 @@
 </template>
 
 <script>
-// import axios from 'axios'; // Pas besoin pour la simulation
+import axios from 'axios';
 
 export default {
   name: 'LoginScreen',
@@ -40,37 +40,42 @@ export default {
       username: '',
       password: '',
       errorMessage: '',
-      isLoading: false // L'état pour afficher/cacher le spinner
-    }; 
-  }, // <-- La virgule est importante ici
-  
+      isLoading: false
+    };
+  },
+
   methods: {
     async handleLogin() {
-      this.errorMessage = ''; 
-      this.isLoading = true; // On active le spinner
+      this.errorMessage = '';
+      this.isLoading = true;
 
       try {
-        // --- SIMULATION (puisqu'il n'y a pas de back-end) ---
-        
-        // On simule une petite attente (500ms) pour que le spinner s'affiche
-        await new Promise(resolve => setTimeout(resolve, 500)); 
 
-        if (this.username === 'admin' && this.password === 'password') {
-          
-          localStorage.setItem('user-token', 'fake-token-for-simulation');
-          
-          // On attend 2 secondes AVANT de rediriger
-          setTimeout(() => {
-            this.$router.push('/dashboard'); 
-          }, 2000); // 2000ms = 2 secondes
+        const response = await axios.post('/api/auth/login', {
+          email: this.username,
+          password: this.password
+        });
 
-        } else {
-          throw new Error('Nom d\'utilisateur ou mot de passe incorrect.');
+        console.log('Connexion réussie', response.data);
+
+        if (response.data.token) {
+          localStorage.setItem('user-token', response.data.token);
         }
 
+        this.$router.push('/dashboard');
+
       } catch (error) {
-        this.errorMessage = error.message;
-        this.isLoading = false; // On cache le spinner si erreur
+        console.error("Erreur de connexion", error);
+
+        if (error.response && (error.response.status === 403 || error.response.status === 401)) {
+          this.errorMessage = 'Identifiants incorrects.';
+        } else if (error.code === 'ERR_NETWORK') {
+           this.errorMessage = 'Impossible de joindre le serveur.';
+        } else {
+          this.errorMessage = 'Une erreur est survenue lors de la connexion.';
+        }
+      } finally {
+        this.isLoading = false;
       }
     }
   }
@@ -78,7 +83,6 @@ export default {
 </script>
 
 <style scoped>
-/* Importez vos polices (ex: Google Fonts) dans votre index.html ou main.css */
 /* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Montserrat:wght@500&display=swap'); */
 
 .page-container {
@@ -111,7 +115,7 @@ export default {
 }
 
 .app-title-logo {
-  max-width: 310px; 
+  max-width: 310px;
   width: 100%;
   height: auto;
   margin-bottom: -1rem;
@@ -168,8 +172,8 @@ h2 {
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px; 
-  height: 20px; 
+  width: 20px;
+  height: 20px;
   opacity: 1;
 }
 
