@@ -5,6 +5,7 @@ import GestionUtilisateurs from '../views/GestionUtilisateurs.vue'
 import Parametres from '../views/Parametres.vue'
 import AjoutUtilisateur from '../views/AjoutUtilisateur.vue'
 import McccView from '../views/Mccc.vue'
+import FicheRessourceView from '../views/FicheRessource.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +23,11 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView
+    },
+    {
+      path: '/fiche-ressource',
+      name: 'fiche-ressource',
+      component: FicheRessourceView
     },
     {
       path: '/user-management',
