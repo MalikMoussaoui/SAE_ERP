@@ -56,7 +56,7 @@ export default {
     navLinks() {
       return [
         { path: '/dashboard', text: this.$t('nav.dashboard'), icon: iconDashboard },
-        { path: '#', text: this.$t('nav.resourceSheets'), icon: iconFiche }, // Chemin temporaire
+        { path: '/fiche-ressource', text: this.$t('nav.resourceSheets'), icon: iconFiche },
         { path: '/mccc', text: this.$t('nav.mccc'), icon: iconMcc },
         { path: '#', text: this.$t('nav.tac'), icon: iconTac }, // Chemin temporaire
         { path: '#', text: this.$t('nav.teachers'), icon: iconEnseignant }, // Chemin temporaire
