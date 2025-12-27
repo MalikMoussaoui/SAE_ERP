@@ -1,32 +1,49 @@
 <template>
   <DashboardLayout>
     <template #header>
-      <h1 class="page-title">MCCC</h1>
+      <h1 class="page-title">{{ $t('nav.mccc') }}</h1>
     </template>
 
     <div class="page-surface mccc-surface">
-      <section class="cards-grid top-grid">
+      <div class="step-indicator">
+        <div class="step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
+          <div class="step-number">1</div>
+          <div class="step-label">{{ $t('mccc.step1Label') }}</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
+          <div class="step-number">2</div>
+          <div class="step-label">{{ $t('mccc.step2Label') }}</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" :class="{ active: currentStep >= 3, completed: currentStep > 3 }">
+          <div class="step-number">3</div>
+          <div class="step-label">{{ $t('mccc.step3Label') }}</div>
+        </div>
+      </div>
+
+      <section v-if="currentStep === 1" class="cards-grid top-grid">
         <div class="info-card">
-          <h3>Organisation generale</h3>
+          <h3>{{ $t('mccc.generalOrganization') }}</h3>
           <div class="card-fields">
             <label class="field">
-              <span>Departement</span>
+              <span>{{ $t('mccc.department') }}</span>
               <select v-model="form.departement" class="pill-select">
-                <option value="" disabled>Choisir un departement</option>
+                <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
                 <option v-for="option in departements" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Annee</span>
+              <span>{{ $t('mccc.year') }}</span>
               <select v-model="form.annee" class="pill-select">
-                <option value="" disabled>Selectionner</option>
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in annees" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Semestre</span>
+              <span>{{ $t('mccc.semester') }}</span>
               <select v-model="form.semestre" class="pill-select">
-                <option value="" disabled>Selectionner</option>
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in semestres" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
@@ -34,40 +51,40 @@
         </div>
 
         <div class="info-card">
-          <h3>Les ressources et SAE</h3>
+          <h3>{{ $t('mccc.resourcesAndSAE') }}</h3>
           <div class="card-fields">
             <label class="field">
-              <span>Modalite</span>
+              <span>{{ $t('mccc.modality') }}</span>
               <select v-model="form.modalite" class="pill-select">
-                <option value="" disabled>Choisir une modalite</option>
+                <option value="" disabled>{{ $t('mccc.chooseModality') }}</option>
                 <option v-for="option in modalites" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Code APOGEE</span>
+              <span>{{ $t('mccc.apogeeCode') }}</span>
               <select v-model="form.codeApogee" class="pill-select">
-                <option value="" disabled>Code</option>
+                <option value="" disabled>{{ $t('mccc.code') }}</option>
                 <option v-for="option in codesApogee" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Type d'evaluation</span>
+              <span>{{ $t('mccc.evaluationType') }}</span>
               <select v-model="form.typeEvaluation" class="pill-select">
-                <option value="" disabled>Selectionner</option>
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in typesEvaluation" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>UE</span>
+              <span>{{ $t('mccc.ue') }}</span>
               <select v-model="form.ue" class="pill-select">
-                <option value="" disabled>Selectionner l'UE</option>
+                <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
                 <option v-for="option in ues" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Niveau de la competence</span>
+              <span>{{ $t('mccc.competenceLevel') }}</span>
               <select v-model="form.niveauCompetence" class="pill-select">
-                <option value="" disabled>Choisir</option>
+                <option value="" disabled>{{ $t('mccc.choose') }}</option>
                 <option v-for="option in niveauxCompetence" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
@@ -75,26 +92,26 @@
         </div>
 
         <div class="info-card">
-          <h3>Coefficient</h3>
+          <h3>{{ $t('mccc.coefficient') }}</h3>
           <div class="card-fields">
             <label class="field">
-              <span>Coefficient SAE</span>
+              <span>{{ $t('mccc.saeCoefficient') }}</span>
               <select v-model="form.coeffSae" class="pill-select">
-                <option value="" disabled>Choisir</option>
+                <option value="" disabled>{{ $t('mccc.choose') }}</option>
                 <option v-for="option in coeffsSae" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Coefficient Ressource</span>
+              <span>{{ $t('mccc.resourceCoefficient') }}</span>
               <select v-model="form.coeffRessource" class="pill-select">
-                <option value="" disabled>Choisir</option>
+                <option value="" disabled>{{ $t('mccc.choose') }}</option>
                 <option v-for="option in coeffsRessource" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Coefficient Total</span>
+              <span>{{ $t('mccc.totalCoefficient') }}</span>
               <select v-model="form.coeffTotal" class="pill-select">
-                <option value="" disabled>Total</option>
+                <option value="" disabled>{{ $t('mccc.total') }}</option>
                 <option v-for="option in coeffsTotal" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
@@ -102,28 +119,28 @@
         </div>
       </section>
 
-      <section class="cards-grid mid-grid">
+      <section v-if="currentStep === 2" class="cards-grid mid-grid">
         <div class="info-card">
-          <h3>Organisation generale</h3>
+          <h3>{{ $t('mccc.validationAndMore') }}</h3>
           <div class="card-fields">
             <label class="field">
-              <span>Regle de validation</span>
+              <span>{{ $t('mccc.validationRule') }}</span>
               <select v-model="form.regleValidation" class="pill-select">
-                <option value="" disabled>Selectionner</option>
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in reglesValidation" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Rattachement</span>
+              <span>{{ $t('mccc.attachment') }}</span>
               <select v-model="form.rattachement" class="pill-select">
-                <option value="" disabled>Selectionner</option>
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in rattachements" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Baseline</span>
+              <span>{{ $t('mccc.baseline') }}</span>
               <select v-model="form.baseline" class="pill-select">
-                <option value="" disabled>Selectionner</option>
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in baselines" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
@@ -131,80 +148,103 @@
         </div>
 
         <div class="info-card">
-          <h3>Organisation generale</h3>
+          <h3>{{ $t('mccc.pedagogicalDetails') }}</h3>
           <div class="card-fields">
             <label class="field">
-              <span>Responsable pedagogique</span>
+              <span>{{ $t('mccc.pedagogicalManager') }}</span>
               <select v-model="form.responsable" class="pill-select">
-                <option value="" disabled>Selectionner</option>
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in responsables" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
-              <span>Objectif de l'UE</span>
+              <span>{{ $t('mccc.ueObjective') }}</span>
               <select v-model="form.objectif" class="pill-select">
-                <option value="" disabled>Selectionner</option>
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in objectifs" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
           </div>
         </div>
       </section>
-
-      <section class="table-section">
+      <section v-if="currentStep === 3" class="table-section">
         <div class="table-card">
           <div class="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Nom Ressource </th>
-                  <th>h CM</th>
-                  <th>h TD</th>
-                  <th>h TP</th>
-                  <th>h DS CM</th>
-                  <th>h DS TP</th>
-                  <th>Ajouter information</th>
+                  <th>{{ $t('mccc.table.resourceName') }}</th>
+                  <th>{{ $t('mccc.table.hCM') }}</th>
+                  <th>{{ $t('mccc.table.hTD') }}</th>
+                  <th>{{ $t('mccc.table.hTP') }}</th>
+                  <th>{{ $t('mccc.table.hDSCM') }}</th>
+                  <th>{{ $t('mccc.table.hDSTP') }}</th>
+                  <th>{{ $t('mccc.table.addInfo') }}</th>
+                  <th class="action-header">{{ $t('mccc.table.action') }}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr v-for="row in ressourcesRows" :key="row.id">
                   <td>
-                    <input class="table-input" v-model="row.label" :placeholder="`Ressource ${row.id}`" />
+                    <input class="table-input" v-model="row.label" :placeholder="$t('mccc.resourcePlaceholder', { id: row.id })" />
                   </td>
-                  <td><input class="table-input" v-model="row.hCM" type="number" min="0" step="0.5" /></td>
-                  <td><input class="table-input" v-model="row.hTD" type="number" min="0" step="0.5" /></td>
-                  <td><input class="table-input" v-model="row.hTP" type="number" min="0" step="0.5" /></td>
-                  <td><input class="table-input" v-model="row.hDSCM" type="number" min="0" step="0.5" /></td>
-                  <td><input class="table-input" v-model="row.hDSTP" type="number" min="0" step="0.5" /></td>
+                  <td><input class="table-input" v-model="row.hCM" type="number" min="0" step="0.5" @input="validatePositive(row, 'hCM')" /></td>
+                  <td><input class="table-input" v-model="row.hTD" type="number" min="0" step="0.5" @input="validatePositive(row, 'hTD')" /></td>
+                  <td><input class="table-input" v-model="row.hTP" type="number" min="0" step="0.5" @input="validatePositive(row, 'hTP')" /></td>
+                  <td><input class="table-input" v-model="row.hDSCM" type="number" min="0" step="0.5" @input="validatePositive(row, 'hDSCM')" /></td>
+                  <td><input class="table-input" v-model="row.hDSTP" type="number" min="0" step="0.5" @input="validatePositive(row, 'hDSTP')" /></td>
                   <td class="info-cell">
                     <div v-if="row.showDetails" class="info-editor">
                       <textarea
                         v-model="row.notes"
                         rows="3"
                         class="info-textarea"
-                        placeholder="Ajoutez eleves, groupes, duree..."
+                        :placeholder="$t('mccc.infoPlaceholder')"
                       ></textarea>
                       <div class="info-actions">
-                        <button type="button" class="btn-finish" @click="row.showDetails = false">Terminer</button>
+                        <button type="button" class="btn-finish" @click="row.showDetails = false">{{ $t('mccc.finish') }}</button>
                       </div>
                     </div>
                     <div v-else class="info-collapsed">
-                      <div class="info-preview">{{ row.notes || 'Aucune information' }}</div>
+                      <div class="info-preview" :class="{ 'has-content': row.notes }">{{ row.notes || $t('mccc.noInfo') }}</div>
                       <button type="button" class="btn-add" @click="row.showDetails = true">
-                        {{ row.notes ? 'Modifier' : 'Ajouter information' }}
+                        {{ row.notes ? $t('mccc.edit') : $t('mccc.addInfo') }}
                       </button>
                     </div>
+                  </td>
+                  <td class="action-cell">
+                    <button v-if="ressourcesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('mccc.deleteRow')">
+                      &times;
+                    </button>
                   </td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <div class="final-totals single">
-            <span class="final-label">TOTAUX HEURES</span>
-            <span class="single-total">{{ grandTotal }}</span>
+          <div class="table-footer">
+            <button @click="addRow" class="btn-add-row">
+              + {{ $t('mccc.addRow') }}
+            </button>
+            <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+            <div class="final-totals single">
+              <span class="final-label">{{ $t('mccc.totalHours') }}</span>
+              <span class="single-total">{{ grandTotal }}</span>
+            </div>
           </div>
         </div>
       </section>
+
+      <div class="step-navigation">
+        <button v-if="currentStep > 1" @click="prevStep" class="btn btn-secondary">
+          {{ $t('mccc.back') }}
+        </button>
+        <button v-if="currentStep < 3" @click="nextStep" class="btn btn-primary">
+          {{ $t('mccc.continue') }}
+        </button>
+        <button v-if="currentStep === 3" class="btn btn-primary">
+          {{ $t('mccc.save') }}
+        </button>
+      </div>
     </div>
   </DashboardLayout>
 </template>
@@ -217,6 +257,7 @@ export default {
   components: { DashboardLayout },
   data() {
     return {
+      currentStep: 1,
       form: {
         departement: '',
         annee: '',
@@ -252,13 +293,10 @@ export default {
       responsables: ['1', '2'],
       objectifs: ['1', '2'],
       ressourcesRows: [
-        { id: 1, label: 'Nom ressource 1', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false },
-        { id: 2, label: 'Nom ressource 2', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false },
-        { id: 3, label: 'Nom ressource 3', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false },
-        { id: 4, label: 'Nom ressource 4', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false },
-        { id: 5, label: 'Nom ressource 5', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false },
-        { id: 6, label: 'Nom ressource 6', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false }
-      ]
+        { id: 1, label: '', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false }
+      ],
+      nextRowId: 2,
+      errorMessage: ''
     };
   },
   computed: {
@@ -273,10 +311,46 @@ export default {
       };
     },
     grandTotal() {
-      return ['hCM', 'hTD', 'hTP', 'hDSCM', 'hDSTP'].reduce(
-        (acc, key) => acc + (this.totals[key === 'hDSCM' ? 'dscm' : key === 'hDSTP' ? 'dstp' : key === 'hCM' ? 'cm' : key === 'hTD' ? 'td' : 'tp'] || 0),
-        0
-      );
+      return Object.values(this.totals).reduce((acc, total) => acc + total, 0);
+    }
+  },
+  methods: {
+    nextStep() {
+      if (this.currentStep < 3) {
+        this.currentStep++;
+      }
+    },
+    prevStep() {
+      if (this.currentStep > 1) {
+        this.currentStep--;
+      }
+    },
+    addRow() {
+      this.ressourcesRows.push({
+        id: this.nextRowId++,
+        label: '',
+        hCM: 0,
+        hTD: 0,
+        hTP: 0,
+        hDSCM: 0,
+        hDSTP: 0,
+        notes: '',
+        showDetails: false
+      });
+    },
+    deleteRow(rowId) {
+      if (this.ressourcesRows.length <= 1) return; // Ne pas supprimer la dernière ligne
+      this.ressourcesRows = this.ressourcesRows.filter(row => row.id !== rowId);
+    },
+    validatePositive(row, field) {
+      if (row[field] < 0) {
+        row[field] = 0;
+        this.errorMessage = "Impossible de saisir une valeur négative.";
+        if (this.errorTimeout) clearTimeout(this.errorTimeout);
+        this.errorTimeout = setTimeout(() => {
+          this.errorMessage = '';
+        }, 3000);
+      }
     }
   }
 };
@@ -292,8 +366,8 @@ export default {
 }
 
 .page-surface {
-  background: linear-gradient(145deg, #f7f8ff 0%, #ffffff 60%);
-  border: 1px solid var(--color-border, #ddd);
+  background: var(--color-sidebar-bg, #f7f8ff);
+  border: 1px solid var(--color-border);
   border-radius: 20px;
   padding: 22px;
   box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
@@ -303,6 +377,74 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  width: 100%;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--color-text-muted);
+  transition: color 0.3s;
+  text-align: center;
+  width: 120px;
+}
+
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  background-color: var(--color-card-bg);
+  transition: all 0.3s;
+  z-index: 1;
+}
+
+.step-label {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.step-connector {
+  flex-grow: 1;
+  height: 2px;
+  background-color: var(--color-border);
+  margin: 0;
+  transform: translateY(17px);
+  transition: background-color 0.3s;
+}
+
+.step.active .step-number {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+.step.active .step-label {
+  color: var(--color-text-header);
+}
+
+.step.completed .step-number {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.step.completed + .step-connector {
+  background-color: var(--color-primary);
 }
 
 .cards-grid {
@@ -320,7 +462,7 @@ export default {
 
 .info-card {
   background: var(--color-card-bg, #fff);
-  border: 1px solid var(--color-border, #d7e0ff);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
   padding: 14px 16px 16px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
@@ -328,7 +470,7 @@ export default {
 
 .info-card h3 {
   margin: 0 0 12px;
-  color: #c00000;
+  color: var(--color-primary);
   font-size: 1.05rem;
   letter-spacing: 0.2px;
   text-align: center;
@@ -357,12 +499,12 @@ export default {
 .pill-select {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #d7e0ff;
+  border: 1px solid var(--color-border);
   border-radius: 12px;
-  background: #fff;
+  background-color: var(--color-input-bg, #fff);
   font-family: var(--font-secondary, 'Montserrat', sans-serif);
   font-size: 0.95rem;
-  color: var(--color-text-body, #333);
+  color: #000;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='%23c00000'%3E%3Cpath d='M5 8l7 7 7-7z'/%3E%3C/svg%3E");
   background-position: right 12px center;
@@ -372,7 +514,7 @@ export default {
 
 .pill-select:focus {
   border-color: var(--color-primary, #c00000);
-  box-shadow: 0 0 0 3px rgba(192, 0, 0, 0.12);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 192, 0, 0), 0.12);
   outline: none;
 }
 
@@ -382,7 +524,7 @@ export default {
 
 .table-card {
   background: var(--color-card-bg, white);
-  border: 1px solid var(--color-border, #ddd);
+  border: 1px solid var(--color-border);
   border-radius: 18px;
   padding: 12px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.05);
@@ -390,7 +532,16 @@ export default {
 
 .table-scroll {
   max-height: 520px;
-  overflow: auto;
+  overflow-x: auto;
+}
+
+.table-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-sidebar-bg, #f4f4f9);
+  border-top: 1px solid var(--color-border);
+  border-radius: 0 0 18px 18px;
 }
 
 .final-totals {
@@ -398,15 +549,12 @@ export default {
   align-items: center;
   gap: 14px;
   padding: 12px 14px;
-  background: #fafafa;
-  border-top: 1px solid var(--color-border, #e6e6e6);
-  border-radius: 0 0 10px 10px;
   font-weight: 600;
   color: var(--color-text-body, #444);
 }
 
 .final-label {
-  color: #c00000;
+  color: var(--color-primary);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.4px;
@@ -431,36 +579,65 @@ thead th {
   color: var(--color-text-header, #333);
   font-weight: 600;
   text-align: left;
-  padding: 12px 14px;
-  border-bottom: 1px solid var(--color-border, #e6e6e6);
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+thead th:first-child {
+  border-top-left-radius: 10px;
+}
+
+thead th:last-child {
+  border-top-right-radius: 10px;
 }
 
 tbody td, tfoot td {
-  padding: 10px 14px;
-  border-bottom: 1px solid var(--color-border, #f0f0f0);
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 tr:nth-child(even) td {
-  background: rgba(0, 0, 0, 0.015);
+  background: var(--color-table-stripe, rgba(0, 0, 0, 0.015));
 }
 
 .table-input {
   width: 100%;
   padding: 8px 10px;
-  border: 1px solid #d7e0ff;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   font-size: 0.92rem;
-  color: var(--color-text-body, #333);
+  color: #000; 
   outline: none;
+}
+
+.table-input::placeholder {
+  color: #000;
+  opacity: 1; /* Pour Firefox */
 }
 
 .table-input:focus {
   border-color: var(--color-primary, #c00000);
-  box-shadow: 0 0 0 3px rgba(192, 0, 0, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 192, 0, 0), 0.1);
+}
+
+.action-header {
+  text-align: center;
+  width: 40px;
+  padding-left: 5px;
+  padding-right: 10px;
 }
 
 .info-cell {
-  min-width: 220px;
+  min-width: 180px;
+  padding-right: 5px;
+}
+
+.action-cell {
+  text-align: center;
+  vertical-align: middle;
+  width: 40px;
+  padding-left: 5px;
+  padding-right: 10px;
 }
 
 .info-collapsed {
@@ -473,6 +650,12 @@ tr:nth-child(even) td {
   min-height: 20px;
   color: var(--color-text-muted, #777);
   font-size: 0.9rem;
+  word-break: break-word; /* Empêche le texte long de déborder */
+}
+
+.info-preview.has-content {
+  color: var(--color-text-header, #333);
+  white-space: pre-wrap; /* Respecte les sauts de ligne */
 }
 
 .info-editor {
@@ -484,17 +667,22 @@ tr:nth-child(even) td {
 .info-textarea {
   width: 100%;
   padding: 8px 10px;
-  border: 1px solid #d7e0ff;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
   font-size: 0.9rem;
   font-family: var(--font-secondary, 'Montserrat', sans-serif);
   resize: vertical;
   min-height: 64px;
+  color: var(--color-text-header, #333);
+}
+
+.info-textarea::placeholder {
+  color: var(--color-text-muted, #777);
 }
 
 .info-textarea:focus {
   border-color: var(--color-primary, #c00000);
-  box-shadow: 0 0 0 3px rgba(192, 0, 0, 0.1);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 192, 0, 0), 0.1);
   outline: none;
 }
 
@@ -518,20 +706,104 @@ tr:nth-child(even) td {
   transition: background 0.2s;
 }
 
+.btn-add-row {
+  background: none;
+  border: none;
+  color: var(--color-primary, #c00000);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  margin-left: 6px;
+}
+
+.btn-add-row:hover {
+  text-decoration: underline;
+}
+
+.error-text {
+  color: var(--color-primary);
+  font-size: 0.9rem;
+  font-weight: 600;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.btn-delete {
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5rem;
+  font-weight: normal;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0 0 2px 0;
+  transition: all 0.2s;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .btn-add:hover,
 .btn-finish:hover {
   background-color: var(--color-primary-dark, #a00000);
 }
 
+.step-navigation {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.step-navigation .btn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary {
+  background-color: var(--color-primary, #c00000);
+  color: white;
+  box-shadow: 0 4px 14px rgba(192, 0, 0, 0.2);
+}
+.btn-primary:hover {
+  background-color: var(--color-primary-dark, #a00000);
+  box-shadow: 0 6px 16px rgba(192, 0, 0, 0.25);
+}
+
+.btn-secondary {
+  background-color: var(--color-card-bg);
+  color: var(--color-text-body);
+  border: 1px solid var(--color-border);
+}
+.btn-secondary:hover {
+  background-color: var(--color-hover-bg);
+}
+
 .totals-row td {
   font-weight: 700;
-  background: #fafafa;
+  background: var(--color-sidebar-bg, #f4f4f9);
 }
 
 .totals-label {
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  color: #c00000;
+  color: var(--color-primary);
 }
 
 @media (max-width: 900px) {

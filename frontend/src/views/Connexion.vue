@@ -73,12 +73,25 @@ export default {
 
 <style scoped>
 .page-container {
+  /* --- VARIABLES DE THEME (Mode Clair par défaut) --- */
+  --bg-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --text-main: #333;
+  --text-muted: rgba(51, 51, 51, 0.6); /* Remplace color #333 + opacity 60% */
+  --input-border: #ddd;
+  --input-focus: #C00000;
+  --shadow-color: rgba(0, 0, 0, 0.07);
+  --icon-filter: none;
+  --overlay-bg: rgba(255, 255, 255, 0.9);
+  --spinner-border: #f3f3f3;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: var(--bg-color);
+  color: var(--text-main);
   font-family: 'Montserrat', sans-serif;
   padding: 2rem 0;
   box-sizing: border-box;
@@ -90,10 +103,10 @@ export default {
 }
 
 .login-card {
-  background: #ffffff;
+  background: var(--card-bg);
   padding: 2.5rem 3rem;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 10px 30px var(--shadow-color);
   text-align: center;
   width: 100%;
   max-width: 420px;
@@ -113,11 +126,11 @@ export default {
 h2 {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-muted);
   margin-bottom: 2rem;
   font-family: 'Poppins', sans-serif;
   margin-top: 1.5rem;
-  opacity: 60%;
+  /* opacity géré par la variable de couleur */
 }
 
 .input-group {
@@ -130,7 +143,8 @@ h2 {
   width: 100%;
   padding: 12px 12px 12px 40px; /* Espace à gauche pour l'icône */
   border: none;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--input-border);
+  color: var(--text-main);
   font-size: 1rem;
   transition: border-color 0.3s;
   background-color: transparent;
@@ -150,7 +164,7 @@ h2 {
 
 .input-group input:focus {
   outline: none;
-  border-bottom-color: #C00000;
+  border-bottom-color: var(--input-focus);
 }
 
 .input-group .icon-img {
@@ -160,7 +174,7 @@ h2 {
   transform: translateY(-50%);
   width: 20px;
   height: 20px;
-  opacity: 1;
+  filter: var(--icon-filter);
 }
 
 button {
@@ -204,7 +218,7 @@ button:focus {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(255, 255, 255, 0.9); /* Fond blanc semi-transparent */
+  background-color: var(--overlay-bg);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -215,7 +229,7 @@ button:focus {
 .spinner {
   width: 100px;
   height: 100px;
-  border: 5px solid #f3f3f3; /* Le cercle gris clair */
+  border: 5px solid var(--spinner-border);
   border-top: 5px solid #C00000; /* Le bout rouge */
   border-radius: 50%;
   animation: spin 2.4s linear infinite; /* L'animation de rotation */
@@ -224,5 +238,52 @@ button:focus {
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+/* --- DEFINITION DU MODE SOMBRE --- */
+/* Appliqué si préférence système OU classe .dark sur body/html */
+
+@media (prefers-color-scheme: dark) {
+  .page-container {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-main: #f5f5f5;
+    --text-muted: rgba(245, 245, 245, 0.9);
+    --input-border: #555;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --icon-filter: brightness(0) invert(1);
+    --overlay-bg: rgba(30, 30, 30, 0.9);
+    --spinner-border: #444;
+  }
+  .input-group input:-webkit-autofill,
+  .input-group input:-webkit-autofill:hover,
+  .input-group input:-webkit-autofill:focus,
+  .input-group input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #1e1e1e inset !important;
+    box-shadow: 0 0 0 30px #1e1e1e inset !important;
+    -webkit-text-fill-color: #f5f5f5 !important;
+  }
+}
+
+/* Support manuel via classe .dark (ex: toggle dans l'app) */
+:global(.dark) .page-container {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-main: #f5f5f5;
+  --text-muted: rgba(245, 245, 245, 0.9);
+  --input-border: #555;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --icon-filter: brightness(0) invert(1);
+  --overlay-bg: rgba(30, 30, 30, 0.9);
+  --spinner-border: #444;
+}
+
+:global(.dark) .input-group input:-webkit-autofill,
+:global(.dark) .input-group input:-webkit-autofill:hover,
+:global(.dark) .input-group input:-webkit-autofill:focus,
+:global(.dark) .input-group input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #1e1e1e inset !important;
+  box-shadow: 0 0 0 30px #1e1e1e inset !important;
+  -webkit-text-fill-color: #f5f5f5 !important;
 }
 </style>
