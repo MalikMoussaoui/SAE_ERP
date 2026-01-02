@@ -8,6 +8,7 @@ import McccView from '../views/Mccc.vue'
 import FicheRessourceView from '../views/FicheRessource.vue'
 import AideView from '../views/Aide.vue'
 import EnseignantsVacataires from '../views/EnseignantsVacataires.vue'
+import TacView from '../views/Tac.vue'
 
 
 const router = createRouter({
@@ -46,6 +47,11 @@ const router = createRouter({
       path: '/mccc',
       name: 'mccc',
       component: McccView
+    },
+    {
+      path: '/tac',
+      name: 'tac',
+      component: TacView
     },
     {
       path: '/enseignants',

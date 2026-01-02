@@ -67,7 +67,7 @@ export default {
         { path: '/dashboard', text: this.$t('nav.dashboard'), icon: iconDashboard },
         { path: '/fiche-ressource', text: this.$t('nav.resourceSheets'), icon: iconFiche },
         { path: '/mccc', text: this.$t('nav.mccc'), icon: iconMcc },
-        { path: '#', text: this.$t('nav.tac'), icon: iconTac }, // Chemin temporaire
+        { path: '/tac', text: this.$t('nav.tac'), icon: iconTac },
         { path: '/enseignants', text: this.$t('nav.teachers'), icon: iconEnseignant },
         { path: '/user-management', text: this.$t('nav.roleManagement'), icon: iconRole },
         { path: '/settings', text: this.$t('nav.settings'), icon: iconParametre },
