@@ -3,18 +3,27 @@
     <nav class="sidebar">
       <div class="sidebar-header">
         <img src="@/assets/Logo_G.png" alt="Logo GestIUT" class="sidebar-logo" />
-        <h3 class="sidebar-title">IUT Gestion</h3>
+        <h3 class="sidebar-title">Gest'IUT</h3>
         <button @click="toggleSidebar" class="toggle-button" aria-label="Toggle sidebar">«</button>
       </div>
 
       <ul class="nav-links">
         <li v-for="link in navLinks" :key="link.path">
-          <router-link :to="link.path" :class="{ active: $route.path === link.path }">
+          <router-link :to="link.path" :class="{ active: isActive(link.path) }">
             <img :src="link.icon" :alt="link.text" class="nav-icon" />
             <span class="nav-text">{{ link.text }}</span>
           </router-link>
         </li>
       </ul>
+
+      <div class="sidebar-footer">
+        <router-link to="/aide" :class="{ active: isActive('/aide') }">
+          <svg class="nav-icon svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+          <span class="nav-text">{{ $t('nav.help') }}</span>
+        </router-link>
+      </div>
     </nav>
 
     <main class="main-content">
@@ -36,7 +45,6 @@
 </template>
 
 <script>
-// Importation des icônes pour une gestion centralisée
 import iconDashboard from '@/assets/TableauDeBord.png';
 import iconFiche from '@/assets/FicheRessource.png';
 import iconMcc from '@/assets/MCC.png';
@@ -44,6 +52,7 @@ import iconTac from '@/assets/TAC.png';
 import iconEnseignant from '@/assets/EnseignantVacataire.png';
 import iconRole from '@/assets/GestionRole.png';
 import iconParametre from '@/assets/parametre.png';
+import logoG from '@/assets/Logo_G.png';
 
 export default {
   name: 'DashboardLayout',
@@ -59,13 +68,27 @@ export default {
         { path: '/fiche-ressource', text: this.$t('nav.resourceSheets'), icon: iconFiche },
         { path: '/mccc', text: this.$t('nav.mccc'), icon: iconMcc },
         { path: '#', text: this.$t('nav.tac'), icon: iconTac }, // Chemin temporaire
-        { path: '#', text: this.$t('nav.teachers'), icon: iconEnseignant }, // Chemin temporaire
+        { path: '/enseignants', text: this.$t('nav.teachers'), icon: iconEnseignant },
         { path: '/user-management', text: this.$t('nav.roleManagement'), icon: iconRole },
         { path: '/settings', text: this.$t('nav.settings'), icon: iconParametre },
       ]
     }
   },
+  created() {
+    document.title = "Gest'IUT";
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = logoG;
+  },
   methods: {
+    isActive(path) {
+      if (path === '#') return false;
+      return this.$route.path === path || this.$route.path.startsWith(path + '/');
+    },
     toggleSidebar() {
       this.isSidebarCollapsed = !this.isSidebarCollapsed;
       localStorage.setItem('sidebarCollapsed', this.isSidebarCollapsed);
@@ -78,14 +101,12 @@ export default {
 }
 </script>
 
-<style scoped>
-.dashboard-layout {
-  /* --- Variables de Thème --- */
-  --font-primary: 'Poppins', sans-serif;
-  --font-secondary: 'Montserrat', sans-serif;
-  
+<style>
+/* Définition des variables de thème globales pour toute l'application */
+:root {
   /* Thème Clair (Défaut) */
   --color-primary: #C00000;
+  --color-primary-rgb: 192, 0, 0;
   --color-primary-dark: #a00000;
   --color-bg: #fcfcfc;
   --color-sidebar-bg: #f8f9fa;
@@ -94,39 +115,48 @@ export default {
   --color-text-body: #555;
   --color-text-muted: #888;
   --color-border: #eee;
+  --color-overlay-bg: rgba(255, 255, 255, 0.9);
   --color-hover-bg: #e9ecef;
   --color-active-bg: #e6f0ff;
   --color-active-text: #0056b3;
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
 
-  /* --- Dimensions & Transitions --- */
+html[data-theme="dark"] {
+  /* Thème Sombre (Overrides) */
+  --color-primary: #f90e0e;
+  --color-primary-rgb: 249, 14, 14;
+  --color-bg: #1a1a1a;
+  --color-sidebar-bg: #252525;
+  --color-card-bg: #2c2c2c;
+  --color-text-header: #f5f5f5;
+  --color-text-body: #d0d0d0;
+  --color-text-muted: #777;
+  --color-border: #3a3a3a;
+  --color-overlay-bg: rgba(26, 26, 26, 0.9);
+  --color-hover-bg: #3a3a3e;
+  --color-active-bg: #0056b3;
+  --color-active-text: #ffffff;
+  --shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+</style>
+
+<style scoped>
+.dashboard-layout {
+  --font-primary: 'Poppins', sans-serif;
+  --font-secondary: 'Montserrat', sans-serif;
   --sidebar-width-open: 280px;
   --sidebar-width-closed: 90px;
   --sidebar-transition-duration: 0.3s;
   --sidebar-transition-timing: cubic-bezier(0.65, 0, 0.35, 1);
 
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
   background-color: var(--color-bg);
   font-family: var(--font-secondary);
-  overflow-x: hidden;
+  overflow: hidden;
   color: var(--color-text-body);
   transition: background-color 0.3s;
-}
-
-html[data-theme="dark"] .dashboard-layout {
-  /* Thème Sombre (Overrides) */
-  --color-bg: #1a1a1a;
-  --color-sidebar-bg: #252525;
-  --color-card-bg: #2c2c2c;
-  --color-text-header: #f0f0f0;
-  --color-text-body: #d0d0d0;
-  --color-text-muted: #777;
-  --color-border: #3a3a3a;
-  --color-hover-bg: #3a3a3e;
-  --color-active-bg: #0056b3;
-  --color-active-text: #ffffff;
-  --shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar {
@@ -140,6 +170,8 @@ html[data-theme="dark"] .dashboard-layout {
   transition: width var(--sidebar-transition-duration) var(--sidebar-transition-timing),
               padding var(--sidebar-transition-duration) var(--sidebar-transition-timing),
               background-color 0.3s, border-color 0.3s;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-header {
@@ -194,10 +226,11 @@ html[data-theme="dark"] .dashboard-layout {
   background-color: var(--color-hover-bg);
 }
 
-.nav-links { list-style: none; padding: 0; margin: 0; }
+.nav-links { list-style: none; padding: 0; margin: 0 0 auto 0; }
 .nav-links li { margin-bottom: 0.5rem; }
 
-.nav-links a {
+.nav-links a,
+.sidebar-footer a {
   display: flex;
   align-items: center;
   padding: 0.65rem 1rem;
@@ -210,7 +243,8 @@ html[data-theme="dark"] .dashboard-layout {
   overflow: hidden;
 }
 
-.nav-icon {
+.nav-icon,
+.svg-icon {
   width: 26px;
   height: 26px;
   object-fit: contain;
@@ -224,14 +258,22 @@ html[data-theme="dark"] .dashboard-layout {
               width var(--sidebar-transition-duration) var(--sidebar-transition-timing);
 }
 
-.nav-links a:hover { background-color: var(--color-hover-bg); }
-.nav-links a.active { background-color: var(--color-active-bg); color: var(--color-active-text); font-weight: 600; }
+.nav-links a:hover, .sidebar-footer a:hover { background-color: var(--color-hover-bg); }
+.nav-links a.active, .sidebar-footer a.active { background-color: var(--color-active-bg); color: var(--color-active-text); font-weight: 600; }
+
+.sidebar-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+.svg-icon { stroke: currentColor; }
 
 .dashboard-layout.sidebar-collapsed .sidebar { width: var(--sidebar-width-closed); padding-left: 1rem; padding-right: 1rem; }
 .dashboard-layout.sidebar-collapsed .sidebar-title,
 .dashboard-layout.sidebar-collapsed .nav-text { opacity: 0; width: 0; }
 .dashboard-layout.sidebar-collapsed .toggle-button { transform: translateY(-50%) rotate(180deg); border-left: 1px solid var(--color-border); }
-.dashboard-layout.sidebar-collapsed .nav-links a {
+.dashboard-layout.sidebar-collapsed .nav-links a,
+.dashboard-layout.sidebar-collapsed .sidebar-footer a {
   padding-left: 1rem;
   padding-right: 1rem;
 }
@@ -241,7 +283,16 @@ html[data-theme="dark"] .dashboard-layout {
   flex-grow: 1;
   padding: 2rem 3rem;
   transition: background-color 0.3s;
-  width: 100%;
+  overflow-y: auto;
+
+  /* Masquer la barre de défilement tout en gardant la fonctionnalité */
+  -ms-overflow-style: none;  /* IE et Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Masquer la barre de défilement pour Webkit (Chrome, Safari) */
+.main-content::-webkit-scrollbar {
+    display: none;
 }
 
 .header {

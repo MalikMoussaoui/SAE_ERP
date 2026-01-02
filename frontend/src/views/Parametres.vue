@@ -163,15 +163,15 @@ export default {
 }
 
 .theme-option .option-box:hover {
-  border-color: #C00000;
-  background-color: rgba(192, 0, 0, 0.05);
+  border-color: var(--color-primary);
+  background-color: rgba(var(--color-primary-rgb, 192, 0, 0), 0.05);
 }
 
 .theme-option input[type="radio"]:checked + .option-box {
-  border-color: #C00000;
-  background-color: #C00000;
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
   color: white;
-  box-shadow: var(--shadow, 0 4px 10px rgba(192, 0, 0, 0.2));
+  box-shadow: var(--shadow, 0 4px 10px rgba(var(--color-primary-rgb, 192, 0, 0), 0.2));
 }
 
 .option-box .icon {

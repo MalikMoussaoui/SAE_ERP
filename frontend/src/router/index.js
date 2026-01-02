@@ -6,6 +6,9 @@ import Parametres from '../views/Parametres.vue'
 import AjoutUtilisateur from '../views/AjoutUtilisateur.vue'
 import McccView from '../views/Mccc.vue'
 import FicheRessourceView from '../views/FicheRessource.vue'
+import AideView from '../views/Aide.vue'
+import EnseignantsVacataires from '../views/EnseignantsVacataires.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,9 +48,19 @@ const router = createRouter({
       component: McccView
     },
     {
+      path: '/enseignants',
+      name: 'enseignants',
+      component: EnseignantsVacataires
+    },
+    {
       path: '/settings',
       name: 'settings',
       component: Parametres
+    },
+    {
+      path: '/aide',
+      name: 'aide',
+      component: AideView
     }
   ]
 })

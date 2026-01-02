@@ -113,13 +113,15 @@ export default {
 .form-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1rem 1.5rem;
+  gap: 1.5rem;
+  margin-bottom: 0.8rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  padding: 13px;
 }
 
 .form-group label {
@@ -140,7 +142,7 @@ export default {
 
 .form-group input:focus {
   border-color: var(--color-primary, #C00000);
-  box-shadow: 0 0 0 3px rgba(192, 0, 0, 0.12);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 192, 0, 0), 0.12);
 }
 
 .form-actions {
@@ -160,7 +162,7 @@ export default {
   font-family: var(--font-primary, 'Poppins', sans-serif);
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 12px 22px rgba(192, 0, 0, 0.28);
+  box-shadow: 0 12px 22px rgba(var(--color-primary-rgb, 192, 0, 0), 0.28);
   transition: background 0.2s, transform 0.1s;
 }
 
@@ -179,6 +181,10 @@ export default {
   justify-content: center;
   width: 100%;
   margin-top: 0.5rem;
+}
+
+.back-action .btn-secondary {
+  padding: 12px 80px;
 }
 
 @media (max-width: 768px) {

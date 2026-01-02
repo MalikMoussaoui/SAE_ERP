@@ -31,6 +31,8 @@
 </template>
 
 <script>
+import logoG from '@/assets/Logo_G.png';
+
 export default {
   name: 'LoginScreen',
   data() {
@@ -41,11 +43,24 @@ export default {
       isLoading: false
     }; 
   },
+  created() {
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+
+    document.title = "Gest'IUT";
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = logoG;
+  },
   
   methods: {
     async handleLogin() {
       this.errorMessage = ''; 
-      this.isLoading = true; // On active le spinner
+      this.isLoading = true;
 
       try {
         // --- SIMULATION (puisqu'il n'y a pas de back-end) ---
@@ -90,8 +105,7 @@ export default {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: var(--bg-color);
-  color: var(--text-main);
+  background-color: #f8f9fa;
   font-family: 'Montserrat', sans-serif;
   padding: 2rem 0;
   box-sizing: border-box;
@@ -103,7 +117,7 @@ export default {
 }
 
 .login-card {
-  background: var(--card-bg);
+  background: #ffffff;
   padding: 2.5rem 3rem;
   border-radius: 20px;
   box-shadow: 0 10px 30px var(--shadow-color);
@@ -111,7 +125,7 @@ export default {
   width: 100%;
   max-width: 420px;
   box-sizing: border-box;
-  position: relative; /* <-- NÉCESSAIRE pour l'overlay */
+  position: relative;
 }
 
 .app-title-logo {
@@ -126,11 +140,11 @@ export default {
 h2 {
   font-size: 1.3rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: #333;
   margin-bottom: 2rem;
   font-family: 'Poppins', sans-serif;
   margin-top: 1.5rem;
-  /* opacity géré par la variable de couleur */
+  opacity: 60%;
 }
 
 .input-group {
@@ -143,13 +157,13 @@ h2 {
   width: 100%;
   padding: 12px 12px 12px 40px; /* Espace à gauche pour l'icône */
   border: none;
-  border-bottom: 2px solid var(--input-border);
-  color: var(--text-main);
+  border-bottom: 2px solid #ddd;
   font-size: 1rem;
   transition: border-color 0.3s;
   background-color: transparent;
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
+  color: var(--color-text-body, #333);
 }
 
 /* Corrige le fond jaune de l'autocomplétion Chrome */
@@ -157,14 +171,14 @@ h2 {
 .input-group input:-webkit-autofill:hover,
 .input-group input:-webkit-autofill:focus,
 .input-group input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px white inset !important;
-  box-shadow: 0 0 0 30px white inset !important;
-  -webkit-text-fill-color: #333 !important;
+  -webkit-box-shadow: 0 0 0 30px var(--color-card-bg, white) inset !important;
+  box-shadow: 0 0 0 30px var(--color-card-bg, white) inset !important;
+  -webkit-text-fill-color: var(--color-text-body, #333) !important;
 }
 
 .input-group input:focus {
   outline: none;
-  border-bottom-color: var(--input-focus);
+  border-bottom-color: #C00000;
 }
 
 .input-group .icon-img {
@@ -182,7 +196,7 @@ button {
   padding: 14px;
   border: none;
   border-radius: 10px;
-  background-color: #C00000;
+  background-color: var(--color-primary);
   color: white;
   font-size: 1.1rem;
   font-weight: 600;
@@ -193,8 +207,8 @@ button {
 }
 
 button:hover {
-  background-color: #a00000;
-  box-shadow: 0 5px 15px rgba(192, 0, 0, 0.3);
+  background-color: var(--color-primary-dark);
+  box-shadow: 0 5px 15px rgba(var(--color-primary-rgb, 192, 0, 0), 0.3);
 }
 
 button:focus {
@@ -202,15 +216,12 @@ button:focus {
 }
 
 .error-message {
-  color: #C00000;
+  color: var(--color-primary);
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   font-weight: 500;
 }
-
-
-/* --- STYLES DU SPINNER AJOUTÉS --- */
 
 .loading-overlay {
   position: absolute;
@@ -218,7 +229,7 @@ button:focus {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--overlay-bg);
+  background-color: rgba(255, 255, 255, 0.9); /* Fond blanc semi-transparent */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -229,10 +240,10 @@ button:focus {
 .spinner {
   width: 100px;
   height: 100px;
-  border: 5px solid var(--spinner-border);
+  border: 5px solid #f3f3f3; /* Le cercle gris clair */
   border-top: 5px solid #C00000; /* Le bout rouge */
   border-radius: 50%;
-  animation: spin 2.4s linear infinite; /* L'animation de rotation */
+  animation: spin 2.4s linear infinite;
 }
 
 @keyframes spin {
