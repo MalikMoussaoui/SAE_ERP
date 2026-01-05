@@ -6,6 +6,7 @@ import Parametres from '../views/Parametres.vue'
 import AjoutUtilisateur from '../views/AjoutUtilisateur.vue'
 import McccView from '../views/Mccc.vue'
 import FicheRessourceView from '../views/FicheRessource.vue'
+import ListeFichesRessources from '../views/ListeFichesRessources.vue'
 import AideView from '../views/Aide.vue'
 import EnseignantsVacataires from '../views/EnseignantsVacataires.vue'
 import TacView from '../views/Tac.vue'
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/fiche-ressource',
       name: 'fiche-ressource',
       component: FicheRessourceView
+    },
+    {
+      path: '/liste-fiches-ressources',
+      name: 'liste-fiches-ressources',
+      component: ListeFichesRessources
     },
     {
       path: '/user-management',

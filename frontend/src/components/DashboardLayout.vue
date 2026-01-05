@@ -66,6 +66,7 @@ export default {
       return [
         { path: '/dashboard', text: this.$t('nav.dashboard'), icon: iconDashboard },
         { path: '/fiche-ressource', text: this.$t('nav.resourceSheets'), icon: iconFiche },
+        { path: '/liste-fiches-ressources', text: this.$t('nav.resourceSheetsList'), icon: iconFiche },
         { path: '/mccc', text: this.$t('nav.mccc'), icon: iconMcc },
         { path: '/tac', text: this.$t('nav.tac'), icon: iconTac },
         { path: '/enseignants', text: this.$t('nav.teachers'), icon: iconEnseignant },

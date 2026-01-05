@@ -2,6 +2,7 @@
   "nav": {
     "dashboard": "Tableau de bord",
     "resourceSheets": "Fiches ressources",
+    "resourceSheetsList": "Liste des fiches ressources",
     "mccc": "MCCC",
     "tac": "TAC",
     "teachers": "Enseignants et vacataires",
