@@ -8,29 +8,17 @@
       <div class="step-indicator">
         <div class="step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
           <div class="step-number">1</div>
-<<<<<<< Updated upstream
-          <div class="step-label">{{ $t('mccc.step1Label') }}</div>
-=======
           <div class="step-label">{{ $t('mccc.step1_label') }}</div>
->>>>>>> Stashed changes
         </div>
         <div class="step-connector"></div>
         <div class="step" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
           <div class="step-number">2</div>
-<<<<<<< Updated upstream
-          <div class="step-label">{{ $t('mccc.step2Label') }}</div>
-=======
           <div class="step-label">{{ $t('mccc.step2_label') }}</div>
->>>>>>> Stashed changes
         </div>
         <div class="step-connector"></div>
         <div class="step" :class="{ active: currentStep >= 3, completed: currentStep > 3 }">
           <div class="step-number">3</div>
-<<<<<<< Updated upstream
-          <div class="step-label">{{ $t('mccc.step3Label') }}</div>
-=======
           <div class="step-label">{{ $t('mccc.step3_label') }}</div>
->>>>>>> Stashed changes
         </div>
       </div>
 
