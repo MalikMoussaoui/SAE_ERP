@@ -128,8 +128,15 @@
     "continue": "Continuer",
     "back": "Retour",
     "save": "Enregistrer",
+    "saveMissingFields": "Veuillez renseigner le departement et l'UE avant d'enregistrer.",
     "step1_label": "Informations generales",
     "step2_label": "Details et regles",
     "step3_label": "Tableau des ressources"
+  },
+  "mcccList": {
+    "empty": "Aucune fiche MCCC enregistree pour le moment.",
+    "savedAt": "Enregistre le",
+    "department": "Departement",
+    "ue": "UE"
   }
 }

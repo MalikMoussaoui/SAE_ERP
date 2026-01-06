@@ -232,7 +232,7 @@
         <button v-if="currentStep < 3" @click="nextStep" class="btn btn-primary">
           {{ $t('mccc.continue') }}
         </button>
-        <button v-if="currentStep === 3" class="btn btn-primary">
+        <button v-if="currentStep === 3" class="btn btn-primary" type="button" @click="saveMccc">
           {{ $t('mccc.save') }}
         </button>
       </div>
@@ -403,7 +403,8 @@ export default {
         { id: 1, label: '', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false }
       ],
       nextRowId: 2,
-      errorMessage: ''
+      errorMessage: '',
+      errorTimeout: null
     };
   },
   created() {
@@ -464,11 +465,34 @@ export default {
       if (row[field] < 0) {
         row[field] = 0;
         this.errorMessage = 'Impossible de saisir une valeur negative.';
-        if (this.errorTimeout) clearTimeout(this.errorTimeout);
-        this.errorTimeout = setTimeout(() => {
-          this.errorMessage = '';
-        }, 3000);
+        this.setErrorTimeout();
       }
+    },
+    setErrorTimeout() {
+      if (this.errorTimeout) clearTimeout(this.errorTimeout);
+      this.errorTimeout = setTimeout(() => {
+        this.errorMessage = '';
+      }, 3000);
+    },
+    saveMccc() {
+      if (!this.form.ue || !this.form.departement) {
+        this.errorMessage = this.$t('mccc.saveMissingFields');
+        this.setErrorTimeout();
+        return;
+      }
+      const existing = JSON.parse(localStorage.getItem('mcccList') || '[]');
+      const entry = {
+        id: Date.now(),
+        ue: this.form.ue,
+        departement: this.form.departement,
+        savedAt: new Date().toISOString(),
+        form: { ...this.form },
+        ressourcesRows: this.ressourcesRows.map(row => ({ ...row }))
+      };
+      existing.push(entry);
+      localStorage.setItem('mcccList', JSON.stringify(existing));
+      this.errorMessage = '';
+      this.$router.push('/liste-mccc');
     }
   }
 };

@@ -5,7 +5,21 @@
     </template>
 
     <div class="page-surface list-surface">
-      <div class="placeholder-card"></div>
+      <div v-if="!mcccEntries.length" class="empty-state">
+        {{ $t('mcccList.empty') }}
+      </div>
+      <div v-else class="mccc-cards">
+        <div v-for="entry in mcccEntries" :key="entry.id" class="mccc-card">
+          <div class="card-header">
+            <h3 class="ue-title">{{ entry.ue }}</h3>
+            <span class="chip">{{ entry.departement }}</span>
+          </div>
+          <div class="card-meta">
+            <span class="meta-label">{{ $t('mcccList.savedAt') }} :</span>
+            <span class="meta-value">{{ formatDate(entry.savedAt) }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </DashboardLayout>
 </template>
@@ -15,7 +29,26 @@ import DashboardLayout from '@/components/DashboardLayout.vue';
 
 export default {
   name: 'ListeMccc',
-  components: { DashboardLayout }
+  components: { DashboardLayout },
+  data() {
+    return {
+      mcccEntries: []
+    };
+  },
+  created() {
+    this.loadEntries();
+  },
+  methods: {
+    loadEntries() {
+      const stored = JSON.parse(localStorage.getItem('mcccList') || '[]');
+      this.mcccEntries = stored.slice().reverse();
+    },
+    formatDate(isoString) {
+      if (!isoString) return '';
+      const date = new Date(isoString);
+      return date.toLocaleString();
+    }
+  }
 };
 </script>
 
@@ -35,10 +68,67 @@ export default {
   box-shadow: var(--shadow, 0 4px 10px rgba(0,0,0,0.05));
 }
 
-.placeholder-card {
+.mccc-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.mccc-card {
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 14px;
+  padding: 14px 16px;
+  background: var(--color-card-bg, #fff);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ue-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-text-header, #333);
+}
+
+.chip {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--color-sidebar-bg, #f3f3f3);
+  color: var(--color-text-body, #555);
+  font-weight: 600;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.card-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 0.95rem;
+  color: var(--color-text-body, #555);
+}
+
+.meta-label {
+  color: var(--color-text-muted, #777);
+  font-weight: 600;
+}
+
+.meta-value {
+  font-weight: 600;
+}
+
+.empty-state {
   border: 1px dashed var(--color-border, #ddd);
   border-radius: 12px;
   padding: 18px;
   color: var(--color-text-muted, #666);
+  text-align: center;
 }
 </style>

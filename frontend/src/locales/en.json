@@ -128,9 +128,16 @@
     "continue": "Continue",
     "back": "Back",
     "save": "Save",
+    "saveMissingFields": "Please fill department and UE before saving.",
     "step1_label": "General Information",
     "step2_label": "Details & Rules",
     "step3_label": "Resources Table"
+  },
+  "mcccList": {
+    "empty": "No MCCC sheet saved yet.",
+    "savedAt": "Saved on",
+    "department": "Department",
+    "ue": "UE"
   },
   "help": {
     "title": "Help Center",
