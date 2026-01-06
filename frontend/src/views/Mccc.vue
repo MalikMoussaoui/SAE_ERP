@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <DashboardLayout>
     <template #header>
       <h1 class="page-title">{{ $t('nav.mccc') }}</h1>
@@ -54,6 +54,13 @@
           <h3>{{ $t('mccc.resourcesAndSAE') }}</h3>
           <div class="card-fields">
             <label class="field">
+              <span>{{ $t('mccc.ue') }}</span>
+              <select v-model="form.ue" class="pill-select">
+                <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
+                <option v-for="option in availableUes" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </label>
+            <label class="field">
               <span>{{ $t('mccc.modality') }}</span>
               <select v-model="form.modalite" class="pill-select">
                 <option value="" disabled>{{ $t('mccc.chooseModality') }}</option>
@@ -75,13 +82,6 @@
               </select>
             </label>
             <label class="field">
-              <span>{{ $t('mccc.ue') }}</span>
-              <select v-model="form.ue" class="pill-select">
-                <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
-                <option v-for="option in ues" :key="option" :value="option">{{ option }}</option>
-              </select>
-            </label>
-            <label class="field">
               <span>{{ $t('mccc.competenceLevel') }}</span>
               <select v-model="form.niveauCompetence" class="pill-select">
                 <option value="" disabled>{{ $t('mccc.choose') }}</option>
@@ -96,24 +96,15 @@
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.saeCoefficient') }}</span>
-              <select v-model="form.coeffSae" class="pill-select">
-                <option value="" disabled>{{ $t('mccc.choose') }}</option>
-                <option v-for="option in coeffsSae" :key="option" :value="option">{{ option }}</option>
-              </select>
+              <input v-model="form.coeffSae" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.choose')" />
             </label>
             <label class="field">
               <span>{{ $t('mccc.resourceCoefficient') }}</span>
-              <select v-model="form.coeffRessource" class="pill-select">
-                <option value="" disabled>{{ $t('mccc.choose') }}</option>
-                <option v-for="option in coeffsRessource" :key="option" :value="option">{{ option }}</option>
-              </select>
+              <input v-model="form.coeffRessource" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.choose')" />
             </label>
             <label class="field">
               <span>{{ $t('mccc.totalCoefficient') }}</span>
-              <select v-model="form.coeffTotal" class="pill-select">
-                <option value="" disabled>{{ $t('mccc.total') }}</option>
-                <option v-for="option in coeffsTotal" :key="option" :value="option">{{ option }}</option>
-              </select>
+              <input v-model="form.coeffTotal" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.total')" />
             </label>
           </div>
         </div>
@@ -138,10 +129,10 @@
               </select>
             </label>
             <label class="field">
-              <span>{{ $t('mccc.baseline') }}</span>
-              <select v-model="form.baseline" class="pill-select">
+              <span>bareme</span>
+              <select v-model="form.bareme" class="pill-select">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
-                <option v-for="option in baselines" :key="option" :value="option">{{ option }}</option>
+                <option v-for="option in baremes" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
           </div>
@@ -255,7 +246,7 @@ import DashboardLayout from '@/components/DashboardLayout.vue';
 export default {
   name: 'McccView',
   components: { DashboardLayout },
-  data() {
+    data() {
     return {
       currentStep: 1,
       form: {
@@ -272,32 +263,159 @@ export default {
         coeffTotal: '',
         regleValidation: '',
         rattachement: '',
-        baseline: '',
+        bareme: '',
         responsable: '',
         objectif: ''
       },
-      departements: ['1', '2'],
-      annees: ['1', '2'],
-      semestres: ['1', '2'],
-      modalites: ['1', '2'],
-      codesApogee: ['1', '2'],
-      typesEvaluation: ['1', '2'],
-      ues: ['1', '2'],
-      niveauxCompetence: ['1', '2'],
-      coeffsSae: ['1', '2'],
-      coeffsRessource: ['1', '2'],
-      coeffsTotal: ['1', '2'],
-      reglesValidation: ['1', '2'],
-      rattachements: ['1', '2'],
-      baselines: ['1', '2'],
-      responsables: ['1', '2'],
-      objectifs: ['1', '2'],
+      departements: [
+        'BUT Informatique',
+        'BUT GEA - Gestion des Entreprises et des Administrations',
+        'BUT TC - Techniques de Commercialisation',
+        'BUT Mesures Physiques (MP)',
+        'BUT Genie Mecanique et Productique (GMP)',
+        'BUT GEII - Genie Electrique et Informatique Industrielle',
+        'BUT Genie Civil - Construction Durable',
+        'BUT Genie Biologique (GB)',
+        "BUT MMI - Metiers du Multimedia et de l'Internet",
+        'BUT GIM - Genie Industriel et Maintenance',
+        'BUT HSE - Hygiene, Securite, Environnement',
+        'BUT Carrieres Sociales'
+      ],
+      semestres: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
+      annees: ['1ere annee (BUT1)', '2eme annee (BUT2)', '3eme annee (BUT3)'],
+      modalites: ['Controle continu integral', 'Controle terminal', 'Mixte (CCI + final)', 'Projet tutore'],
+      codesApogee: ['INF201', 'MMI205', 'TC301', 'GEA102', 'GEII208'],
+      typesEvaluation: ['Dossier + soutenance', 'QCM / ecrit surveille', 'Projet en equipe', 'Etude de cas', 'Oral individuel'],
+      uesByDepartement: {
+        'BUT Informatique': [
+          'UE Realiser des applications',
+          'UE Optimiser des applications',
+          'UE Administrer des systemes informatiques communicants',
+          "UE Gerer des donnees de l'information",
+          'UE Conduire un projet',
+          'UE Collaborer dans un environnement professionnel'
+        ],
+        'BUT GEA - Gestion des Entreprises et des Administrations': [
+          'UE Gerer les organisations',
+          'UE Piloter la performance',
+          "UE Produire l information comptable financiere et de gestion",
+          'UE Developper une activite economique',
+          'UE Conduire un projet',
+          'UE Communiquer et travailler en equipe'
+        ],
+        'BUT TC - Techniques de Commercialisation': [
+          'UE Developper la relation client',
+          'UE Mettre en oeuvre une strategie marketing',
+          'UE Vendre une offre commerciale',
+          "UE Analyser le marche et l environnement",
+          'UE Conduire un projet commercial',
+          'UE Communiquer dans un contexte professionnel'
+        ],
+        'BUT Mesures Physiques (MP)': [
+          'UE Realiser des mesures physiques',
+          'UE Exploiter des donnees experimentales',
+          'UE Mettre en oeuvre des protocoles experimentaux',
+          'UE Caracteriser des systemes physiques',
+          'UE Conduire un projet scientifique',
+          'UE Communiquer en milieu scientifique'
+        ],
+        'BUT Genie Mecanique et Productique (GMP)': [
+          'UE Concevoir des systemes mecaniques',
+          'UE Industrialiser un produit',
+          'UE Organiser et gerer la production',
+          'UE Ameliorer les performances industrielles',
+          'UE Conduire un projet industriel',
+          'UE Communiquer dans l industrie'
+        ],
+        'BUT GEII - Genie Electrique et Informatique Industrielle': [
+          'UE Concevoir des systemes electroniques et automatises',
+          'UE Programmer et exploiter des systemes industriels',
+          'UE Mettre en oeuvre des reseaux industriels',
+          'UE Maintenir et ameliorer des installations',
+          'UE Conduire un projet industriel',
+          'UE Communiquer dans un contexte technique'
+        ],
+        'BUT Genie Civil - Construction Durable': [
+          'UE Concevoir des ouvrages de construction',
+          'UE Dimensionner des structures',
+          'UE Organiser un chantier',
+          'UE Integrer le developpement durable',
+          'UE Conduire un projet de construction',
+          'UE Communiquer dans le secteur du BTP'
+        ],
+        'BUT Genie Biologique (GB)': [
+          'UE Realiser des analyses biologiques',
+          'UE Exploiter des resultats experimentaux',
+          'UE Mettre en oeuvre des procedes biologiques',
+          'UE Assurer la qualite et la securite',
+          'UE Conduire un projet scientifique',
+          'UE Communiquer dans un contexte biologique'
+        ],
+        'BUT MMI - Metiers du Multimedia et de l Internet': [
+          'UE Concevoir des produits multimedia',
+          'UE Developper des dispositifs interactifs',
+          'UE Creer des contenus graphiques et audiovisuels',
+          'UE Mettre en oeuvre une strategie de communication',
+          'UE Conduire un projet multimedia',
+          'UE Travailler en equipe et communiquer'
+        ],
+        'BUT GIM - Genie Industriel et Maintenance': [
+          'UE Maintenir des systemes industriels',
+          'UE Ameliorer la fiabilite des equipements',
+          'UE Diagnostiquer des pannes',
+          'UE Optimiser la maintenance',
+          'UE Conduire un projet industriel',
+          'UE Communiquer en milieu professionnel'
+        ],
+        'BUT HSE - Hygiene, Securite, Environnement': [
+          'UE Prevenir les risques professionnels',
+          'UE Gerer la securite et la sante au travail',
+          "UE Proteger l environnement",
+          'UE Mettre en conformite reglementaire',
+          'UE Conduire un projet HSE',
+          'UE Communiquer et sensibiliser'
+        ],
+        'BUT Carrieres Sociales': [
+          'UE Analyser les situations sociales',
+          'UE Accompagner des publics',
+          'UE Concevoir des actions sociales',
+          'UE Travailler en reseau partenarial',
+          'UE Conduire un projet social',
+          'UE Communiquer dans le champ social'
+        ]
+      },
+      availableUes: [],
+      niveauxCompetence: ['Niveau 1 - Decouverte', 'Niveau 2 - Application', 'Niveau 3 - Maitrise', 'Niveau 4 - Approfondissement'],
+      coeffsSae: ['0,5', '1', '1,5', '2', '3'],
+      coeffsRessource: ['0,25', '0,5', '1', '1,5', '2'],
+      coeffsTotal: ['2', '3', '4', '5', '6'],
+      reglesValidation: ['Compensation de semestre', 'Capitalisation dUE', 'Seuil minimal par ressource', 'Session de rattrapage'],
+      rattachements: ['Tronc commun', 'Parcours cybersecurite (INF)', 'Parcours data / IA', 'Parcours creation numerique (MMI)', 'Parcours commerce international (TC)'],
+      baremes: ['Referentiel national BUT 2024', 'Adaptation locale IUT', 'Maquette formation initiale', 'Maquette apprentissage'],
+      responsables: ['Coordonnateur de semestre', 'Responsable de diplome', 'Responsable dUE', 'Referent SAE'],
+      objectifs: [
+        'Valider les competences du semestre',
+        'Preparer la professionnalisation',
+        'Consolider les acquis scientifiques et techniques',
+        'Developper les competences transversales'
+      ],
       ressourcesRows: [
         { id: 1, label: '', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false }
       ],
       nextRowId: 2,
       errorMessage: ''
     };
+  },
+  created() {
+    if (this.form.departement) {
+      this.availableUes = this.uesByDepartement[this.form.departement] || [];
+    }
+  },
+  watch: {
+    'form.departement'(newDepartement) {
+      this.availableUes = this.uesByDepartement[newDepartement] || [];
+      this.form.ue = '';
+    }
   },
   computed: {
     totals() {
@@ -339,13 +457,13 @@ export default {
       });
     },
     deleteRow(rowId) {
-      if (this.ressourcesRows.length <= 1) return; // Ne pas supprimer la dernière ligne
+      if (this.ressourcesRows.length <= 1) return; // Ne pas supprimer la derniere ligne
       this.ressourcesRows = this.ressourcesRows.filter(row => row.id !== rowId);
     },
     validatePositive(row, field) {
       if (row[field] < 0) {
         row[field] = 0;
-        this.errorMessage = "Impossible de saisir une valeur négative.";
+        this.errorMessage = 'Impossible de saisir une valeur negative.';
         if (this.errorTimeout) clearTimeout(this.errorTimeout);
         this.errorTimeout = setTimeout(() => {
           this.errorMessage = '';
@@ -650,7 +768,7 @@ tr:nth-child(even) td {
   min-height: 20px;
   color: var(--color-text-muted, #777);
   font-size: 0.9rem;
-  word-break: break-word; /* Empêche le texte long de déborder */
+  word-break: break-word; /* EmpÃªche le texte long de dÃ©border */
 }
 
 .info-preview.has-content {
@@ -835,3 +953,18 @@ tr:nth-child(even) td {
   }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
