@@ -7,6 +7,7 @@ import AjoutUtilisateur from '../views/AjoutUtilisateur.vue'
 import McccView from '../views/Mccc.vue'
 import FicheRessourceView from '../views/FicheRessource.vue'
 import ListeFichesRessources from '../views/ListeFichesRessources.vue'
+import ListeMccc from '../views/ListeMccc.vue'
 import AideView from '../views/Aide.vue'
 import EnseignantsVacataires from '../views/EnseignantsVacataires.vue'
 import TacView from '../views/Tac.vue'
@@ -53,6 +54,11 @@ const router = createRouter({
       path: '/mccc',
       name: 'mccc',
       component: McccView
+    },
+    {
+      path: '/liste-mccc',
+      name: 'liste-mccc',
+      component: ListeMccc
     },
     {
       path: '/tac',
