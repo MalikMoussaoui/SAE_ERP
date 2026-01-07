@@ -1,11 +1,11 @@
-﻿<template>
+<template>
   <DashboardLayout>
     <template #header>
       <h1 class="page-title">{{ $t('nav.mccc') }}</h1>
     </template>
 
     <div class="page-surface mccc-surface">
-      <div class="step-indicator">
+      <div v-if="!showAllSteps" class="step-indicator">
         <div class="step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
           <div class="step-number">1</div>
           <div class="step-label">{{ $t('mccc.step1_label') }}</div>
@@ -22,27 +22,27 @@
         </div>
       </div>
 
-      <section v-if="currentStep === 1" class="cards-grid top-grid">
+      <section v-if="showAllSteps || currentStep === 1" class="cards-grid top-grid">
         <div class="info-card">
           <h3>{{ $t('mccc.generalOrganization') }}</h3>
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.department') }}</span>
-              <select v-model="form.departement" class="pill-select">
+              <select v-model="form.departement" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
                 <option v-for="option in departements" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.year') }}</span>
-              <select v-model="form.annee" class="pill-select">
+              <select v-model="form.annee" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in annees" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.semester') }}</span>
-              <select v-model="form.semestre" class="pill-select">
+              <select v-model="form.semestre" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in semestres" :key="option" :value="option">{{ option }}</option>
               </select>
@@ -55,35 +55,35 @@
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.ue') }}</span>
-              <select v-model="form.ue" class="pill-select">
+              <select v-model="form.ue" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
                 <option v-for="option in availableUes" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.modality') }}</span>
-              <select v-model="form.modalite" class="pill-select">
+              <select v-model="form.modalite" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.chooseModality') }}</option>
                 <option v-for="option in modalites" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.apogeeCode') }}</span>
-              <select v-model="form.codeApogee" class="pill-select">
+              <select v-model="form.codeApogee" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.code') }}</option>
                 <option v-for="option in codesApogee" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.evaluationType') }}</span>
-              <select v-model="form.typeEvaluation" class="pill-select">
+              <select v-model="form.typeEvaluation" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in typesEvaluation" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.competenceLevel') }}</span>
-              <select v-model="form.niveauCompetence" class="pill-select">
+              <select v-model="form.niveauCompetence" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.choose') }}</option>
                 <option v-for="option in niveauxCompetence" :key="option" :value="option">{{ option }}</option>
               </select>
@@ -96,41 +96,41 @@
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.saeCoefficient') }}</span>
-              <input v-model="form.coeffSae" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.choose')" />
+              <input v-model="form.coeffSae" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.choose')" :disabled="isReadOnly" />
             </label>
             <label class="field">
               <span>{{ $t('mccc.resourceCoefficient') }}</span>
-              <input v-model="form.coeffRessource" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.choose')" />
+              <input v-model="form.coeffRessource" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.choose')" :disabled="isReadOnly" />
             </label>
             <label class="field">
               <span>{{ $t('mccc.totalCoefficient') }}</span>
-              <input v-model="form.coeffTotal" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.total')" />
+              <input v-model="form.coeffTotal" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.total')" :disabled="isReadOnly" />
             </label>
           </div>
         </div>
       </section>
 
-      <section v-if="currentStep === 2" class="cards-grid mid-grid">
+      <section v-if="showAllSteps || currentStep === 2" class="cards-grid mid-grid">
         <div class="info-card">
           <h3>{{ $t('mccc.validationAndMore') }}</h3>
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.validationRule') }}</span>
-              <select v-model="form.regleValidation" class="pill-select">
+              <select v-model="form.regleValidation" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in reglesValidation" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.attachment') }}</span>
-              <select v-model="form.rattachement" class="pill-select">
+              <select v-model="form.rattachement" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in rattachements" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>bareme</span>
-              <select v-model="form.bareme" class="pill-select">
+              <select v-model="form.bareme" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in baremes" :key="option" :value="option">{{ option }}</option>
               </select>
@@ -143,14 +143,14 @@
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.pedagogicalManager') }}</span>
-              <select v-model="form.responsable" class="pill-select">
+              <select v-model="form.responsable" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in responsables" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.ueObjective') }}</span>
-              <select v-model="form.objectif" class="pill-select">
+              <select v-model="form.objectif" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in objectifs" :key="option" :value="option">{{ option }}</option>
               </select>
@@ -158,7 +158,7 @@
           </div>
         </div>
       </section>
-      <section v-if="currentStep === 3" class="table-section">
+      <section v-if="showAllSteps || currentStep === 3" class="table-section">
         <div class="table-card">
           <div class="table-scroll">
             <table>
@@ -177,13 +177,13 @@
               <tbody>
                 <tr v-for="row in ressourcesRows" :key="row.id">
                   <td>
-                    <input class="table-input" v-model="row.label" :placeholder="$t('mccc.resourcePlaceholder', { id: row.id })" />
+                    <input class="table-input" v-model="row.label" :placeholder="$t('mccc.resourcePlaceholder', { id: row.id })" :disabled="isReadOnly" />
                   </td>
-                  <td><input class="table-input" v-model="row.hCM" type="number" min="0" step="0.5" @input="validatePositive(row, 'hCM')" /></td>
-                  <td><input class="table-input" v-model="row.hTD" type="number" min="0" step="0.5" @input="validatePositive(row, 'hTD')" /></td>
-                  <td><input class="table-input" v-model="row.hTP" type="number" min="0" step="0.5" @input="validatePositive(row, 'hTP')" /></td>
-                  <td><input class="table-input" v-model="row.hDSCM" type="number" min="0" step="0.5" @input="validatePositive(row, 'hDSCM')" /></td>
-                  <td><input class="table-input" v-model="row.hDSTP" type="number" min="0" step="0.5" @input="validatePositive(row, 'hDSTP')" /></td>
+                  <td><input class="table-input" v-model="row.hCM" type="number" min="0" step="0.5" @input="validatePositive(row, 'hCM')" :disabled="isReadOnly" /></td>
+                  <td><input class="table-input" v-model="row.hTD" type="number" min="0" step="0.5" @input="validatePositive(row, 'hTD')" :disabled="isReadOnly" /></td>
+                  <td><input class="table-input" v-model="row.hTP" type="number" min="0" step="0.5" @input="validatePositive(row, 'hTP')" :disabled="isReadOnly" /></td>
+                  <td><input class="table-input" v-model="row.hDSCM" type="number" min="0" step="0.5" @input="validatePositive(row, 'hDSCM')" :disabled="isReadOnly" /></td>
+                  <td><input class="table-input" v-model="row.hDSTP" type="number" min="0" step="0.5" @input="validatePositive(row, 'hDSTP')" :disabled="isReadOnly" /></td>
                   <td class="info-cell">
                     <div v-if="row.showDetails" class="info-editor">
                       <textarea
@@ -191,20 +191,21 @@
                         rows="3"
                         class="info-textarea"
                         :placeholder="$t('mccc.infoPlaceholder')"
+                        :disabled="isReadOnly"
                       ></textarea>
                       <div class="info-actions">
-                        <button type="button" class="btn-finish" @click="row.showDetails = false">{{ $t('mccc.finish') }}</button>
+                        <button type="button" class="btn-finish" @click="row.showDetails = false" :disabled="isReadOnly">{{ $t('mccc.finish') }}</button>
                       </div>
                     </div>
                     <div v-else class="info-collapsed">
                       <div class="info-preview" :class="{ 'has-content': row.notes }">{{ row.notes || $t('mccc.noInfo') }}</div>
-                      <button type="button" class="btn-add" @click="row.showDetails = true">
+                      <button type="button" class="btn-add" @click="row.showDetails = true" :disabled="isReadOnly">
                         {{ row.notes ? $t('mccc.edit') : $t('mccc.addInfo') }}
                       </button>
                     </div>
                   </td>
                   <td class="action-cell">
-                    <button v-if="ressourcesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('mccc.deleteRow')">
+                    <button v-if="ressourcesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('mccc.deleteRow')" :disabled="isReadOnly">
                       &times;
                     </button>
                   </td>
@@ -213,7 +214,7 @@
             </table>
           </div>
           <div class="table-footer">
-            <button @click="addRow" class="btn-add-row">
+            <button @click="addRow" class="btn-add-row" :disabled="isReadOnly">
               + {{ $t('mccc.addRow') }}
             </button>
             <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
@@ -225,14 +226,14 @@
         </div>
       </section>
 
-      <div class="step-navigation">
+      <div v-if="!showAllSteps" class="step-navigation">
         <button v-if="currentStep > 1" @click="prevStep" class="btn btn-secondary">
           {{ $t('mccc.back') }}
         </button>
         <button v-if="currentStep < 3" @click="nextStep" class="btn btn-primary">
           {{ $t('mccc.continue') }}
         </button>
-        <button v-if="currentStep === 3" class="btn btn-primary" type="button" @click="saveMccc">
+        <button v-if="currentStep === 3" class="btn btn-primary" type="button" @click="saveMccc" :disabled="isReadOnly">
           {{ $t('mccc.save') }}
         </button>
       </div>
@@ -267,6 +268,8 @@ export default {
         responsable: '',
         objectif: ''
       },
+      editingId: null,
+      isReadOnly: false,
       departements: [
         'BUT Informatique',
         'BUT GEA - Gestion des Entreprises et des Administrations',
@@ -411,14 +414,24 @@ export default {
     if (this.form.departement) {
       this.availableUes = this.uesByDepartement[this.form.departement] || [];
     }
+    this.loadFromRoute();
   },
   watch: {
     'form.departement'(newDepartement) {
       this.availableUes = this.uesByDepartement[newDepartement] || [];
       this.form.ue = '';
+    },
+    '$route.query.id'() {
+      this.loadFromRoute();
+    },
+    '$route.query.mode'() {
+      this.isReadOnly = this.$route.query.mode === 'view';
     }
   },
   computed: {
+    showAllSteps() {
+      return this.isReadOnly && this.$route.query.mode === 'view';
+    },
     totals() {
       const sum = key => this.ressourcesRows.reduce((acc, row) => acc + (Number(row[key]) || 0), 0);
       return {
@@ -434,6 +447,30 @@ export default {
     }
   },
   methods: {
+    loadFromRoute() {
+      const { id, mode } = this.$route.query;
+      this.isReadOnly = mode === 'view';
+
+      if (!id) {
+        this.editingId = null;
+        return;
+      }
+
+      const stored = JSON.parse(localStorage.getItem('mcccList') || '[]');
+      const entry = stored.find(item => String(item.id) === String(id));
+
+      if (!entry) return;
+
+      this.currentStep = 1;
+      this.editingId = entry.id;
+      this.form = { ...this.form, ...(entry.form || {}) };
+      this.availableUes = this.uesByDepartement[this.form.departement] || [];
+
+      const loadedRows = (entry.ressourcesRows || []).map(row => ({ ...row, showDetails: false }));
+      this.ressourcesRows = loadedRows.length ? loadedRows : [{ id: 1, label: '', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false }];
+      const maxId = this.ressourcesRows.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0);
+      this.nextRowId = maxId + 1;
+    },
     nextStep() {
       if (this.currentStep < 3) {
         this.currentStep++;
@@ -465,34 +502,34 @@ export default {
       if (row[field] < 0) {
         row[field] = 0;
         this.errorMessage = 'Impossible de saisir une valeur negative.';
-        this.setErrorTimeout();
+        if (this.errorTimeout) clearTimeout(this.errorTimeout);
+        this.errorTimeout = setTimeout(() => {
+          this.errorMessage = '';
+        }, 3000);
       }
-    },
-    setErrorTimeout() {
-      if (this.errorTimeout) clearTimeout(this.errorTimeout);
-      this.errorTimeout = setTimeout(() => {
-        this.errorMessage = '';
-      }, 3000);
     },
     saveMccc() {
-      if (!this.form.ue || !this.form.departement) {
-        this.errorMessage = this.$t('mccc.saveMissingFields');
-        this.setErrorTimeout();
-        return;
-      }
-      const existing = JSON.parse(localStorage.getItem('mcccList') || '[]');
+      const now = new Date().toISOString();
       const entry = {
-        id: Date.now(),
-        ue: this.form.ue,
+        id: this.editingId || Date.now(),
+        savedAt: now,
         departement: this.form.departement,
-        savedAt: new Date().toISOString(),
+        ue: this.form.ue,
         form: { ...this.form },
         ressourcesRows: this.ressourcesRows.map(row => ({ ...row }))
       };
-      existing.push(entry);
-      localStorage.setItem('mcccList', JSON.stringify(existing));
-      this.errorMessage = '';
-      this.$router.push('/liste-mccc');
+
+      const list = JSON.parse(localStorage.getItem('mcccList') || '[]');
+      const existingIndex = list.findIndex(item => String(item.id) === String(entry.id));
+      if (existingIndex !== -1) {
+        list[existingIndex] = entry;
+      } else {
+        list.push(entry);
+      }
+      localStorage.setItem('mcccList', JSON.stringify(list));
+      this.editingId = entry.id;
+      this.isReadOnly = false;
+      this.$router.push({ name: 'liste-mccc' });
     }
   }
 };
@@ -641,6 +678,7 @@ export default {
 .pill-select {
   width: 100%;
   padding: 10px 12px;
+  box-sizing: border-box;
   border: 1px solid var(--color-border);
   border-radius: 12px;
   background-color: var(--color-input-bg, #fff);
@@ -652,6 +690,12 @@ export default {
   background-position: right 12px center;
   background-repeat: no-repeat;
   background-size: 16px 16px;
+}
+
+.pill-select:disabled {
+  background-color: var(--color-sidebar-bg, #f4f4f4);
+  color: var(--color-text-muted, #777);
+  cursor: not-allowed;
 }
 
 .pill-select:focus {
@@ -762,6 +806,13 @@ tr:nth-child(even) td {
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 192, 0, 0), 0.1);
 }
 
+.table-input:disabled,
+.info-textarea:disabled {
+  background: var(--color-sidebar-bg, #f4f4f4);
+  color: var(--color-text-muted, #777);
+  cursor: not-allowed;
+}
+
 .action-header {
   text-align: center;
   width: 40px;
@@ -792,7 +843,7 @@ tr:nth-child(even) td {
   min-height: 20px;
   color: var(--color-text-muted, #777);
   font-size: 0.9rem;
-  word-break: break-word; /* EmpÃªche le texte long de dÃ©border */
+  word-break: break-word; /* Empêche le texte long de déborder */
 }
 
 .info-preview.has-content {
@@ -889,6 +940,16 @@ tr:nth-child(even) td {
   transition: all 0.2s;
 }
 
+.btn-add[disabled],
+.btn-finish[disabled],
+.btn-delete[disabled],
+.btn-add-row[disabled],
+.btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -977,6 +1038,8 @@ tr:nth-child(even) td {
   }
 }
 </style>
+
+
 
 
 

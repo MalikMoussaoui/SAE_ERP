@@ -18,6 +18,20 @@
             <span class="meta-label">{{ $t('mcccList.savedAt') }} :</span>
             <span class="meta-value">{{ formatDate(entry.savedAt) }}</span>
           </div>
+          <div class="card-actions">
+            <router-link
+              class="action-button ghost"
+              :to="{ name: 'mccc', query: { id: entry.id, mode: 'view' } }"
+            >
+              Consulter
+            </router-link>
+            <router-link
+              class="action-button primary"
+              :to="{ name: 'mccc', query: { id: entry.id, mode: 'edit' } }"
+            >
+              Modifier
+            </router-link>
+          </div>
         </div>
       </div>
     </div>
@@ -122,6 +136,46 @@ export default {
 
 .meta-value {
   font-weight: 600;
+}
+
+.card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.action-button {
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.action-button.primary {
+  background: var(--color-primary, #c00000);
+  color: #fff;
+  box-shadow: 0 6px 12px rgba(192, 0, 0, 0.18);
+}
+
+.action-button.ghost {
+  border: 1px solid var(--color-border, #ddd);
+  background: var(--color-card-bg, #fff);
+  color: var(--color-text-body, #444);
+}
+
+.action-button:hover {
+  transform: translateY(-1px);
+}
+
+.action-button.primary:hover {
+  background: var(--color-primary-dark, #a00000);
+}
+
+.action-button.ghost:hover {
+  background: var(--color-sidebar-bg, #f5f5f5);
 }
 
 .empty-state {
