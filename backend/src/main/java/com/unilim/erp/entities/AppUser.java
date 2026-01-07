@@ -7,9 +7,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "app_user")
@@ -40,16 +43,17 @@ public class AppUser {
     @Column(nullable=false)
     private UserStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="department_id")
-    private Department department;
-
     @Column(nullable = false,updatable = false)
     private Instant createdAt = Instant.now();
+
+    @ManyToMany(mappedBy = "teachers")
+    @JsonIgnore
+    private Set<Course> courses = new HashSet<>();
+
     public AppUser() {
     }
 
-    public AppUser(UUID id,String email, String passwordHash, String displayName, String phone, UserRole role, UserStatus status, Department department, Instant createdAt) {
+    public AppUser(UUID id,String email, String passwordHash, String displayName, String phone, UserRole role, UserStatus status, Instant createdAt) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -57,7 +61,6 @@ public class AppUser {
         this.phone = phone;
         this.role = role;
         this.status = status;
-        this.department = department;
         this.createdAt = createdAt;
     }
 

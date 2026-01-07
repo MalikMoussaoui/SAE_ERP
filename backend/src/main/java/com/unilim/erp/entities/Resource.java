@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "resource")
@@ -17,18 +18,19 @@ public class Resource {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ue_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Ue ue;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(name = "cm_hours")
+    @Column(name = "hours_cm")
     private int cmHours;
 
-    @Column(name = "td_hours")
+    @Column(name = "hours_td")
     private int tdHours;
 
-    @Column(name = "tp_hours")
+    @Column(name = "hours_tp")
     private int tpHours;
 
     public Resource() {
