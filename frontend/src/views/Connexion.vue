@@ -3,85 +3,93 @@
     <img src="@/assets/logo_iut.png" alt="Logo Université de Limoges" class="main-logo" />
 
     <div class="login-card">
-      
       <div v-if="isLoading" class="loading-overlay">
         <div class="spinner"></div>
       </div>
+
       <img src="@/assets/GestIUT_logo.png" alt="Logo GestIUT" class="app-title-logo" />
 
       <h2>{{ $t('login.title') }}</h2>
 
       <form @submit.prevent="handleLogin">
-        
         <div class="input-group">
           <img src="@/assets/Bonhomme.png" alt="Utilisateur" class="icon-img" />
           <input v-model="username" type="text" :placeholder="$t('login.usernamePlaceholder')" required />
         </div>
-        
+
         <div class="input-group">
           <img src="@/assets/Cadenas.png" alt="Mot de passe" class="icon-img" />
           <input v-model="password" type="password" :placeholder="$t('login.passwordPlaceholder')" required />
         </div>
 
-        <button type="submit">{{ $t('login.connect') }}</button>
+        <button type="submit" :disabled="isLoading">
+          {{ isLoading ? 'Connexion...' : $t('login.connect') }}
+        </button>
       </form>
+
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
   </div>
 </template>
 
 <script>
+// 1. IMPORT D'AXIOS
+import axios from 'axios';
 import logoG from '@/assets/Logo_G.png';
 
 export default {
   name: 'LoginScreen',
   data() {
     return {
-      username: '',
+      username: '', // Utilisé comme email pour le backend
       password: '',
       errorMessage: '',
       isLoading: false
-    }; 
+    };
+  },
+  methods: {
+    async handleLogin() {
+      this.errorMessage = '';
+      this.isLoading = true;
+
+      try {
+        // 2. APPEL RÉEL AU BACKEND
+        // L'URL correspond à votre AuthenticationController
+        const response = await axios.post('http://localhost:8080/api/auth/login', {
+          email: this.username, // Le DTO Java attend 'email'
+          password: this.password
+        });
+
+        // 3. GESTION DU SUCCÈS
+        // Le backend renvoie un objet contenant le 'token'
+        const token = response.data.token;
+        localStorage.setItem('user-token', token);
+
+        // Redirection vers le dashboard
+        this.$router.push('/dashboard');
+
+      } catch (error) {
+        // 4. GESTION DES ERREURS
+        console.error("Erreur de connexion:", error);
+
+        if (error.response) {
+          // Erreur venant du serveur (ex: 401 Unauthorized)
+          this.errorMessage = this.$t('login.error');
+        } else if (error.request) {
+          // Le serveur n'a pas répondu (CORS ou serveur éteint)
+          this.errorMessage = "Impossible de contacter le serveur.";
+        } else {
+          this.errorMessage = "Une erreur est survenue.";
+        }
+      } finally {
+        this.isLoading = false;
+      }
+    }
   },
   created() {
     const theme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', theme);
-
     document.title = "Gest'IUT";
-    let link = document.querySelector("link[rel~='icon']");
-    if (!link) {
-      link = document.createElement('link');
-      link.rel = 'icon';
-      document.head.appendChild(link);
-    }
-    link.href = logoG;
-  },
-  
-  methods: {
-    async handleLogin() {
-      this.errorMessage = ''; 
-      this.isLoading = true;
-
-      try {
-        // --- SIMULATION (puisqu'il n'y a pas de back-end) ---
-        
-        if (this.username === 'admin' && this.password === 'password') {
-          // Connexion réussie : pas de délai pour une meilleure expérience utilisateur.
-          localStorage.setItem('user-token', 'fake-token-for-simulation');
-          this.$router.push('/dashboard');
-
-        } else {
-          // On simule une attente seulement en cas d'erreur
-          // pour afficher le spinner et décourager les tentatives rapides.
-          await new Promise(resolve => setTimeout(resolve, 500));
-          throw new Error(this.$t('login.error'));
-        }
-
-      } catch (error) {
-        this.errorMessage = this.$t('login.error');
-        this.isLoading = false;
-      }
-    }
   }
 };
 </script>
