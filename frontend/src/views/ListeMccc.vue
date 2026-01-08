@@ -31,6 +31,13 @@
             >
               Modifier
             </router-link>
+            <button
+              type="button"
+              class="action-button danger"
+              @click="deleteEntry(entry.id)"
+            >
+              Supprimer
+            </button>
           </div>
         </div>
       </div>
@@ -56,6 +63,17 @@ export default {
     loadEntries() {
       const stored = JSON.parse(localStorage.getItem('mcccList') || '[]');
       this.mcccEntries = stored.slice().reverse();
+    },
+    deleteEntry(entryId) {
+      const entry = this.mcccEntries.find(item => String(item.id) === String(entryId));
+      const label = entry?.ue ? ` "${entry.ue}"` : '';
+      const confirmed = window.confirm(`Supprimer la fiche MCCC${label} ?`);
+      if (!confirmed) return;
+
+      const stored = JSON.parse(localStorage.getItem('mcccList') || '[]');
+      const updated = stored.filter(item => String(item.id) !== String(entryId));
+      localStorage.setItem('mcccList', JSON.stringify(updated));
+      this.loadEntries();
     },
     formatDate(isoString) {
       if (!isoString) return '';
@@ -172,6 +190,16 @@ export default {
 
 .action-button.primary:hover {
   background: var(--color-primary-dark, #a00000);
+}
+
+.action-button.danger {
+  background: #fff;
+  color: #b00020;
+  border: 1px solid #b00020;
+}
+
+.action-button.danger:hover {
+  background: rgba(176, 0, 32, 0.08);
 }
 
 .action-button.ghost:hover {

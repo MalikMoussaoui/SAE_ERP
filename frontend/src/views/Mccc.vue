@@ -68,11 +68,8 @@
               </select>
             </label>
             <label class="field">
-              <span>{{ $t('mccc.apogeeCode') }}</span>
-              <select v-model="form.codeApogee" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.code') }}</option>
-                <option v-for="option in codesApogee" :key="option" :value="option">{{ option }}</option>
-              </select>
+              <span>Ressource (à écrire)</span>
+              <input v-model="form.ressource" class="pill-select pill-input" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
             </label>
             <label class="field">
               <span>{{ $t('mccc.evaluationType') }}</span>
@@ -255,7 +252,7 @@ export default {
         annee: '',
         semestre: '',
         modalite: '',
-        codeApogee: '',
+        ressource: '',
         typeEvaluation: '',
         ue: '',
         niveauCompetence: '',
@@ -287,7 +284,6 @@ export default {
       semestres: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
       annees: ['1ere annee (BUT1)', '2eme annee (BUT2)', '3eme annee (BUT3)'],
       modalites: ['Controle continu integral', 'Controle terminal', 'Mixte (CCI + final)', 'Projet tutore'],
-      codesApogee: ['INF201', 'MMI205', 'TC301', 'GEA102', 'GEII208'],
       typesEvaluation: ['Dossier + soutenance', 'QCM / ecrit surveille', 'Projet en equipe', 'Etude de cas', 'Oral individuel'],
       uesByDepartement: {
         'BUT Informatique': [
@@ -702,6 +698,11 @@ export default {
   border-color: var(--color-primary, #c00000);
   box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 192, 0, 0), 0.12);
   outline: none;
+}
+
+.pill-input {
+  background-image: none;
+  padding-right: 12px;
 }
 
 .table-section {
