@@ -4,7 +4,11 @@
       <div class="sidebar-header">
         <img src="@/assets/Logo_G.png" alt="Logo GestIUT" class="sidebar-logo" />
         <h3 class="sidebar-title">Gest'IUT</h3>
-        <button @click="toggleSidebar" class="toggle-button" aria-label="Toggle sidebar">«</button>
+        <button @click="toggleSidebar" class="toggle-button" aria-label="Toggle sidebar">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
       </div>
 
       <ul class="nav-links">
@@ -278,25 +282,31 @@ html[data-theme="dark"] {
 .toggle-button {
   position: absolute;
   top: 50%;
-  right: -25px;
+  right: -40px;
   transform: translateY(-50%);
   background-color: var(--color-card-bg);
   border: 1px solid var(--color-border);
-  border-left: none;
-  border-radius: 0 50% 50% 0;
-  width: 25px;
-  height: 40px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.2rem;
-  color: var(--color-text-body);
+  color: var(--color-text-muted);
   z-index: 10;
-  transition: transform var(--sidebar-transition-duration) var(--sidebar-transition-timing), background-color 0.3s, border-color 0.3s;
+  transition: transform var(--sidebar-transition-duration) var(--sidebar-transition-timing), 
+              background-color 0.3s, 
+              border-color 0.3s,
+              color 0.3s,
+              box-shadow 0.3s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 .toggle-button:hover {
-  background-color: var(--color-hover-bg);
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+  box-shadow: 0 4px 8px rgba(var(--color-primary-rgb), 0.3);
 }
 
 .nav-links { 
@@ -395,7 +405,7 @@ html[data-theme="dark"] {
 .dashboard-layout.sidebar-collapsed .sidebar { width: var(--sidebar-width-closed); padding-left: 1rem; padding-right: 1rem; }
 .dashboard-layout.sidebar-collapsed .sidebar-title,
 .dashboard-layout.sidebar-collapsed .nav-text { opacity: 0; width: 0; }
-.dashboard-layout.sidebar-collapsed .toggle-button { transform: translateY(-50%) rotate(180deg); border-left: 1px solid var(--color-border); }
+.dashboard-layout.sidebar-collapsed .toggle-button { transform: translateY(-50%) rotate(180deg); right: -32px; }
 .dashboard-layout.sidebar-collapsed .nav-links a,
 .dashboard-layout.sidebar-collapsed .nav-group,
 .dashboard-layout.sidebar-collapsed .sidebar-footer a {

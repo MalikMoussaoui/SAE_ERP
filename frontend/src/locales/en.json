@@ -175,6 +175,12 @@
   },
   "help": {
     "title": "Help Center",
+    "subtitle": "How can we help you?",
+    "description": "Find answers to frequently asked questions or contact support.",
+    "faq": "Frequently Asked Questions",
+    "contact": "Contact Us",
+    "email": "Email",
+    "phone": "Phone",
     "q1": "How to create a new MCCC sheet?",
     "a1": "Navigate to the MCCC section via the sidebar, then follow the form steps.",
     "q2": "How to manage users?",
