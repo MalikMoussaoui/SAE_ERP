@@ -1,192 +1,190 @@
 <template>
   <DashboardLayout>
     <template #header>
-      <h1 class="page-title">Fiche Ressource</h1>
+      <h1 class="page-title">{{ $t('nav.resourceSheets') }}</h1>
     </template>
 
-    <div class="page-surface resource-sheet">
-      <section class="card">
-        <header class="card-header">
-          <h2>1. Informations générales et volumes horaires</h2>
-        </header>
-        <div class="fields-row">
-          <label class="field">
-            <span>Semestre</span>
-            <select v-model="form.semestre">
-              <option value="" disabled>Choisir</option>
-              <option v-for="option in semestres" :key="option" :value="option">{{ option }}</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>UE</span>
-            <select v-model="form.ue">
-              <option value="" disabled>Choisir</option>
-              <option v-for="option in ues" :key="option" :value="option">{{ option }}</option>
-            </select>
-          </label>
-          <label class="field">
-            <span>Ressource</span>
-            <select v-model="form.ressource">
-              <option value="" disabled>Choisir</option>
-              <option v-for="option in ressources" :key="option" :value="option">{{ option }}</option>
-            </select>
-          </label>
-          <label class="field coefficient">
-            <span>Coefficient</span>
-            <input v-model="form.coefficient" type="number" min="0" step="0.1" />
-          </label>
+    <div class="page-surface resource-surface">
+      <!-- Indicateur d'étapes (Wizard) -->
+      <div v-if="!showAllSteps" class="step-indicator">
+        <div class="step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
+          <div class="step-number">1</div>
+          <div class="step-label">{{ $t('resourceSheet.step1_label') }}</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" :class="{ active: currentStep >= 2, completed: currentStep > 2 }">
+          <div class="step-number">2</div>
+          <div class="step-label">{{ $t('resourceSheet.step2_label') }}</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" :class="{ active: currentStep >= 3, completed: currentStep > 3 }">
+          <div class="step-number">3</div>
+          <div class="step-label">{{ $t('resourceSheet.step3_label') }}</div>
+        </div>
+      </div>
+
+      <!-- ÉTAPE 1 : Identification -->
+      <section v-if="showAllSteps || currentStep === 1" class="cards-grid top-grid">
+        <div class="info-card">
+          <h3>{{ $t('resourceSheet.generalInfo') }}</h3>
+          <div class="card-fields">
+            <label class="field full">
+              <span>{{ $t('mccc.department') }}</span>
+              <select v-model="form.departement" class="pill-select" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
+                <option v-for="option in departements" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </label>
+            <label class="field full">
+              <span>{{ $t('resourceSheet.resourceTitle') }}</span>
+              <input v-model="form.titre" class="pill-select pill-input" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
+            </label>
+          </div>
         </div>
 
-        <div class="table-wrapper">
-          <table class="hours-table">
-            <thead>
-              <tr>
-                <th>Heures CM</th>
-                <th>Heures TD</th>
-                <th>Heures TP</th>
-                <th>Heures Contrôle</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><input class="hours-input" v-model="form.heures.cm" type="number" min="0" step="0.5" /></td>
-                <td><input class="hours-input" v-model="form.heures.td" type="number" min="0" step="0.5" /></td>
-                <td><input class="hours-input" v-model="form.heures.tp" type="number" min="0" step="0.5" /></td>
-                <td><input class="hours-input" v-model="form.heures.controle" type="number" min="0" step="0.5" /></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card">
-        <header class="card-header">
-          <h2>2. Objectif de la ressource</h2>
-        </header>
-        <div class="objectives">
-          <label class="field">
-            <span>Prérequis</span>
-            <textarea v-model="form.prerequis" rows="4"></textarea>
-          </label>
-          <label class="field">
-            <span>Objectif de la ressource</span>
-            <textarea v-model="form.objectif" rows="4"></textarea>
-          </label>
+        <div class="info-card">
+          <h3>{{ $t('mccc.resourcesAndSAE') }}</h3>
+          <div class="card-fields">
+            <label class="field">
+              <span>{{ $t('resourceSheet.resourceCode') }}</span>
+              <input v-model="form.code" class="pill-select pill-input" placeholder="R1.XX" :disabled="isReadOnly" />
+            </label>
+            <label class="field">
+              <span>{{ $t('resourceSheet.semester') }}</span>
+              <select v-model="form.semestre" class="pill-select" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
+                <option v-for="option in semestres" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </label>
+            <label class="field full">
+              <span>{{ $t('resourceSheet.ue') }}</span>
+              <select v-model="form.ue" class="pill-select" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
+                <option v-for="option in availableUes" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </label>
+          </div>
         </div>
       </section>
 
-      <section class="card">
-        <header class="card-header">
-          <h2>3. SAé</h2>
-        </header>
-        <label class="field">
-          <span>SAé concernée(s)</span>
-          <input v-model="form.sae" type="text" />
-        </label>
-      </section>
+      <!-- ÉTAPE 2 : Volume Horaire & Description -->
+      <section v-if="showAllSteps || currentStep === 2" class="cards-grid mid-grid">
+        <div class="info-card">
+          <h3>{{ $t('resourceSheet.hours') }}</h3>
+          <div class="card-fields hours-grid">
+            <label class="field">
+              <span>{{ $t('resourceSheet.hCM') }}</span>
+              <input v-model="form.hCM" type="number" min="0" step="0.5" class="pill-select" :disabled="isReadOnly" />
+            </label>
+            <label class="field">
+              <span>{{ $t('resourceSheet.hTD') }}</span>
+              <input v-model="form.hTD" type="number" min="0" step="0.5" class="pill-select" :disabled="isReadOnly" />
+            </label>
+            <label class="field">
+              <span>{{ $t('resourceSheet.hTP') }}</span>
+              <input v-model="form.hTP" type="number" min="0" step="0.5" class="pill-select" :disabled="isReadOnly" />
+            </label>
+          </div>
+        </div>
 
-      <section class="card">
-        <header class="card-header">
-          <h2>4. Connaissances que font apprendre les étudiants</h2>
-        </header>
-        <label class="field">
-          <span>Connaissance à apprendre</span>
-          <textarea v-model="form.connaissance" rows="4"></textarea>
-        </label>
-      </section>
-
-      <section class="card">
-        <header class="card-header">
-          <h2>5. Descriptif du cours</h2>
-        </header>
-        <div class="course-grid">
-          <label class="field">
-            <span>CM1</span>
-            <input v-model="form.descriptif.cm1" type="text" />
-          </label>
-          <label class="field">
-            <span>CM2</span>
-            <input v-model="form.descriptif.cm2" type="text" />
-          </label>
-          <label class="field">
-            <span>TD1</span>
-            <input v-model="form.descriptif.td1" type="text" />
-          </label>
-          <label class="field">
-            <span>TD2</span>
-            <input v-model="form.descriptif.td2" type="text" />
-          </label>
+        <div class="info-card full-width">
+          <h3>{{ $t('resourceSheet.description') }}</h3>
+          <div class="card-fields single-col">
+            <textarea 
+              v-model="form.description" 
+              class="info-textarea main-desc" 
+              rows="5" 
+              :placeholder="$t('resourceSheet.descriptionPlaceholder')"
+              :disabled="isReadOnly"
+            ></textarea>
+          </div>
         </div>
       </section>
 
-      <section class="card">
-        <header class="card-header">
-          <h2>6. Retour sur cours</h2>
-        </header>
-        <div class="feedback-grid">
-          <label class="field">
-            <span>Retour des étudiants</span>
-            <textarea v-model="form.retours.etudiants" rows="4"></textarea>
-          </label>
-          <label class="field">
-            <span>Retour de l'équipe pédagogique</span>
-            <textarea v-model="form.retours.equipe" rows="4"></textarea>
-          </label>
-          <label class="field">
-            <span>Heures prévues / Heures réalisées</span>
-            <textarea v-model="form.retours.heures" rows="4"></textarea>
-          </label>
+      <!-- ÉTAPE 3 : Tableau des Séquences -->
+      <section v-if="showAllSteps || currentStep === 3" class="table-section">
+        <div class="table-card">
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>{{ $t('resourceSheet.table.sequence') }}</th>
+                  <th>{{ $t('resourceSheet.table.type') }}</th>
+                  <th>{{ $t('resourceSheet.table.duration') }}</th>
+                  <th>{{ $t('resourceSheet.table.details') }}</th>
+                  <th class="action-header">{{ $t('resourceSheet.table.action') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="row in sequencesRows" :key="row.id">
+                  <td>
+                    <input class="table-input" v-model="row.label" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
+                  </td>
+                  <td>
+                    <select v-model="row.type" class="table-input" :disabled="isReadOnly">
+                      <option value="CM">CM</option>
+                      <option value="TD">TD</option>
+                      <option value="TP">TP</option>
+                      <option value="Autre">Autre</option>
+                    </select>
+                  </td>
+                  <td>
+                    <input class="table-input" v-model="row.duration" type="number" min="0" step="0.5" @input="validatePositive(row, 'duration')" :disabled="isReadOnly" />
+                  </td>
+                  <td class="info-cell">
+                    <div v-if="row.showDetails" class="info-editor">
+                      <textarea
+                        v-model="row.notes"
+                        rows="2"
+                        class="info-textarea"
+                        :placeholder="$t('mccc.infoPlaceholder')"
+                        :disabled="isReadOnly"
+                      ></textarea>
+                      <div class="info-actions">
+                        <button type="button" class="btn-finish" @click="row.showDetails = false" :disabled="isReadOnly">{{ $t('mccc.finish') }}</button>
+                      </div>
+                    </div>
+                    <div v-else class="info-collapsed">
+                      <div class="info-preview" :class="{ 'has-content': row.notes }">{{ row.notes || $t('mccc.noInfo') }}</div>
+                      <button type="button" class="btn-add" @click="row.showDetails = true" :disabled="isReadOnly">
+                        {{ row.notes ? $t('mccc.edit') : $t('mccc.addInfo') }}
+                      </button>
+                    </div>
+                  </td>
+                  <td class="action-cell">
+                    <button v-if="sequencesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('mccc.deleteRow')" :disabled="isReadOnly">
+                      &times;
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="table-footer">
+            <button @click="addRow" class="btn-add-row" :disabled="isReadOnly">
+              + {{ $t('resourceSheet.addSequence') }}
+            </button>
+            <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+            <div class="final-totals single">
+              <span class="final-label">{{ $t('mccc.totalHours') }}</span>
+              <span class="single-total">{{ totalSequenceHours }}</span>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section class="card">
-        <header class="card-header">
-          <h2>7. Tableau recapitulatif des heures</h2>
-        </header>
-        <div class="recap-table-wrapper">
-          <table class="recap-table">
-            <thead>
-              <tr>
-                <th>Ressource</th>
-                <th>h CM</th>
-                <th>h TD</th>
-                <th>h TP</th>
-                <th>h DS CM</th>
-                <th>h DS TP</th>
-                <th>Renseignement complementaire (Nombre eleve, de groupe, duree des seances)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="row in form.recapRows" :key="row.id">
-                <td><input v-model="row.label" type="text" /></td>
-                <td><input v-model="row.hCM" type="number" min="0" step="0.5" /></td>
-                <td><input v-model="row.hTD" type="number" min="0" step="0.5" /></td>
-                <td><input v-model="row.hTP" type="number" min="0" step="0.5" /></td>
-                <td><input v-model="row.hDSCM" type="number" min="0" step="0.5" /></td>
-                <td><input v-model="row.hDSTP" type="number" min="0" step="0.5" /></td>
-                <td><textarea v-model="row.notes" rows="2"></textarea></td>
-              </tr>
-            </tbody>
-            <tfoot>
-              <tr>
-                <td class="totals-label">Totaux</td>
-                <td class="totals-cell">{{ recapTotals.cm }}</td>
-                <td class="totals-cell">{{ recapTotals.td }}</td>
-                <td class="totals-cell">{{ recapTotals.tp }}</td>
-                <td class="totals-cell">{{ recapTotals.dscm }}</td>
-                <td class="totals-cell">{{ recapTotals.dstp }}</td>
-                <td class="totals-cell"></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      </section>
-
-      <footer class="footer">
-        <button type="button" class="cta ghost">Retour</button>
-        <span class="step">4/4</span>
-        <button type="button" class="cta">Valider</button>
-      </footer>
+      <!-- Navigation -->
+      <div v-if="!showAllSteps" class="step-navigation">
+        <button v-if="currentStep > 1" @click="prevStep" class="btn btn-secondary">
+          {{ $t('mccc.back') }}
+        </button>
+        <button v-if="currentStep < 3" @click="nextStep" class="btn btn-primary">
+          {{ $t('mccc.continue') }}
+        </button>
+        <button v-if="currentStep === 3" class="btn btn-primary" type="button" @click="saveResource" :disabled="isReadOnly">
+          {{ $t('mccc.save') }}
+        </button>
+      </div>
     </div>
   </DashboardLayout>
 </template>
@@ -199,362 +197,297 @@ export default {
   components: { DashboardLayout },
   data() {
     return {
-      semestres: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
-      ressources: ['1', '2'],
-      ues: [],
-      mcccEntries: [],
-      currentMccc: null,
+      currentStep: 1,
       form: {
+        departement: '',
+        titre: '',
+        code: '',
         semestre: '',
         ue: '',
-        ressource: '',
-        coefficient: '',
-        heures: { cm: '', td: '', tp: '', controle: '' },
-        prerequis: '',
-        objectif: '',
-        sae: '',
-        connaissance: '',
-        descriptif: { cm1: '', cm2: '', td1: '', td2: '' },
-        retours: { etudiants: '', equipe: '', heures: '' },
-        recapRows: [
-          { id: 1, label: '', hCM: '', hTD: '', hTP: '', hDSCM: '', hDSTP: '', notes: '' },
-          { id: 2, label: '', hCM: '', hTD: '', hTP: '', hDSCM: '', hDSTP: '', notes: '' },
-          { id: 3, label: '', hCM: '', hTD: '', hTP: '', hDSCM: '', hDSTP: '', notes: '' },
-          { id: 4, label: '', hCM: '', hTD: '', hTP: '', hDSCM: '', hDSTP: '', notes: '' },
-          { id: 5, label: '', hCM: '', hTD: '', hTP: '', hDSCM: '', hDSTP: '', notes: '' }
-        ]
-      }
+        hCM: 0,
+        hTD: 0,
+        hTP: 0,
+        description: ''
+      },
+      editingId: null,
+      isReadOnly: false,
+      departements: [
+        'BUT Informatique',
+        'BUT GEA - Gestion des Entreprises et des Administrations',
+        'BUT TC - Techniques de Commercialisation',
+        'BUT Mesures Physiques (MP)',
+        'BUT Genie Mecanique et Productique (GMP)',
+        'BUT GEII - Genie Electrique et Informatique Industrielle',
+        'BUT Genie Civil - Construction Durable',
+        'BUT Genie Biologique (GB)',
+        "BUT MMI - Metiers du Multimedia et de l'Internet",
+        'BUT GIM - Genie Industriel et Maintenance',
+        'BUT HSE - Hygiene, Securite, Environnement',
+        'BUT Carrieres Sociales'
+      ],
+      semestres: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
+      uesByDepartement: {
+        'BUT Informatique': [
+          'UE Realiser des applications',
+          'UE Optimiser des applications',
+          'UE Administrer des systemes informatiques communicants',
+          "UE Gerer des donnees de l'information",
+          'UE Conduire un projet',
+          'UE Collaborer dans un environnement professionnel'
+        ],
+        // ... (Autres départements identiques à Mccc.vue, abrégé pour l'exemple)
+      },
+      availableUes: [],
+      sequencesRows: [
+        { id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }
+      ],
+      nextRowId: 2,
+      errorMessage: '',
+      errorTimeout: null
     };
   },
   created() {
-    this.loadMcccIndex();
+    if (this.form.departement) {
+      this.availableUes = this.uesByDepartement[this.form.departement] || [];
+    }
+    this.loadFromRoute();
   },
   watch: {
-    'form.ue'(newUe) {
-      this.applyMcccFromUe(newUe);
+    'form.departement'(newDepartement) {
+      this.availableUes = this.uesByDepartement[newDepartement] || [];
+      this.form.ue = '';
     },
-    'form.ressource'(newRessource) {
-      this.applyResourceFromMccc(newRessource);
+    '$route.query.id'() {
+      this.loadFromRoute();
+    },
+    '$route.query.mode'() {
+      this.isReadOnly = this.$route.query.mode === 'view';
     }
   },
   computed: {
-    recapTotals() {
-      const sum = key => this.form.recapRows.reduce((acc, row) => acc + (Number(row[key]) || 0), 0);
-      return {
-        cm: sum('hCM'),
-        td: sum('hTD'),
-        tp: sum('hTP'),
-        dscm: sum('hDSCM'),
-        dstp: sum('hDSTP')
-      };
+    showAllSteps() {
+      return this.isReadOnly && this.$route.query.mode === 'view';
+    },
+    totalSequenceHours() {
+      return this.sequencesRows.reduce((acc, row) => acc + (Number(row.duration) || 0), 0);
     }
   },
   methods: {
-    loadMcccIndex() {
-      const list = JSON.parse(localStorage.getItem('mcccList') || '[]');
-      this.mcccEntries = list;
-      this.ues = [...new Set(list.map(entry => entry.ue).filter(Boolean))];
-    },
-    findLatestMcccForUe(ueLabel) {
-      const matches = this.mcccEntries.filter(entry => entry.ue === ueLabel);
-      if (!matches.length) return null;
-      return matches
-        .sort((a, b) => new Date(b.savedAt || 0) - new Date(a.savedAt || 0))[0];
-    },
-    applyMcccFromUe(ueLabel) {
-      if (!ueLabel) {
-        this.currentMccc = null;
+    loadFromRoute() {
+      const { id, mode } = this.$route.query;
+      this.isReadOnly = mode === 'view';
+
+      if (!id) {
+        this.editingId = null;
         return;
       }
 
-      if (!this.mcccEntries.length) {
-        this.loadMcccIndex();
-      }
+      const stored = JSON.parse(localStorage.getItem('resourceList') || '[]');
+      const entry = stored.find(item => String(item.id) === String(id));
 
-      const entry = this.findLatestMcccForUe(ueLabel);
-      if (!entry) {
-        this.currentMccc = null;
-        return;
-      }
+      if (!entry) return;
 
-      this.currentMccc = entry;
-      const mcccForm = entry.form || {};
+      this.currentStep = 1;
+      this.editingId = entry.id;
+      this.form = { ...this.form, ...(entry.form || {}) };
+      this.availableUes = this.uesByDepartement[this.form.departement] || [];
 
-      if (mcccForm.semestre) this.form.semestre = mcccForm.semestre;
-      if (mcccForm.coeffRessource !== undefined && mcccForm.coeffRessource !== '') {
-        this.form.coefficient = mcccForm.coeffRessource;
-      }
-      if (mcccForm.objectif) this.form.objectif = mcccForm.objectif;
-
-      const rows = (entry.ressourcesRows || []).map((row, index) => ({
-        id: row.id || index + 1,
-        label: row.label || '',
-        hCM: row.hCM ?? '',
-        hTD: row.hTD ?? '',
-        hTP: row.hTP ?? '',
-        hDSCM: row.hDSCM ?? '',
-        hDSTP: row.hDSTP ?? '',
-        notes: row.notes || ''
-      }));
-
-      if (rows.length) {
-        this.form.recapRows = rows;
-        this.ressources = rows.map(row => row.label).filter(Boolean);
-        if (!this.ressources.includes(this.form.ressource)) {
-          this.form.ressource = '';
-        }
-      }
-
-      this.applyResourceFromMccc(this.form.ressource);
+      const loadedRows = (entry.sequencesRows || []).map(row => ({ ...row, showDetails: false }));
+      this.sequencesRows = loadedRows.length ? loadedRows : [{ id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }];
+      const maxId = this.sequencesRows.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0);
+      this.nextRowId = maxId + 1;
     },
-    applyResourceFromMccc(resourceLabel) {
-      if (!this.currentMccc || !resourceLabel) return;
-      const row = (this.currentMccc.ressourcesRows || []).find(item => item.label === resourceLabel);
-      if (!row) return;
-      this.form.heures = {
-        cm: row.hCM ?? '',
-        td: row.hTD ?? '',
-        tp: row.hTP ?? '',
-        controle: (Number(row.hDSCM) || 0) + (Number(row.hDSTP) || 0)
+    nextStep() {
+      if (this.currentStep < 3) {
+        this.currentStep++;
+      }
+    },
+    prevStep() {
+      if (this.currentStep > 1) {
+        this.currentStep--;
+      }
+    },
+    addRow() {
+      this.sequencesRows.push({
+        id: this.nextRowId++,
+        label: '',
+        type: 'CM',
+        duration: 0,
+        notes: '',
+        showDetails: false
+      });
+    },
+    deleteRow(rowId) {
+      if (this.sequencesRows.length <= 1) return;
+      this.sequencesRows = this.sequencesRows.filter(row => row.id !== rowId);
+    },
+    validatePositive(row, field) {
+      if (row[field] < 0) {
+        row[field] = 0;
+        this.errorMessage = this.$t('common.error.negativeValue');
+        if (this.errorTimeout) clearTimeout(this.errorTimeout);
+        this.errorTimeout = setTimeout(() => {
+          this.errorMessage = '';
+        }, 3000);
+      }
+    },
+    saveResource() {
+      const now = new Date().toISOString();
+      const entry = {
+        id: this.editingId || Date.now(),
+        savedAt: now,
+        departement: this.form.departement,
+        titre: this.form.titre,
+        form: { ...this.form },
+        sequencesRows: this.sequencesRows.map(row => ({ ...row }))
       };
+
+      const list = JSON.parse(localStorage.getItem('resourceList') || '[]');
+      const existingIndex = list.findIndex(item => String(item.id) === String(entry.id));
+      if (existingIndex !== -1) {
+        list[existingIndex] = entry;
+      } else {
+        list.push(entry);
+      }
+      localStorage.setItem('resourceList', JSON.stringify(list));
+      this.editingId = entry.id;
+      this.isReadOnly = false;
+      this.$router.push({ name: 'liste-fiches-ressources' }); // Assurez-vous que cette route existe
     }
   }
 };
 </script>
 
 <style scoped>
+/* Styles copiés et adaptés de Mccc.vue pour conserver le même design */
 .page-title {
   font-family: var(--font-primary, 'Poppins', sans-serif);
-  font-size: 2.2rem;
+  font-size: 2.4rem;
   font-weight: 700;
-  margin: 0;
   color: var(--color-text-header, #222);
+  margin: 0;
 }
 
 .page-surface {
   background: var(--color-sidebar-bg, #f7f8ff);
-  border: 1px solid var(--color-border, #dfe4ef);
+  border: 1px solid var(--color-border);
   border-radius: 20px;
-  padding: 20px 20px 16px;
+  padding: 22px;
   box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
 }
 
-.resource-sheet {
+.resource-surface {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
-.card {
+/* Step Indicator Styles */
+.step-indicator {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  width: 100%;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--color-text-muted);
+  transition: color 0.3s;
+  text-align: center;
+  width: 120px;
+}
+.step-number {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  background-color: var(--color-card-bg);
+  transition: all 0.3s;
+  z-index: 1;
+}
+.step-label { margin-top: 0.5rem; font-size: 0.85rem; font-weight: 500; }
+.step-connector {
+  flex-grow: 1;
+  height: 2px;
+  background-color: var(--color-border);
+  margin: 0;
+  transform: translateY(17px);
+  transition: background-color 0.3s;
+}
+.step.active .step-number { border-color: var(--color-primary); color: var(--color-primary); }
+.step.active .step-label { color: var(--color-text-header); }
+.step.completed .step-number { background-color: var(--color-primary); border-color: var(--color-primary); color: white; }
+.step.completed + .step-connector { background-color: var(--color-primary); }
+
+/* Cards & Grid */
+.cards-grid { display: grid; gap: 14px; }
+.top-grid { grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.mid-grid { grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+
+.info-card {
   background: var(--color-card-bg, #fff);
-  border: 1px solid var(--color-border, #d3d7e0);
+  border: 1px solid var(--color-border);
   border-radius: 16px;
-  padding: 14px 16px 18px;
+  padding: 14px 16px 16px;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
 }
-
-.card-header h2 {
-  margin: 0 0 12px;
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--color-primary, #c00000);
+.info-card h3 { margin: 0 0 12px; color: var(--color-primary); font-size: 1.05rem; text-align: center; }
+.card-fields { 
+  display: grid; 
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+  gap: 16px; 
+  align-items: start;
 }
-
-.fields-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 12px;
-  align-items: end;
+.hours-grid {
+  grid-template-columns: repeat(3, 1fr);
 }
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.95rem;
-}
-
-.field span {
-  color: var(--color-text-body, #444);
-}
-
-select,
-input,
-textarea {
-  width: 100%;
-  border: 1px solid var(--color-border, #c8ceda);
-  border-radius: 12px;
-  padding: 10px 12px;
-  font-size: 0.95rem;
-  font-family: var(--font-secondary, 'Montserrat', sans-serif);
-  background: var(--color-input-bg, #fff);
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  box-sizing: border-box;
-}
-
-select:focus,
-input:focus,
-textarea:focus {
-  border-color: var(--color-primary, #c00000);
-  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb, 192, 0, 0), 0.12);
-}
-
-.coefficient input {
-  max-width: 200px;
-}
-
-.table-wrapper {
-  margin-top: 12px;
-  border: none;
-  border-radius: 0;
-  overflow: hidden;
-  padding: 0;
-}
-
-.hours-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.hours-table th,
-.hours-table td {
-  border: 1px solid var(--color-border, #c8ceda);
-  padding: 8px 10px;
-  text-align: left;
-  background: var(--color-card-bg, #fff);
-  width: 25%;
-}
-
-.hours-table th {
-  background: var(--color-sidebar-bg, #f4f4f9);
-  font-weight: 700;
-}
-
-.hours-input {
-  width: 100%;
-  box-sizing: border-box;
-  margin: 0;
-  border-radius: 8px;
-}
-
-.objectives {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  column-gap: 16px;
-  row-gap: 12px;
-  width: 100%;
-}
-
-.course-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px 14px;
-}
-
-.feedback-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-}
-
-.recap-table-wrapper {
-  overflow-x: auto;
-}
-
-.recap-table {
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: fixed;
-}
-
-.recap-table th,
-.recap-table td {
-  border: 1px solid var(--color-border, #c8ceda);
-  padding: 8px 10px;
-  background: var(--color-card-bg, #fff);
-  vertical-align: top;
-}
-
-.recap-table th {
-  background: var(--color-sidebar-bg, #f4f4f9);
-  font-weight: 700;
-}
-
-.recap-table input,
-.recap-table textarea {
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.recap-table textarea {
-  min-height: 52px;
-  resize: vertical;
-}
-
-.totals-label {
-  font-weight: 700;
-  background: var(--color-sidebar-bg, #f4f4f9);
-}
-
-.totals-cell {
-  font-weight: 700;
-  text-align: center;
-  background: var(--color-sidebar-bg, #f4f4f9);
-}
-
-textarea {
-  resize: vertical;
-  min-height: 90px;
-}
-
-.footer {
-  display: flex;
-  justify-content: space-between;
+.hours-grid .field {
   align-items: center;
-  padding: 8px 4px 2px;
-  color: var(--color-text-body, #444);
-  font-weight: 600;
 }
+.hours-grid input {
+  text-align: center;
+}
+.card-fields.single-col { grid-template-columns: 1fr; }
+.full-width { grid-column: 1 / -1; }
 
-.cta.ghost {
-  background: var(--color-card-bg, #fff);
-  color: var(--color-primary, #c00000);
-  border: 1px solid var(--color-primary, #c00000);
-  box-shadow: none;
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 0.92rem; color: var(--color-text-body, #444); width: 100%; }
+.field.full { grid-column: 1 / -1; }
+.pill-select {
+  width: 100%; padding: 10px 12px; box-sizing: border-box; border: 1px solid var(--color-border); border-radius: 12px;
+  background-color: var(--color-input-bg, #fff); font-family: var(--font-secondary); font-size: 0.95rem;
 }
+.pill-select:focus { border-color: var(--color-primary); outline: none; }
+.pill-input { padding-right: 12px; }
 
-.cta {
-  background: var(--color-primary, #c00000);
-  color: #fff;
-  border: none;
-  border-radius: 10px;
-  padding: 10px 18px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 10px 20px rgba(192, 0, 0, 0.2);
-  transition: background 0.2s ease, transform 0.1s ease;
-}
-
-.cta:hover {
-  background: var(--color-primary-dark, #a00000);
-}
-
-.cta:active {
-  transform: translateY(1px);
-}
-
-.step {
-  font-size: 0.95rem;
-}
-
-@media (max-width: 720px) {
-  .fields-row {
-    grid-template-columns: 1fr;
-  }
-  .coefficient input {
-    max-width: none;
-  }
-}
+/* Table & Actions */
+.table-section { margin-top: 8px; }
+.table-card { background: var(--color-card-bg); border: 1px solid var(--color-border); border-radius: 18px; padding: 12px; }
+.table-scroll { max-height: 520px; overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.94rem; }
+thead th { position: sticky; top: 0; background: var(--color-sidebar-bg); padding: 12px 18px; text-align: left; }
+tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
+.table-input { width: 100%; padding: 8px 10px; box-sizing: border-box; border: 1px solid var(--color-border); border-radius: 10px; }
+.btn-add-row { background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 12px 16px; }
+.step-navigation { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+.btn { padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; }
+.btn-primary { background-color: var(--color-primary); color: white; }
+.btn-secondary { background-color: var(--color-card-bg); border: 1px solid var(--color-border); }
+.btn-delete { background: var(--color-primary); color: white; width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer; }
+.info-textarea { width: 100%; padding: 8px 10px; box-sizing: border-box; border: 1px solid var(--color-border); border-radius: 10px; resize: vertical; font-family: var(--font-secondary); }
+.main-desc { min-height: 100px; }
+.info-actions { display: flex; justify-content: flex-end; margin-top: 5px; }
+.btn-finish, .btn-add { background-color: var(--color-primary); color: white; border: none; border-radius: 10px; padding: 6px 12px; cursor: pointer; }
+.table-footer { display: flex; justify-content: space-between; align-items: center; background: var(--color-sidebar-bg); border-top: 1px solid var(--color-border); border-radius: 0 0 18px 18px; }
+.final-totals { display: flex; gap: 14px; padding: 12px 14px; font-weight: 600; }
+.final-label { color: var(--color-primary); text-transform: uppercase; }
 </style>

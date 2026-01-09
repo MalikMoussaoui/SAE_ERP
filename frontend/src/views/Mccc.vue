@@ -68,7 +68,7 @@
               </select>
             </label>
             <label class="field">
-              <span>Ressource (à écrire)</span>
+              <span>{{ $t('mccc.resourceToWrite') }}</span>
               <input v-model="form.ressource" class="pill-select pill-input" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
             </label>
             <label class="field">
@@ -497,7 +497,7 @@ export default {
     validatePositive(row, field) {
       if (row[field] < 0) {
         row[field] = 0;
-        this.errorMessage = 'Impossible de saisir une valeur negative.';
+        this.errorMessage = this.$t('common.error.negativeValue');
         if (this.errorTimeout) clearTimeout(this.errorTimeout);
         this.errorTimeout = setTimeout(() => {
           this.errorMessage = '';
@@ -1039,20 +1039,3 @@ tr:nth-child(even) td {
   }
 }
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -6,8 +6,8 @@
     "mccc": "MCCC",
     "mcccList": "MCCC List",
     "tac": "TAC",
-    "teachers": "Teachers & Contractors",
-    "roleManagement": "User Management",
+    "teachers": "Teachers and Contractors",
+    "roleManagement": "Role Management",
     "settings": "Settings",
     "help": "Help"
   },
@@ -16,10 +16,10 @@
     "logout": "Logout"
   },
   "dashboard": {
-    "greeting": "Hello, [FirstName] [LastName]",
+    "greeting": "Hello, {firstName} {lastName}",
     "title": "Dashboard",
     "fillSheet": "Fill the sheet",
-    "subject": "Advanced-level algorithmics",
+    "subject": "Advanced Algorithmics",
     "semester": "Semester 3",
     "complete": "Complete",
     "notifications": "Notifications",
@@ -28,18 +28,18 @@
   "settings": {
     "title": "Settings",
     "appearance": "Appearance",
-    "appTheme": "Application Theme",
+    "appTheme": "App Theme",
     "themeSubtitle": "Choose a light or dark theme for the interface.",
     "light": "Light",
     "dark": "Dark",
     "language": "Language",
-    "appLanguage": "Application Language",
+    "appLanguage": "App Language",
     "languageSubtitle": "Choose the interface language.",
-    "french": "Français",
+    "french": "French",
     "english": "English"
   },
   "roleManagement": {
-    "title": "User Management",
+    "title": "Manager",
     "searchPlaceholder": "Search by first name, last name, etc.",
     "filterByPosition": "Filter by position",
     "professor": "Professor",
@@ -50,8 +50,8 @@
       "departments": "Departments",
       "position": "Position",
       "action": "Action",
-      "edit": "[Edit]",
-      "delete": "[Delete]",
+      "edit": "Edit",
+      "delete": "Delete",
       "noUserFound": "No user found."
     },
     "addUser": "Add a user"
@@ -60,11 +60,11 @@
     "title": "Please authenticate",
     "usernamePlaceholder": "Username",
     "passwordPlaceholder": "Password",
-    "connect": "Connect",
+    "connect": "Login",
     "error": "Incorrect username or password."
   },
   "addUser": {
-    "headerTitle": "User Management",
+    "headerTitle": "Manager",
     "formTitle": "Add/Edit a user",
     "firstName": "First Name",
     "firstNamePlaceholder": "Enter first name",
@@ -72,7 +72,7 @@
     "lastNamePlaceholder": "Enter last name",
     "position": "Position",
     "positionPlaceholder": "Enter position",
-    "department": "Departments",
+    "department": "Department",
     "departmentPlaceholder": "Enter department",
     "validate": "Validate",
     "back": "Back"
@@ -91,7 +91,7 @@
     "code": "Code",
     "evaluationType": "Evaluation Type",
     "ue": "UE",
-    "selectUE": "Select the UE",
+    "selectUE": "Select UE",
     "competenceLevel": "Competence Level",
     "choose": "Choose",
     "coefficient": "Coefficient",
@@ -113,7 +113,7 @@
       "hTP": "Hours TP",
       "hDSCM": "Hours DS CM",
       "hDSTP": "Hours DS TP",
-      "addInfo": "Add Information",
+      "addInfo": "Add information",
       "action": "Action"
     },
     "resourcePlaceholder": "Resource {id}",
@@ -121,37 +121,56 @@
     "finish": "Finish",
     "noInfo": "No information",
     "edit": "Edit",
-    "addInfo": "Add Information",
+    "addInfo": "Add info",
     "totalHours": "TOTAL HOURS",
     "addRow": "Add a resource",
     "deleteRow": "Delete row",
     "continue": "Continue",
     "back": "Back",
     "save": "Save",
-    "saveMissingFields": "Please fill department and UE before saving.",
+    "saveMissingFields": "Please fill in the department and UE before saving.",
     "step1_label": "General Information",
-    "step2_label": "Details & Rules",
-    "step3_label": "Resources Table"
+    "step2_label": "Details and Rules",
+    "step3_label": "Resources Table",
+    "resourceToWrite": "Resource (to write)"
   },
   "mcccList": {
-    "empty": "No MCCC sheet saved yet.",
-    "savedAt": "Saved on",
+    "empty": "No MCCC sheet saved for now.",
+    "savedAt": "Saved at",
     "department": "Department",
     "ue": "UE"
   },
-  "help": {
-    "title": "Help Center",
-    "subtitle": "Need assistance?",
-    "description": "Find answers to frequently asked questions or contact technical support.",
-    "faq": "Frequently Asked Questions",
-    "contact": "Contact Support",
-    "email": "Email",
-    "phone": "Phone",
-    "q1": "How do I reset my password?",
-    "a1": "For security reasons, please contact your system administrator or the IUT IT department.",
-    "q2": "Where can I find resource sheets?",
-    "a2": "In the left sidebar menu, click on the \"Resource Sheets\" tab.",
-    "q3": "How do I change the application theme?",
-    "a3": "Go to \"Settings\" and select Light or Dark theme in the Appearance section."
+  "resourceSheet": {
+    "step1_label": "Identification",
+    "step2_label": "Volume & Details",
+    "step3_label": "Sequences",
+    "generalInfo": "General Information",
+    "resourceTitle": "Resource Title",
+    "resourceCode": "Code (ex: R1.01)",
+    "semester": "Semester",
+    "ue": "Attached UE",
+    "hours": "Hourly Volume",
+    "hCM": "Hours CM",
+    "hTD": "Hours TD",
+    "hTP": "Hours TP",
+    "description": "Description / Objectives",
+    "descriptionPlaceholder": "Describe objectives and content briefly...",
+    "table": {
+      "sequence": "Sequence / Chapter",
+      "type": "Type",
+      "duration": "Duration (h)",
+      "details": "Details",
+      "action": "Action"
+    },
+    "addSequence": "Add a sequence"
+  },
+  "common": {
+    "loading": "Loading...",
+    "connecting": "Connecting...",
+    "error": {
+      "negativeValue": "Cannot enter a negative value.",
+      "serverUnreachable": "Unable to contact the server.",
+      "generic": "An error occurred."
+    }
   }
 }

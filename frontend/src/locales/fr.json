@@ -131,12 +131,46 @@
     "saveMissingFields": "Veuillez renseigner le departement et l'UE avant d'enregistrer.",
     "step1_label": "Informations generales",
     "step2_label": "Details et regles",
-    "step3_label": "Tableau des ressources"
+    "step3_label": "Tableau des ressources",
+    "resourceToWrite": "Ressource (à écrire)"
   },
   "mcccList": {
     "empty": "Aucune fiche MCCC enregistree pour le moment.",
     "savedAt": "Enregistre le",
     "department": "Departement",
     "ue": "UE"
+  },
+  "resourceSheet": {
+    "step1_label": "Identification",
+    "step2_label": "Volume & Détails",
+    "step3_label": "Séquences",
+    "generalInfo": "Informations générales",
+    "resourceTitle": "Titre de la ressource",
+    "resourceCode": "Code (ex: R1.01)",
+    "semester": "Semestre",
+    "ue": "UE de rattachement",
+    "hours": "Volume Horaire",
+    "hCM": "Heures CM",
+    "hTD": "Heures TD",
+    "hTP": "Heures TP",
+    "description": "Description / Objectifs",
+    "descriptionPlaceholder": "Décrire les objectifs et le contenu succinct...",
+    "table": {
+      "sequence": "Séquence / Chapitre",
+      "type": "Type",
+      "duration": "Durée (h)",
+      "details": "Détails",
+      "action": "Action"
+    },
+    "addSequence": "Ajouter une séquence"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "connecting": "Connexion...",
+    "error": {
+      "negativeValue": "Impossible de saisir une valeur négative.",
+      "serverUnreachable": "Impossible de contacter le serveur.",
+      "generic": "Une erreur est survenue."
+    }
   }
 }

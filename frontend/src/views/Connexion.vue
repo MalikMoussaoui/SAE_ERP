@@ -23,7 +23,7 @@
         </div>
 
         <button type="submit" :disabled="isLoading">
-          {{ isLoading ? 'Connexion...' : $t('login.connect') }}
+          {{ isLoading ? $t('common.connecting') : $t('login.connect') }}
         </button>
       </form>
 
@@ -77,9 +77,9 @@ export default {
           this.errorMessage = this.$t('login.error');
         } else if (error.request) {
           // Le serveur n'a pas répondu (CORS ou serveur éteint)
-          this.errorMessage = "Impossible de contacter le serveur.";
+          this.errorMessage = this.$t('common.error.serverUnreachable');
         } else {
-          this.errorMessage = "Une erreur est survenue.";
+          this.errorMessage = this.$t('common.error.generic');
         }
       } finally {
         this.isLoading = false;

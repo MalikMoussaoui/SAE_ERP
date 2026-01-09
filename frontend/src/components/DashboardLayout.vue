@@ -228,7 +228,22 @@ html[data-theme="dark"] {
   background-color: var(--color-hover-bg);
 }
 
-.nav-links { list-style: none; padding: 0; margin: 0 0 auto 0; }
+.nav-links { 
+  list-style: none; 
+  padding: 0; 
+  margin: 0; 
+  flex: 1; /* Prend l'espace disponible pour pousser le footer en bas */
+  overflow-y: auto; /* Permet le scroll si le menu est trop grand */
+  scrollbar-width: thin; /* Firefox: barre fine */
+  scrollbar-color: var(--color-border) transparent;
+}
+.nav-links::-webkit-scrollbar { 
+  width: 4px; /* Largeur pour Webkit */
+}
+.nav-links::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 4px;
+}
 .nav-links li { margin-bottom: 0.5rem; }
 
 .nav-links a,
