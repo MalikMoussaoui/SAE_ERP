@@ -1,12 +1,16 @@
 import { createApp } from 'vue'
+import { createI18n } from 'vue-i18n'
 import App from './App.vue'
-
 import router from './router'
-import i18n from './i18n'
+import { messages } from './locales/translations'
 
-// Applique le thème sauvegardé dès le chargement pour éviter un flash de contenu
-const savedTheme = localStorage.getItem('theme') || 'light';
-document.documentElement.setAttribute('data-theme', savedTheme);
+const i18n = createI18n({
+    legacy: true,
+    globalInjection: true,
+    locale: 'fr',
+    fallbackLocale: 'fr',
+    messages: messages
+})
 
 const app = createApp(App)
 
