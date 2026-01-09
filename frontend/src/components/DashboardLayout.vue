@@ -8,11 +8,36 @@
       </div>
 
       <ul class="nav-links">
-        <li v-for="link in navLinks" :key="link.path">
-          <router-link :to="link.path" :class="{ active: isActive(link.path) }">
-            <img :src="link.icon" :alt="link.text" class="nav-icon" />
-            <span class="nav-text">{{ link.text }}</span>
-          </router-link>
+        <li v-for="item in navItems" :key="item.key || item.path">
+          <template v-if="item.type === 'group'">
+            <button
+              type="button"
+              class="nav-group"
+              :class="{ open: isGroupOpen(item.key), active: isGroupActive(item) }"
+              @click="toggleGroup(item.key)"
+            >
+              <img :src="item.icon" :alt="item.text" class="nav-icon" />
+              <span class="nav-text">{{ item.text }}</span>
+              <span class="nav-caret" aria-hidden="true">
+                <svg viewBox="0 0 20 20" focusable="false" aria-hidden="true">
+                  <path d="M7 4l7 6-7 6V4z" />
+                </svg>
+              </span>
+            </button>
+            <ul v-if="isGroupOpen(item.key)" class="nav-sublist">
+              <li v-for="child in item.children" :key="child.path">
+                <router-link :to="child.path" :class="{ active: isActive(child.path) }">
+                  <span class="nav-text">{{ child.text }}</span>
+                </router-link>
+              </li>
+            </ul>
+          </template>
+          <template v-else>
+            <router-link :to="item.path" :class="{ active: isActive(item.path) }">
+              <img :src="item.icon" :alt="item.text" class="nav-icon" />
+              <span class="nav-text">{{ item.text }}</span>
+            </router-link>
+          </template>
         </li>
       </ul>
 
@@ -58,21 +83,41 @@ export default {
   name: 'DashboardLayout',
   data() {
     return {
-      isSidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true'
+      isSidebarCollapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+      openGroups: {
+        resourceSheets: false,
+        mccc: false
+      }
     };
   },
   computed: {
-    navLinks() {
+    navItems() {
       return [
-        { path: '/dashboard', text: this.$t('nav.dashboard'), icon: iconDashboard },
-        { path: '/fiche-ressource', text: this.$t('nav.resourceSheets'), icon: iconFiche },
-        { path: '/liste-fiches-ressources', text: this.$t('nav.resourceSheetsList'), icon: iconFiche },
-        { path: '/mccc', text: this.$t('nav.mccc'), icon: iconMcc },
-        { path: '/liste-mccc', text: this.$t('nav.mcccList'), icon: iconMcc },
-        { path: '/tac', text: this.$t('nav.tac'), icon: iconTac },
-        { path: '/enseignants', text: this.$t('nav.teachers'), icon: iconEnseignant },
-        { path: '/user-management', text: this.$t('nav.roleManagement'), icon: iconRole },
-        { path: '/settings', text: this.$t('nav.settings'), icon: iconParametre },
+        { type: 'link', path: '/dashboard', text: this.$t('nav.dashboard'), icon: iconDashboard },
+        {
+          type: 'group',
+          key: 'resourceSheets',
+          text: this.$t('nav.resourceSheets'),
+          icon: iconFiche,
+          children: [
+            { path: '/fiche-ressource', text: this.$t('nav.resourceSheets') },
+            { path: '/liste-fiches-ressources', text: this.$t('nav.resourceSheetsList') }
+          ]
+        },
+        {
+          type: 'group',
+          key: 'mccc',
+          text: this.$t('nav.mccc'),
+          icon: iconMcc,
+          children: [
+            { path: '/mccc', text: this.$t('nav.mccc') },
+            { path: '/liste-mccc', text: this.$t('nav.mcccList') }
+          ]
+        },
+        { type: 'link', path: '/tac', text: this.$t('nav.tac'), icon: iconTac },
+        { type: 'link', path: '/enseignants', text: this.$t('nav.teachers'), icon: iconEnseignant },
+        { type: 'link', path: '/user-management', text: this.$t('nav.roleManagement'), icon: iconRole },
+        { type: 'link', path: '/settings', text: this.$t('nav.settings'), icon: iconParametre },
       ]
     }
   },
@@ -86,10 +131,36 @@ export default {
     }
     link.href = logoG;
   },
+  watch: {
+    '$route.path': {
+      immediate: true,
+      handler() {
+        this.syncOpenGroups();
+      }
+    }
+  },
   methods: {
     isActive(path) {
       if (path === '#') return false;
       return this.$route.path === path || this.$route.path.startsWith(path + '/');
+    },
+    isGroupActive(item) {
+      return item.children.some(child => this.isActive(child.path));
+    },
+    isGroupOpen(key) {
+      return this.openGroups[key];
+    },
+    toggleGroup(key) {
+      this.openGroups[key] = !this.openGroups[key];
+    },
+    syncOpenGroups() {
+      this.navItems
+        .filter(item => item.type === 'group')
+        .forEach(item => {
+          if (this.isGroupActive(item)) {
+            this.openGroups[item.key] = true;
+          }
+        });
     },
     toggleSidebar() {
       this.isSidebarCollapsed = !this.isSidebarCollapsed;
@@ -247,6 +318,7 @@ html[data-theme="dark"] {
 .nav-links li { margin-bottom: 0.5rem; }
 
 .nav-links a,
+.nav-group,
 .sidebar-footer a {
   display: flex;
   align-items: center;
@@ -258,6 +330,41 @@ html[data-theme="dark"] {
   transition: background-color 0.2s ease, color 0.2s ease;
   white-space: nowrap;
   overflow: hidden;
+}
+
+.nav-group {
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+
+.nav-caret {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+.nav-caret svg {
+  width: 14px;
+  height: 14px;
+  fill: currentColor;
+  display: block;
+}
+
+.nav-group.open .nav-caret {
+  transform: rotate(90deg);
+}
+
+.nav-sublist {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.nav-sublist a {
+  padding: 0.5rem 1rem 0.5rem 2.75rem;
+  font-size: 0.95rem;
 }
 
 .nav-icon,
@@ -275,8 +382,8 @@ html[data-theme="dark"] {
               width var(--sidebar-transition-duration) var(--sidebar-transition-timing);
 }
 
-.nav-links a:hover, .sidebar-footer a:hover { background-color: var(--color-hover-bg); }
-.nav-links a.active, .sidebar-footer a.active { background-color: var(--color-active-bg); color: var(--color-active-text); font-weight: 600; }
+.nav-links a:hover, .nav-group:hover, .sidebar-footer a:hover { background-color: var(--color-hover-bg); }
+.nav-links a.active, .nav-group.active, .sidebar-footer a.active { background-color: var(--color-active-bg); color: var(--color-active-text); font-weight: 600; }
 
 .sidebar-footer {
   margin-top: 1rem;
@@ -290,11 +397,14 @@ html[data-theme="dark"] {
 .dashboard-layout.sidebar-collapsed .nav-text { opacity: 0; width: 0; }
 .dashboard-layout.sidebar-collapsed .toggle-button { transform: translateY(-50%) rotate(180deg); border-left: 1px solid var(--color-border); }
 .dashboard-layout.sidebar-collapsed .nav-links a,
+.dashboard-layout.sidebar-collapsed .nav-group,
 .dashboard-layout.sidebar-collapsed .sidebar-footer a {
   padding-left: 1rem;
   padding-right: 1rem;
 }
 .dashboard-layout.sidebar-collapsed .nav-icon { margin-right: 0; }
+.dashboard-layout.sidebar-collapsed .nav-caret,
+.dashboard-layout.sidebar-collapsed .nav-sublist { display: none; }
 
 .main-content {
   flex-grow: 1;

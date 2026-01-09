@@ -1,7 +1,7 @@
 {
   "nav": {
     "dashboard": "Tableau de bord",
-    "resourceSheets": "Fiches ressources",
+    "resourceSheets": "Fiche ressource",
     "resourceSheetsList": "Liste des fiches ressources",
     "mccc": "MCCC",
     "mcccList": "Liste MCCC",
@@ -132,7 +132,7 @@
     "step1_label": "Informations generales",
     "step2_label": "Details et regles",
     "step3_label": "Tableau des ressources",
-    "resourceToWrite": "Ressource (à écrire)"
+    "resourceToWrite": "Ressource (\u00e0 \u00e9crire)"
   },
   "mcccList": {
     "empty": "Aucune fiche MCCC enregistree pour le moment.",
@@ -142,9 +142,9 @@
   },
   "resourceSheet": {
     "step1_label": "Identification",
-    "step2_label": "Volume & Détails",
-    "step3_label": "Séquences",
-    "generalInfo": "Informations générales",
+    "step2_label": "Volume & D\u00e9tails",
+    "step3_label": "S\u00e9quences",
+    "generalInfo": "Informations g\u00e9n\u00e9rales",
     "resourceTitle": "Titre de la ressource",
     "resourceCode": "Code (ex: R1.01)",
     "semester": "Semestre",
@@ -154,21 +154,21 @@
     "hTD": "Heures TD",
     "hTP": "Heures TP",
     "description": "Description / Objectifs",
-    "descriptionPlaceholder": "Décrire les objectifs et le contenu succinct...",
+    "descriptionPlaceholder": "D\u00e9crire les objectifs et le contenu succinct...",
     "table": {
-      "sequence": "Séquence / Chapitre",
+      "sequence": "S\u00e9quence / Chapitre",
       "type": "Type",
-      "duration": "Durée (h)",
-      "details": "Détails",
+      "duration": "Dur\u00e9e (h)",
+      "details": "D\u00e9tails",
       "action": "Action"
     },
-    "addSequence": "Ajouter une séquence"
+    "addSequence": "Ajouter une s\u00e9quence"
   },
   "common": {
     "loading": "Chargement...",
     "connecting": "Connexion...",
     "error": {
-      "negativeValue": "Impossible de saisir une valeur négative.",
+      "negativeValue": "Impossible de saisir une valeur n\u00e9gative.",
       "serverUnreachable": "Impossible de contacter le serveur.",
       "generic": "Une erreur est survenue."
     }
