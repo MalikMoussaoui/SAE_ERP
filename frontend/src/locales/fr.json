@@ -172,5 +172,14 @@
       "serverUnreachable": "Impossible de contacter le serveur.",
       "generic": "Une erreur est survenue."
     }
+  },
+  "help": {
+    "title": "Centre d'Aide",
+    "q1": "Comment créer une nouvelle fiche MCCC ?",
+    "a1": "Naviguez vers la section MCCC via le menu latéral, puis suivez les étapes du formulaire.",
+    "q2": "Comment gérer les utilisateurs ?",
+    "a2": "La section 'Gestion des rôles' permet aux administrateurs d'ajouter ou modifier des comptes.",
+    "q3": "Puis-je modifier une fiche validée ?",
+    "a3": "Oui, en accédant à la liste des fiches et en cliquant sur l'icône d'édition."
   }
 }
