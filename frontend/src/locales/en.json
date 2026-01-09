@@ -1,7 +1,7 @@
 {
   "nav": {
     "dashboard": "Dashboard",
-    "resourceSheets": "Resource Sheets",
+    "resourceSheets": "Resource Sheet",
     "resourceSheetsList": "Resource Sheets List",
     "mccc": "MCCC",
     "mcccList": "MCCC List",
@@ -172,5 +172,14 @@
       "serverUnreachable": "Unable to contact the server.",
       "generic": "An error occurred."
     }
+  },
+  "help": {
+    "title": "Help Center",
+    "q1": "How to create a new MCCC sheet?",
+    "a1": "Navigate to the MCCC section via the sidebar, then follow the form steps.",
+    "q2": "How to manage users?",
+    "a2": "The 'Role Management' section allows administrators to add or edit accounts.",
+    "q3": "Can I edit a validated sheet?",
+    "a3": "Yes, by accessing the list of sheets and clicking the edit icon."
   }
 }
