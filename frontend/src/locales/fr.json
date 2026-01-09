@@ -138,5 +138,20 @@
     "savedAt": "Enregistre le",
     "department": "Departement",
     "ue": "UE"
+  },
+  "help": {
+    "title": "Centre d'aide",
+    "subtitle": "Besoin d'aide ?",
+    "description": "Trouvez des reponses aux questions frequentes ou contactez le support technique.",
+    "faq": "Questions frequentes",
+    "contact": "Contacter le support",
+    "email": "Email",
+    "phone": "Telephone",
+    "q1": "Comment reinitialiser mon mot de passe ?",
+    "a1": "Pour des raisons de securite, contactez votre administrateur systeme ou le service informatique de l'IUT.",
+    "q2": "Ou trouver les fiches ressources ?",
+    "a2": "Dans le menu de gauche, cliquez sur l'onglet \"Fiches ressources\".",
+    "q3": "Comment changer le theme de l'application ?",
+    "a3": "Allez dans \"Parametres\" et choisissez Clair ou Sombre dans la section Apparence."
   }
 }
