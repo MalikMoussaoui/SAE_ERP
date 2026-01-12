@@ -26,23 +26,6 @@
       <!-- ÉTAPE 1 : Identification -->
       <section v-if="showAllSteps || currentStep === 1" class="cards-grid top-grid">
         <div class="info-card">
-          <h3>{{ $t('resourceSheet.generalInfo') }}</h3>
-          <div class="card-fields">
-            <label class="field full">
-              <span>{{ $t('mccc.department') }}</span>
-              <select v-model="form.departement" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
-                <option v-for="option in departements" :key="option" :value="option">{{ option }}</option>
-              </select>
-            </label>
-            <label class="field full">
-              <span>{{ $t('resourceSheet.resourceTitle') }}</span>
-              <input v-model="form.titre" class="pill-select pill-input" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
-            </label>
-          </div>
-        </div>
-
-        <div class="info-card">
           <h3>{{ $t('mccc.resourcesAndSAE') }}</h3>
           <div class="card-fields">
             <label class="field">
@@ -62,6 +45,23 @@
                 <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
                 <option v-for="option in availableUes" :key="option" :value="option">{{ option }}</option>
               </select>
+            </label>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <h3>{{ $t('resourceSheet.generalInfo') }}</h3>
+          <div class="card-fields">
+            <label class="field full">
+              <span>{{ $t('mccc.department') }}</span>
+              <select v-model="form.departement" class="pill-select" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
+                <option v-for="option in departements" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </label>
+            <label class="field full">
+              <span>{{ $t('resourceSheet.resourceTitle') }}</span>
+              <input v-model="form.titre" class="pill-select pill-input" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
             </label>
           </div>
         </div>
@@ -191,6 +191,7 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import axios from 'axios';
 
 export default {
   name: 'FicheRessourceView',
@@ -243,7 +244,10 @@ export default {
       ],
       nextRowId: 2,
       errorMessage: '',
-      errorTimeout: null
+      errorTimeout: null,
+      mcccEntries: null,
+      lastAutoFillKey: null,
+      isAutoFillLoading: false
     };
   },
   created() {
@@ -262,6 +266,18 @@ export default {
     },
     '$route.query.mode'() {
       this.isReadOnly = this.$route.query.mode === 'view';
+    },
+    'form.departement'() {
+      this.maybeAutoFillFromMccc();
+    },
+    'form.code'() {
+      this.maybeAutoFillFromMccc();
+    },
+    'form.semestre'() {
+      this.maybeAutoFillFromMccc();
+    },
+    'form.ue'() {
+      this.maybeAutoFillFromMccc();
     }
   },
   computed: {
@@ -273,6 +289,153 @@ export default {
     }
   },
   methods: {
+    normalizeValue(value) {
+      if (value === null || value === undefined) return '';
+      return String(value).trim().toLowerCase();
+    },
+    toNumber(value) {
+      if (value === null || value === undefined) return 0;
+      const normalized = String(value).replace(',', '.');
+      const parsed = Number(normalized);
+      return Number.isFinite(parsed) ? parsed : 0;
+    },
+    async fetchMcccEntries() {
+      if (this.mcccEntries) return this.mcccEntries;
+
+      const response = await axios.get('/api/mccc');
+      this.mcccEntries = response.data.map((entry) => {
+        const form = entry.form || {};
+        return {
+          ...entry,
+          departement: entry.departement || entry.department || form.departement || '',
+          ue: entry.ue || form.ue || '',
+          semestre: entry.semestre || entry.semester || form.semestre || '',
+          code: form.code || form.ressource || '',
+          savedAt: entry.savedAt || entry.saved_at || form.savedAt || ''
+        };
+      });
+
+      return this.mcccEntries;
+    },
+    buildAutoFillKey() {
+      return [
+        this.normalizeValue(this.form.departement),
+        this.normalizeValue(this.form.code),
+        this.normalizeValue(this.form.semestre),
+        this.normalizeValue(this.form.ue)
+      ].join('|');
+    },
+    isDefaultSequences() {
+      return this.sequencesRows.length === 1
+        && !this.sequencesRows[0].label
+        && this.toNumber(this.sequencesRows[0].duration) === 0
+        && !this.sequencesRows[0].notes;
+    },
+    async maybeAutoFillFromMccc() {
+      if (this.isReadOnly || this.isAutoFillLoading) return;
+      if (!this.form.departement || !this.form.code || !this.form.semestre || !this.form.ue) return;
+
+      const key = this.buildAutoFillKey();
+      if (this.lastAutoFillKey === key) return;
+
+      this.isAutoFillLoading = true;
+      try {
+        const entries = await this.fetchMcccEntries();
+        const normalizedCode = this.normalizeValue(this.form.code);
+        const normalizedDepartement = this.normalizeValue(this.form.departement);
+        const normalizedSemestre = this.normalizeValue(this.form.semestre);
+        const normalizedUe = this.normalizeValue(this.form.ue);
+
+        const matches = entries.filter((entry) => {
+          if (this.normalizeValue(entry.departement) !== normalizedDepartement) return false;
+          if (this.normalizeValue(entry.semestre) !== normalizedSemestre) return false;
+          if (this.normalizeValue(entry.ue) !== normalizedUe) return false;
+          const entryCode = this.normalizeValue(entry.code);
+          return entryCode ? entryCode === normalizedCode : this.normalizeValue(entry.form?.ressource) === normalizedCode;
+        });
+
+        if (!matches.length) {
+          this.lastAutoFillKey = key;
+          return;
+        }
+
+        const sorted = matches
+          .map(entry => ({ entry, savedAt: entry.savedAt ? new Date(entry.savedAt).getTime() : 0 }))
+          .sort((a, b) => b.savedAt - a.savedAt);
+        this.applyMcccToResource(sorted[0].entry);
+        this.lastAutoFillKey = key;
+      } catch (error) {
+        console.error('Error loading MCCC for auto-fill', error);
+      } finally {
+        this.isAutoFillLoading = false;
+      }
+    },
+    applyMcccToResource(mccc) {
+      const form = mccc.form || {};
+      const rows = Array.isArray(mccc.ressourcesRows) ? mccc.ressourcesRows : [];
+
+      if (!this.form.titre) {
+        this.form.titre = form.ressource || form.titre || mccc.ue || '';
+      }
+
+      if (!this.form.departement) {
+        this.form.departement = mccc.departement || '';
+      }
+
+      if (!this.form.semestre) {
+        this.form.semestre = mccc.semestre || '';
+      }
+
+      if (!this.form.ue) {
+        this.form.ue = mccc.ue || '';
+      }
+
+      if (this.toNumber(this.form.hCM) === 0) {
+        this.form.hCM = rows.reduce((acc, row) => acc + this.toNumber(row.hCM), 0);
+      }
+      if (this.toNumber(this.form.hTD) === 0) {
+        this.form.hTD = rows.reduce((acc, row) => acc + this.toNumber(row.hTD), 0);
+      }
+      if (this.toNumber(this.form.hTP) === 0) {
+        this.form.hTP = rows.reduce((acc, row) => acc + this.toNumber(row.hTP), 0);
+      }
+
+      if (!this.form.description) {
+        const notes = rows
+          .map(row => row.notes)
+          .filter(Boolean)
+          .join('\n');
+        if (notes) {
+          this.form.description = notes;
+        }
+      }
+
+      if (this.isDefaultSequences() && rows.length) {
+        this.sequencesRows = rows.map((row, index) => {
+          const hcm = this.toNumber(row.hCM);
+          const htd = this.toNumber(row.hTD);
+          const htp = this.toNumber(row.hTP);
+          let type = 'Autre';
+          if (hcm > 0 && htd === 0 && htp === 0) type = 'CM';
+          if (htd > 0 && hcm === 0 && htp === 0) type = 'TD';
+          if (htp > 0 && hcm === 0 && htd === 0) type = 'TP';
+
+          const duration = hcm + htd + htp
+            + this.toNumber(row.hDSCM)
+            + this.toNumber(row.hDSTP);
+
+          return {
+            id: index + 1,
+            label: row.label || `Ressource ${index + 1}`,
+            type,
+            duration,
+            notes: row.notes || '',
+            showDetails: false
+          };
+        });
+        this.nextRowId = this.sequencesRows.length + 1;
+      }
+    },
     loadFromRoute() {
       const { id, mode } = this.$route.query;
       this.isReadOnly = mode === 'view';
