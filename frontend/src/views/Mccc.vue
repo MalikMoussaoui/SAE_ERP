@@ -68,7 +68,7 @@
               </select>
             </label>
             <label class="field">
-              <span>{{ $t('mccc.resourceToWrite') }}</span>
+              <span>Ressource (à écrire)</span>
               <input v-model="form.ressource" class="pill-select pill-input" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
             </label>
             <label class="field">
@@ -240,6 +240,7 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import axios from 'axios';
 
 export default {
   name: 'McccView',
@@ -443,7 +444,7 @@ export default {
     }
   },
   methods: {
-    loadFromRoute() {
+    async loadFromRoute() {
       const { id, mode } = this.$route.query;
       this.isReadOnly = mode === 'view';
 
@@ -452,80 +453,59 @@ export default {
         return;
       }
 
-      const stored = JSON.parse(localStorage.getItem('mcccList') || '[]');
-      const entry = stored.find(item => String(item.id) === String(id));
+      try {
+        const response = await axios.get(`/api/mccc/${id}`);
+        const mccc = response.data;
 
-      if (!entry) return;
+        this.currentStep = 1;
+        this.editingId = mccc.id;
+        this.form = {
+            ...this.form,
+            ...(mccc.form || {}),
+            departement: mccc.departement || '',
+            ue: mccc.ue || '',
+            annee: mccc.annee || '',
+            semestre: mccc.semestre || ''
+        };
 
-      this.currentStep = 1;
-      this.editingId = entry.id;
-      this.form = { ...this.form, ...(entry.form || {}) };
-      this.availableUes = this.uesByDepartement[this.form.departement] || [];
+        if(this.form.departement) {
+             this.availableUes = this.uesByDepartement[this.form.departement] || [];
+        }
 
-      const loadedRows = (entry.ressourcesRows || []).map(row => ({ ...row, showDetails: false }));
-      this.ressourcesRows = loadedRows.length ? loadedRows : [{ id: 1, label: '', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false }];
-      const maxId = this.ressourcesRows.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0);
-      this.nextRowId = maxId + 1;
-    },
-    nextStep() {
-      if (this.currentStep < 3) {
-        this.currentStep++;
+        this.ressourcesRows = mccc.ressourcesRows || [];
+        if (this.ressourcesRows.length === 0) {
+           this.ressourcesRows = [{ id: 1, label: '', hCM: 0, hTD: 0, hTP: 0, hDSCM: 0, hDSTP: 0, notes: '', showDetails: false }];
+        }
+        const maxId = this.ressourcesRows.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0);
+        this.nextRowId = maxId + 1;
+
+      } catch (error) {
+        console.error("Error loading MCCC", error);
       }
     },
-    prevStep() {
-      if (this.currentStep > 1) {
-        this.currentStep--;
-      }
-    },
-    addRow() {
-      this.ressourcesRows.push({
-        id: this.nextRowId++,
-        label: '',
-        hCM: 0,
-        hTD: 0,
-        hTP: 0,
-        hDSCM: 0,
-        hDSTP: 0,
-        notes: '',
-        showDetails: false
-      });
-    },
-    deleteRow(rowId) {
-      if (this.ressourcesRows.length <= 1) return; // Ne pas supprimer la derniere ligne
-      this.ressourcesRows = this.ressourcesRows.filter(row => row.id !== rowId);
-    },
-    validatePositive(row, field) {
-      if (row[field] < 0) {
-        row[field] = 0;
-        this.errorMessage = this.$t('common.error.negativeValue');
-        if (this.errorTimeout) clearTimeout(this.errorTimeout);
-        this.errorTimeout = setTimeout(() => {
-          this.errorMessage = '';
-        }, 3000);
-      }
-    },
-    saveMccc() {
-      const now = new Date().toISOString();
-      const entry = {
-        id: this.editingId || Date.now(),
-        savedAt: now,
+    // ...
+    async saveMccc() {
+      const payload = {
         departement: this.form.departement,
         ue: this.form.ue,
+        annee: this.form.annee,
+        semestre: this.form.semestre,
         form: { ...this.form },
-        ressourcesRows: this.ressourcesRows.map(row => ({ ...row }))
+        ressourcesRows: this.ressourcesRows
       };
 
-      const list = JSON.parse(localStorage.getItem('mcccList') || '[]');
-      const existingIndex = list.findIndex(item => String(item.id) === String(entry.id));
-      if (existingIndex !== -1) {
-        list[existingIndex] = entry;
-      } else {
-        list.push(entry);
+      try {
+        if (this.editingId) {
+             await axios.put(`/api/mccc/${this.editingId}`, payload);
+        } else {
+             await axios.post('/api/mccc', payload);
+        }
+        alert('MCCC enregistrée !');
+        this.$router.push({ name: 'liste-mccc' });
+      } catch (e) {
+        console.error("Error saving MCCC", e);
+        alert("Erreur lors de l'enregistrement");
       }
-      localStorage.setItem('mcccList', JSON.stringify(list));
-      this.editingId = entry.id;
-      this.isReadOnly = false;
-      this.$router.push({ name: 'liste-mccc' });
     }
   }
 };
@@ -793,7 +773,7 @@ tr:nth-child(even) td {
   border: 1px solid var(--color-border);
   border-radius: 10px;
   font-size: 0.92rem;
-  color: #000; 
+  color: #000;
   outline: none;
 }
 
@@ -844,12 +824,12 @@ tr:nth-child(even) td {
   min-height: 20px;
   color: var(--color-text-muted, #777);
   font-size: 0.9rem;
-  word-break: break-word; /* Empêche le texte long de déborder */
+  word-break: break-word;
 }
 
 .info-preview.has-content {
   color: var(--color-text-header, #333);
-  white-space: pre-wrap; /* Respecte les sauts de ligne */
+  white-space: pre-wrap;
 }
 
 .info-editor {
@@ -1039,3 +1019,20 @@ tr:nth-child(even) td {
   }
 }
 </style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
