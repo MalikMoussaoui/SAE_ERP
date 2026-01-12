@@ -454,7 +454,7 @@ export default {
       }
 
       try {
-        const response = await axios.get(`/api/mccc/${id}`);
+        const response = await axios.get(`/mccc/${id}`);
         const mccc = response.data;
 
         this.currentStep = 1;
@@ -532,9 +532,9 @@ export default {
 
       try {
         if (this.editingId) {
-             await axios.put(`/api/mccc/${this.editingId}`, payload);
+             await axios.put(`/mccc/${this.editingId}`, payload);
         } else {
-             await axios.post('/api/mccc', payload);
+             await axios.post('/mccc', payload);
         }
         alert('MCCC enregistrée !');
         this.$router.push({ name: 'liste-mccc' });

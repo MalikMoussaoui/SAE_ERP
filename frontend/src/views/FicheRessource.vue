@@ -191,7 +191,6 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
-import axios from 'axios';
 
 import axios from 'axios';
 

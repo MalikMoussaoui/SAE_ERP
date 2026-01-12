@@ -63,7 +63,7 @@ export default {
   methods: {
     async loadEntries() {
       try {
-        const response = await axios.get('/api/mccc');
+        const response = await axios.get('/mccc');
         const entries = response.data.map((entry) => ({
           ...entry,
           departement: entry.departement || entry.department || entry.form?.departement || '',
