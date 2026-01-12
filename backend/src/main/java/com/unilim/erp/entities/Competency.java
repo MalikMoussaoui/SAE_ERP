@@ -23,8 +23,8 @@ public class Competency {
     @Column(nullable = false)
     private String title;
 
-    @ManyToMany(mappedBy = "competencies", fetch = FetchType.LAZY)
-    private Set<ResourceSheet> resourceSheets = new LinkedHashSet<>();
+    // @ManyToMany(mappedBy = "competencies", fetch = FetchType.LAZY)
+    // private Set<ResourceSheet> resourceSheets = new LinkedHashSet<>();
 
     public Competency() {
     }

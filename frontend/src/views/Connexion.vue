@@ -55,7 +55,7 @@ export default {
       try {
         // 2. APPEL RÉEL AU BACKEND
         // L'URL correspond à votre AuthenticationController
-        const response = await axios.post('http://164.81.120.78:8080/api/auth/login', {
+        const response = await axios.post('/auth/login', {
           email: this.username, // Le DTO Java attend 'email'
           password: this.password
         });

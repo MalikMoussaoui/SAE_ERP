@@ -192,6 +192,8 @@
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
 
+import axios from 'axios';
+
 export default {
   name: 'FicheRessourceView',
   components: { DashboardLayout },
@@ -331,28 +333,44 @@ export default {
         }, 3000);
       }
     },
-    saveResource() {
-      const now = new Date().toISOString();
-      const entry = {
-        id: this.editingId || Date.now(),
-        savedAt: now,
-        departement: this.form.departement,
+    async saveResource() {
+      // 1. Préparation des données
+      const payload = {
         titre: this.form.titre,
-        form: { ...this.form },
-        sequencesRows: this.sequencesRows.map(row => ({ ...row }))
+        departement: this.form.departement,
+        description: this.form.description,
+        hCM: Number(this.form.hCM) || 0,
+        hTD: Number(this.form.hTD) || 0,
+        hTP: Number(this.form.hTP) || 0,
+        ue: this.form.ue,
+        semestre: this.form.semestre
       };
 
-      const list = JSON.parse(localStorage.getItem('resourceList') || '[]');
-      const existingIndex = list.findIndex(item => String(item.id) === String(entry.id));
-      if (existingIndex !== -1) {
-        list[existingIndex] = entry;
-      } else {
-        list.push(entry);
+      try {
+        // 2. Vérification : Édition ou Création ?
+        // On regarde si on est en mode 'edit' ET qu'on a bien un ID dans l'URL
+        const id = this.$route.query.id;
+        const mode = this.$route.query.mode;
+
+        if (mode === 'edit' && id) {
+          // --- MODE MODIFICATION (PUT) ---
+          console.log("Mise à jour de la fiche n°", id);
+          await axios.put(`/resource-sheets/${id}`, payload);
+          alert("Fiche modifiée avec succès !");
+        } else {
+          // --- MODE CRÉATION (POST) ---
+          console.log("Création d'une nouvelle fiche");
+          await axios.post('/resource-sheets', payload);
+          alert("Fiche créée avec succès !");
+        }
+
+        // 3. Retour à la liste
+        this.$router.push({ name: 'liste-fiches-ressources' });
+
+      } catch (error) {
+        console.error("Erreur lors de la sauvegarde :", error);
+        alert("Erreur technique. Vérifie la console.");
       }
-      localStorage.setItem('resourceList', JSON.stringify(list));
-      this.editingId = entry.id;
-      this.isReadOnly = false;
-      this.$router.push({ name: 'liste-fiches-ressources' }); // Assurez-vous que cette route existe
     }
   }
 };
