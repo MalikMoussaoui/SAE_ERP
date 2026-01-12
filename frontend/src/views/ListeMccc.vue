@@ -47,6 +47,7 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import axios from 'axios';
 
 export default {
   name: 'ListeMccc',
@@ -60,20 +61,33 @@ export default {
     this.loadEntries();
   },
   methods: {
-    loadEntries() {
-      const stored = JSON.parse(localStorage.getItem('mcccList') || '[]');
-      this.mcccEntries = stored.slice().reverse();
+    async loadEntries() {
+      try {
+        const response = await axios.get('/api/mccc');
+        const entries = response.data.map((entry) => ({
+          ...entry,
+          departement: entry.departement || entry.department || entry.form?.departement || '',
+          ue: entry.ue || entry.form?.ue || '',
+          savedAt: entry.savedAt || entry.saved_at || entry.form?.savedAt || ''
+        }));
+        this.mcccEntries = entries.reverse();
+      } catch (e) {
+        console.error("Error loading MCCC list", e);
+      }
     },
-    deleteEntry(entryId) {
+    async deleteEntry(entryId) {
       const entry = this.mcccEntries.find(item => String(item.id) === String(entryId));
       const label = entry?.ue ? ` "${entry.ue}"` : '';
       const confirmed = window.confirm(`Supprimer la fiche MCCC${label} ?`);
       if (!confirmed) return;
 
-      const stored = JSON.parse(localStorage.getItem('mcccList') || '[]');
-      const updated = stored.filter(item => String(item.id) !== String(entryId));
-      localStorage.setItem('mcccList', JSON.stringify(updated));
-      this.loadEntries();
+      try {
+        await axios.delete(`/api/mccc/${entryId}`);
+        this.loadEntries();
+      } catch (e) {
+        console.error("Error deleting entry", e);
+        alert("Erreur lors de la suppression");
+      }
     },
     formatDate(isoString) {
       if (!isoString) return '';

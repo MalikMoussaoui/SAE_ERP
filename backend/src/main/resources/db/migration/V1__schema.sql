@@ -101,3 +101,14 @@ CREATE TABLE feedback (
     date DATE NOT NULL DEFAULT CURRENT_DATE,
     commentary TEXT NOT NULL
 );
+
+CREATE TABLE mccc (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    department TEXT,
+    ue TEXT,
+    years TEXT,
+    semester TEXT,
+    form TEXT,
+    ressources_rows TEXT,
+    saved_at TIMESTAMP DEFAULT now()
+);
