@@ -40,7 +40,12 @@
           <div class="help-card">
             <h3>{{ $t('help.contact') }}</h3>
             <div class="contact-item">
-              <span class="icon">📧</span>
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6z" />
+                  <path d="M4 7l8 5 8-5" />
+                </svg>
+              </span>
               <div>
                 <strong>{{ $t('help.email') }}</strong>
                 <br>
@@ -48,7 +53,11 @@
               </div>
             </div>
             <div class="contact-item">
-              <span class="icon">📞</span>
+              <span class="icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                  <path d="M5 4h4l2 5-3 2a11 11 0 0 0 5 5l2-3 5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
+                </svg>
+              </span>
               <div>
                 <strong>{{ $t('help.phone') }}</strong>
                 <br>
@@ -141,7 +150,25 @@ details summary { cursor: pointer; font-weight: 600; color: var(--color-text-hea
 details p { margin: 0.5rem 0 0; color: var(--color-text-body); padding-left: 1rem; border-left: 2px solid var(--color-border); }
 
 .contact-item { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; background: var(--color-card-bg); padding: 1rem; border-radius: 10px; border: 1px solid var(--color-border); }
-.contact-item .icon { font-size: 1.5rem; }
+.contact-item .icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(var(--color-primary-rgb), 0.1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+}
+.contact-item .icon svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
 .contact-item a { color: var(--color-primary); text-decoration: none; font-weight: 600; }
 .contact-item a:hover { text-decoration: underline; }
 </style>

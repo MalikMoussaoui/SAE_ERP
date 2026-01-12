@@ -64,6 +64,7 @@ export default {
         // Le backend renvoie un objet contenant le 'token'
         const token = response.data.token;
         localStorage.setItem('user-token', token);
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
         // Redirection vers le dashboard
         this.$router.push('/dashboard');

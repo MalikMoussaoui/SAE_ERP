@@ -462,10 +462,10 @@ export default {
         this.form = {
             ...this.form,
             ...(mccc.form || {}),
-            departement: mccc.departement || '',
-            ue: mccc.ue || '',
-            annee: mccc.annee || '',
-            semestre: mccc.semestre || ''
+            departement: mccc.departement || mccc.department || mccc.form?.departement || '',
+            ue: mccc.ue || mccc.form?.ue || '',
+            annee: mccc.annee || mccc.years || mccc.form?.annee || '',
+            semestre: mccc.semestre || mccc.semester || mccc.form?.semestre || ''
         };
 
         if(this.form.departement) {
@@ -483,13 +483,49 @@ export default {
         console.error("Error loading MCCC", error);
       }
     },
-    // ...
+    nextStep() {
+      if (this.currentStep < 3) {
+        this.currentStep++;
+      }
+    },
+    prevStep() {
+      if (this.currentStep > 1) {
+        this.currentStep--;
+      }
+    },
+    addRow() {
+      this.ressourcesRows.push({
+        id: this.nextRowId++,
+        label: '',
+        hCM: 0,
+        hTD: 0,
+        hTP: 0,
+        hDSCM: 0,
+        hDSTP: 0,
+        notes: '',
+        showDetails: false
+      });
+    },
+    deleteRow(rowId) {
+      if (this.ressourcesRows.length <= 1) return;
+      this.ressourcesRows = this.ressourcesRows.filter(row => row.id !== rowId);
+    },
+    validatePositive(row, field) {
+      if (row[field] < 0) {
+        row[field] = 0;
+        this.errorMessage = this.$t('common.error.negativeValue');
+        if (this.errorTimeout) clearTimeout(this.errorTimeout);
+        this.errorTimeout = setTimeout(() => {
+          this.errorMessage = '';
+        }, 3000);
+      }
+    },
     async saveMccc() {
       const payload = {
-        departement: this.form.departement,
+        department: this.form.departement,
         ue: this.form.ue,
-        annee: this.form.annee,
-        semestre: this.form.semestre,
+        years: this.form.annee,
+        semester: this.form.semestre,
         form: { ...this.form },
         ressourcesRows: this.ressourcesRows
       };

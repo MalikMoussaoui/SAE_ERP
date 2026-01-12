@@ -64,7 +64,13 @@ export default {
     async loadEntries() {
       try {
         const response = await axios.get('/api/mccc');
-        this.mcccEntries = response.data.reverse();
+        const entries = response.data.map((entry) => ({
+          ...entry,
+          departement: entry.departement || entry.department || entry.form?.departement || '',
+          ue: entry.ue || entry.form?.ue || '',
+          savedAt: entry.savedAt || entry.saved_at || entry.form?.savedAt || ''
+        }));
+        this.mcccEntries = entries.reverse();
       } catch (e) {
         console.error("Error loading MCCC list", e);
       }
