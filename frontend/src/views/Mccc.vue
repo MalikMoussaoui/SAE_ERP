@@ -68,7 +68,7 @@
               </select>
             </label>
             <label class="field">
-              <span>Ressource (à écrire)</span>
+              <span>{{ $t('mccc.resourceToWrite') }}</span>
               <input v-model="form.ressource" class="pill-select pill-input" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
             </label>
             <label class="field">
@@ -126,7 +126,7 @@
               </select>
             </label>
             <label class="field">
-              <span>bareme</span>
+              <span>{{ $t('mccc.bareme') }}</span>
               <select v-model="form.bareme" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in baremes" :key="option" :value="option">{{ option }}</option>
@@ -1055,20 +1055,3 @@ tr:nth-child(even) td {
   }
 }
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
