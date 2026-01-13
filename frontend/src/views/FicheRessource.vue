@@ -21,11 +21,26 @@
           <div class="step-number">3</div>
           <div class="step-label">{{ $t('resourceSheet.step3_label') }}</div>
         </div>
+        <div class="step-connector"></div>
+        <div class="step" :class="{ active: currentStep >= 4, completed: currentStep > 4 }">
+          <div class="step-number">4</div>
+          <div class="step-label">{{ $t('resourceSheet.step4_label') }}</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" :class="{ active: currentStep >= 5, completed: currentStep > 5 }">
+          <div class="step-number">5</div>
+          <div class="step-label">{{ $t('resourceSheet.step5_label') }}</div>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step" :class="{ active: currentStep >= 6, completed: currentStep > 6 }">
+          <div class="step-number">6</div>
+          <div class="step-label">{{ $t('resourceSheet.step6_label') }}</div>
+        </div>
       </div>
 
       <!-- ÉTAPE 1 : Identification -->
       <section v-if="showAllSteps || currentStep === 1" class="cards-grid top-grid">
-        <div class="info-card">
+        <div class="info-card full-width">
           <h3>{{ $t('mccc.resourcesAndSAE') }}</h3>
           <div class="card-fields">
             <label class="field">
@@ -40,6 +55,13 @@
               </select>
             </label>
             <label class="field full">
+              <span>{{ $t('mccc.department') }}</span>
+              <select v-model="form.departement" class="pill-select" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
+                <option v-for="option in departements" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </label>
+            <label class="field full">
               <span>{{ $t('resourceSheet.ue') }}</span>
               <select v-model="form.ue" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
@@ -48,28 +70,11 @@
             </label>
           </div>
         </div>
-
-        <div class="info-card">
-          <h3>{{ $t('resourceSheet.generalInfo') }}</h3>
-          <div class="card-fields">
-            <label class="field full">
-              <span>{{ $t('mccc.department') }}</span>
-              <select v-model="form.departement" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
-                <option v-for="option in departements" :key="option" :value="option">{{ option }}</option>
-              </select>
-            </label>
-            <label class="field full">
-              <span>{{ $t('resourceSheet.resourceTitle') }}</span>
-              <input v-model="form.titre" class="pill-select pill-input" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
-            </label>
-          </div>
-        </div>
       </section>
 
       <!-- ÉTAPE 2 : Volume Horaire & Description -->
       <section v-if="showAllSteps || currentStep === 2" class="cards-grid mid-grid">
-        <div class="info-card">
+        <div class="info-card full-width">
           <h3>{{ $t('resourceSheet.hours') }}</h3>
           <div class="card-fields hours-grid">
             <label class="field">
@@ -101,8 +106,140 @@
         </div>
       </section>
 
-      <!-- ÉTAPE 3 : Tableau des Séquences -->
-      <section v-if="showAllSteps || currentStep === 3" class="table-section">
+      <!-- ?%TAPE 3 : Modalit??s d'??valuation -->
+      <section v-if="showAllSteps || currentStep === 3" class="cards-grid mid-grid">
+        <div class="info-card full-width">
+          <h3>{{ $t('resourceSheet.step3_label') }}</h3>
+          <div class="card-fields single-col">
+            <label class="field full">
+              <span>{{ $t('resourceSheet.evaluationType') }}</span>
+              <div class="choice-group">
+                <label class="choice">
+                  <input v-model="form.typeEvaluation" type="radio" value="CC" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.evaluationTypeCc') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.typeEvaluation" type="radio" value="EXAMEN" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.evaluationTypeExam') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.typeEvaluation" type="radio" value="CC_EXAMEN" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.evaluationTypeBoth') }}</span>
+                </label>
+              </div>
+            </label>
+            <label class="field full">
+              <span>{{ $t('resourceSheet.evaluationsPlanned') }}</span>
+              <div class="choice-group">
+                <label class="choice">
+                  <input v-model="form.evaluationsPrevues" type="checkbox" value="DS" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.evaluationDs') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.evaluationsPrevues" type="checkbox" value="TP_NOTE" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.evaluationTp') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.evaluationsPrevues" type="checkbox" value="PROJET" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.evaluationProject') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.evaluationsPrevues" type="checkbox" value="ORAL" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.evaluationOral') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.evaluationsPrevues" type="checkbox" value="RAPPORT" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.evaluationReport') }}</span>
+                </label>
+              </div>
+            </label>
+            <label class="field">
+              <span>{{ $t('resourceSheet.resourceCoefficient') }}</span>
+              <input v-model="form.coefficientRessource" type="number" min="0" step="0.1" class="pill-select" :disabled="isReadOnly" />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ?%TAPE 4 : R??gles de validation -->
+      <section v-if="showAllSteps || currentStep === 4" class="cards-grid mid-grid">
+        <div class="info-card full-width">
+          <h3>{{ $t('resourceSheet.step4_label') }}</h3>
+          <div class="card-fields single-col">
+            <label class="field">
+              <span>{{ $t('resourceSheet.validationMinScore') }}</span>
+              <input v-model="form.noteMinimale" type="number" min="0" step="0.1" class="pill-select" :disabled="isReadOnly" />
+            </label>
+            <label class="field full">
+              <span>{{ $t('resourceSheet.validationCompensation') }}</span>
+              <div class="choice-group">
+                <label class="choice">
+                  <input v-model="form.compensation" type="radio" value="OUI" :disabled="isReadOnly" />
+                  <span>{{ $t('common.yes') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.compensation" type="radio" value="NON" :disabled="isReadOnly" />
+                  <span>{{ $t('common.no') }}</span>
+                </label>
+              </div>
+            </label>
+            <label class="field full">
+              <span>{{ $t('resourceSheet.validationRetake') }}</span>
+              <div class="choice-group">
+                <label class="choice">
+                  <input v-model="form.rattrapage" type="radio" value="OUI" :disabled="isReadOnly" />
+                  <span>{{ $t('common.yes') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.rattrapage" type="radio" value="NON" :disabled="isReadOnly" />
+                  <span>{{ $t('common.no') }}</span>
+                </label>
+              </div>
+            </label>
+            <label class="field full">
+              <span>{{ $t('resourceSheet.validationRetakeMode') }}</span>
+              <input v-model="form.modaliteRattrapage" class="pill-select pill-input" :placeholder="$t('resourceSheet.validationRetakePlaceholder')" :disabled="isReadOnly" />
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ?%TAPE 5 : Organisation p??dagogique -->
+      <section v-if="showAllSteps || currentStep === 5" class="cards-grid mid-grid">
+        <div class="info-card full-width">
+          <h3>{{ $t('resourceSheet.step5_label') }}</h3>
+          <div class="card-fields single-col">
+            <label class="field">
+              <span>{{ $t('resourceSheet.pedagogicalManager') }}</span>
+              <input v-model="form.responsablePedagogique" class="pill-select pill-input" :disabled="isReadOnly" />
+            </label>
+            <label class="field">
+              <span>{{ $t('resourceSheet.intervenants') }}</span>
+              <input v-model="form.intervenants" class="pill-select pill-input" :disabled="isReadOnly" />
+            </label>
+            <label class="field full">
+              <span>{{ $t('resourceSheet.teachingType') }}</span>
+              <div class="choice-group">
+                <label class="choice">
+                  <input v-model="form.typeEnseignement" type="radio" value="PRESENTIEL" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.teachingTypeInPerson') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.typeEnseignement" type="radio" value="DISTANCIEL" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.teachingTypeRemote') }}</span>
+                </label>
+                <label class="choice">
+                  <input v-model="form.typeEnseignement" type="radio" value="HYBRIDE" :disabled="isReadOnly" />
+                  <span>{{ $t('resourceSheet.teachingTypeHybrid') }}</span>
+                </label>
+              </div>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- ?%TAPE 6 : Tableau des S??quences -->
+      <section v-if="showAllSteps || currentStep === 6" class="table-section">
         <div class="table-card">
           <div class="table-scroll">
             <table>
@@ -178,10 +315,10 @@
         <button v-if="currentStep > 1" @click="prevStep" class="btn btn-secondary">
           {{ $t('mccc.back') }}
         </button>
-        <button v-if="currentStep < 3" @click="nextStep" class="btn btn-primary">
+        <button v-if="currentStep < 6" @click="nextStep" class="btn btn-primary">
           {{ $t('mccc.continue') }}
         </button>
-        <button v-if="currentStep === 3" class="btn btn-primary" type="button" @click="saveResource" :disabled="isReadOnly">
+        <button v-if="currentStep === 6" class="btn btn-primary" type="button" @click="saveResource" :disabled="isReadOnly">
           {{ $t('mccc.save') }}
         </button>
       </div>
@@ -207,6 +344,17 @@ export default {
         hCM: 0,
         hTD: 0,
         hTP: 0,
+        typeEvaluation: '',
+        evaluationsPrevues: [],
+        coefficientRessource: 0,
+        noteMinimale: 0,
+        compensation: '',
+        rattrapage: '',
+        modaliteRattrapage: '',
+        responsablePedagogique: '',
+        intervenants: '',
+        typeEnseignement: '',
+        modalitesEvaluation: '',
         description: ''
       },
       editingId: null,
@@ -331,7 +479,7 @@ export default {
         && !this.sequencesRows[0].notes;
     },
     async maybeAutoFillFromMccc() {
-      if (this.isReadOnly || this.isAutoFillLoading) return;
+      if (this.isReadOnly || this.isAutoFillLoading || this.currentStep !== 1) return;
       if (!this.form.departement || !this.form.code || !this.form.semestre || !this.form.ue) return;
 
       const key = this.buildAutoFillKey();
@@ -460,7 +608,7 @@ export default {
       this.nextRowId = maxId + 1;
     },
     nextStep() {
-      if (this.currentStep < 3) {
+      if (this.currentStep < 6) {
         this.currentStep++;
       }
     },
@@ -668,4 +816,7 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
 .table-footer { display: flex; justify-content: space-between; align-items: center; background: var(--color-sidebar-bg); border-top: 1px solid var(--color-border); border-radius: 0 0 18px 18px; }
 .final-totals { display: flex; gap: 14px; padding: 12px 14px; font-weight: 600; }
 .final-label { color: var(--color-primary); text-transform: uppercase; }
+.choice-group { display: flex; flex-wrap: wrap; gap: 10px; }
+.choice { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-card-bg); }
+.choice input { margin: 0; }
 </style>

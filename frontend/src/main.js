@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+mimport { createApp } from 'vue'
 import { createI18n } from 'vue-i18n'
 import axios from 'axios'
 import App from './App.vue'
