@@ -53,20 +53,13 @@ export default {
       this.isLoading = true;
 
       try {
-        localStorage.removeItem('user-token');
-        delete axios.defaults.headers.common.Authorization;
-        // 2. APPEL RÉEL AU BACKEND
-        // L'URL correspond à votre AuthenticationController
-        const response = await axios.post('/auth/login', {
-          email: this.username, // Le DTO Java attend 'email'
+        const response = await axios.post('http://164.81.120.78:8080/api/auth/login', {
+          email: this.username,
           password: this.password
         });
 
-        // 3. GESTION DU SUCCÈS
-        // Le backend renvoie un objet contenant le 'token'
         const token = response.data.token;
         localStorage.setItem('user-token', token);
-        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
         // Redirection vers le dashboard
         this.$router.push('/dashboard');
@@ -76,10 +69,10 @@ export default {
         console.error("Erreur de connexion:", error);
 
         if (error.response) {
-          // Erreur venant du serveur (ex: 401 Unauthorized)
+          // Erreur venant du serveur
           this.errorMessage = this.$t('login.error');
         } else if (error.request) {
-          // Le serveur n'a pas répondu (CORS ou serveur éteint)
+          // Le serveur n'a pas répondu
           this.errorMessage = this.$t('common.error.serverUnreachable');
         } else {
           this.errorMessage = this.$t('common.error.generic');

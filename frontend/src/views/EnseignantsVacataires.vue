@@ -68,6 +68,7 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import axios from 'axios';
 
 export default {
   name: 'EnseignantsVacatairesView',
@@ -79,30 +80,56 @@ export default {
       searchQuery: '',
       selectedPoste: '',
       selectedDept: '',
-      enseignants: [
-        { name: 'Jean Bon', dept: 'INFO', poste: 'Vacataire' },
-        { name: 'Marc Pont', dept: 'MP', poste: 'Professeur' },
-        { name: 'Sarah Croche', dept: 'GEA', poste: 'Professeur' },
-        { name: 'Marc Assin', dept: 'TC', poste: 'Professeur' },
-        { name: 'Luc Etincelle', dept: 'TC', poste: 'Professeur' },
-        { name: 'Pat Hibulaire', dept: 'GEA', poste: 'Vacataire' },
-        { name: 'Guy Tarre', dept: 'INFO', poste: 'Vacataire' },
-        { name: 'Emma Thyste', dept: 'GMP', poste: 'Professeur' },
-        { name: 'Jacques Pot', dept: 'MMI', poste: 'Professeur' },
-        { name: 'Alain Térieur', dept: 'INFO', poste: 'Professeur' }
-      ]
+      enseignants: []
     };
+  },
+  mounted() {
+    this.fetchEnseignants();
+  },
+  methods: {
+    async fetchEnseignants() {
+      try {
+        const response = await axios.get('http://localhost:8080/api/app-users/teachers');
+
+        this.enseignants = response.data.map(user => {
+
+          let posteAffiche = 'Autre';
+          if (user.role === 'TEACHER' || user.role === 'ENSEIGNANT') posteAffiche = 'Professeur';
+          else if (user.role === 'VACATAIRE') posteAffiche = 'Vacataire';
+          else if (user.poste) posteAffiche = user.poste; // Si le DTO renvoie déjà le poste
+
+          const deptAffiche = user.dept || user.department || 'Non défini';
+
+          return {
+            name: user.displayName || user.name || user.email,
+            dept: deptAffiche,
+            poste: posteAffiche
+          };
+        });
+
+      } catch (error) {
+        console.error("Erreur lors du chargement des enseignants :", error);
+      }
+    }
   },
   computed: {
     filteredEnseignants() {
       const searchLower = this.searchQuery.toLowerCase();
+
       return this.enseignants.filter((person) => {
+        // Sécurités null-check (au cas où des champs seraient vides en base)
+        const personName = person.name ? person.name.toLowerCase() : '';
+        const personDept = person.dept ? person.dept.toLowerCase() : '';
+        const personPoste = person.poste ? person.poste.toLowerCase() : '';
+
         const matchesSearch =
-          person.name.toLowerCase().includes(searchLower) ||
-          person.dept.toLowerCase().includes(searchLower) ||
-          person.poste.toLowerCase().includes(searchLower);
+          personName.includes(searchLower) ||
+          personDept.includes(searchLower) ||
+          personPoste.includes(searchLower);
+
         const matchesPoste = this.selectedPoste === '' || person.poste === this.selectedPoste;
         const matchesDept = this.selectedDept === '' || person.dept === this.selectedDept;
+
         return matchesSearch && matchesPoste && matchesDept;
       });
     }

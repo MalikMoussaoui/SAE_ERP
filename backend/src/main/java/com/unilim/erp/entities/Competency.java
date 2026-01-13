@@ -6,11 +6,6 @@ import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 
-// --- IMPORT CORRIGÉ ---
-// PAS org.hibernate.mapping.Set
-import java.util.Set;
-// ---
-
 @Getter
 @Setter
 @Entity
