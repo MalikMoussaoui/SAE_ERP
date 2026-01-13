@@ -53,6 +53,8 @@ export default {
       this.isLoading = true;
 
       try {
+        localStorage.removeItem('user-token');
+        delete axios.defaults.headers.common.Authorization;
         // 2. APPEL RÉEL AU BACKEND
         // L'URL correspond à votre AuthenticationController
         const response = await axios.post('/auth/login', {
