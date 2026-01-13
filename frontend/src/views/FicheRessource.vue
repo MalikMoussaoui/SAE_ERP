@@ -328,6 +328,7 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import axios from 'axios';
 
 export default {
   name: 'FicheRessourceView',
