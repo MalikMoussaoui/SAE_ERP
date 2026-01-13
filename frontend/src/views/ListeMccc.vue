@@ -82,7 +82,7 @@ export default {
       if (!confirmed) return;
 
       try {
-        await axios.delete(`/api/mccc/${entryId}`);
+        await axios.delete(`/mccc/${entryId}`);
         this.loadEntries();
       } catch (e) {
         console.error("Error deleting entry", e);
