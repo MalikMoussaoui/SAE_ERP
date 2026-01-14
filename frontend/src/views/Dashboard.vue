@@ -2,7 +2,7 @@
   <DashboardLayout>
     <template #header>
       <div class="header-welcome">
-        <h2>{{ $t('dashboard.greeting') }}</h2>
+        <h2>{{ $t('dashboard.greeting') }} {{ userName }}</h2>
         <h1>{{ $t('dashboard.title') }}</h1>
       </div>
     </template>
@@ -17,11 +17,11 @@
         </div>
         <div class="card card-notifications">
           <div class="icon-success">
-          <span>✔</span>
+            <span>✔</span>
+          </div>
+          <h3>{{ $t('dashboard.notifications') }}</h3>
+          <p>{{ $t('dashboard.noNotifications') }}</p>
         </div>
-        <h3>{{ $t('dashboard.notifications') }}</h3>
-        <p>{{ $t('dashboard.noNotifications') }}</p>
-      </div>
       </section>
     </div>
   </DashboardLayout>
@@ -34,6 +34,14 @@ export default {
   name: 'DashboardView',
   components: {
     DashboardLayout
+  },
+  data() {
+    return {
+      userName: ''
+    };
+  },
+  mounted() {
+    this.userName = localStorage.getItem('userName') || '';
   }
 }
 </script>
@@ -46,14 +54,12 @@ export default {
   color: var(--color-text-header, #333);
   margin: 0.25rem 0 0 0;
 }
-
 .header-welcome h2 {
   font-size: 1.25rem;
   font-weight: 500;
   color: var(--color-text-body, #555);
   margin: 0;
 }
-
 .page-surface {
   background: var(--color-card-bg, #ffffff);
   border: 1px solid var(--color-border, #ddd);
@@ -61,13 +67,11 @@ export default {
   padding: 20px;
   box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
 }
-
 .content-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
 }
-
 .card {
   background: var(--color-card-bg, #ffffff);
   padding: 2rem;
@@ -75,7 +79,6 @@ export default {
   box-shadow: var(--shadow, 0 10px 30px rgba(0, 0, 0, 0.07));
   border: 1px solid var(--color-border, #eef);
 }
-
 .card h3 {
   font-family: var(--font-primary, 'Poppins', sans-serif);
   font-size: 1.5rem;
@@ -83,19 +86,16 @@ export default {
   color: var(--color-text-header, #333);
   margin: 0 0 0.5rem 0;
 }
-
 .card p {
   font-size: 1rem;
   color: var(--color-text-body, #555);
   margin: 0.25rem 0;
 }
-
 .card p.subtitle {
   font-size: 0.9rem;
   color: #888;
   margin-bottom: 1.5rem;
 }
-
 .card-notifications {
   display: flex;
   flex-direction: column;
@@ -103,7 +103,6 @@ export default {
   justify-content: center;
   text-align: center;
 }
-
 .icon-success {
   width: 50px;
   height: 50px;
@@ -117,7 +116,6 @@ export default {
   font-weight: bold;
   margin-bottom: 1rem;
 }
-
 .btn-primary {
   width: 100%;
   padding: 14px;
@@ -132,7 +130,6 @@ export default {
   margin-top: 1rem;
   font-family: var(--font-primary, 'Poppins', sans-serif);
 }
-
 .btn-primary:hover {
   background-color: var(--color-primary-dark, #a00000);
   box-shadow: 0 5px 15px rgba(192, 0, 0, 0.3);
