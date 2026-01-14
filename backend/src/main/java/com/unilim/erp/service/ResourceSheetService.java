@@ -1,4 +1,4 @@
-package com.unilim.erp.services;
+package com.unilim.erp.service;
 
 import com.unilim.erp.dto.ResourceSheetDto;
 import com.unilim.erp.entities.ResourceSheet;
