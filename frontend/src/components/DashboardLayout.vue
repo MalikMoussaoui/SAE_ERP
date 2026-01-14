@@ -126,6 +126,9 @@ export default {
     }
   },
   created() {
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+
     document.title = "Gest'IUT";
     let link = document.querySelector("link[rel~='icon']");
     if (!link) {
