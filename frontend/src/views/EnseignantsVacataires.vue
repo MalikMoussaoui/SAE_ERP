@@ -89,7 +89,7 @@ export default {
   methods: {
     async fetchEnseignants() {
       try {
-        const response = await axios.get('http://localhost:8080/api/app-users/teachers');
+        const response = await axios.get('/app-users/teachers');
 
         this.enseignants = response.data.map(user => {
 
