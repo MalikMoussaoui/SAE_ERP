@@ -351,6 +351,8 @@ html[data-theme="dark"] {
   border: none;
   cursor: pointer;
   text-align: left;
+  font-family: inherit;
+  font-size: inherit;
 }
 
 .nav-caret {
