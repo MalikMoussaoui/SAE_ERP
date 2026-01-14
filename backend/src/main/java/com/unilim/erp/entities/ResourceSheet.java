@@ -1,54 +1,57 @@
 package com.unilim.erp.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "resource_sheet")
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ResourceSheet {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "department_name")
-    private String departmentName;
+    private String titre;
+    private String code;
+    private String semestre;
+    private String ue;
+    private String departement;
 
     @Column(columnDefinition = "TEXT")
-    private String objectives;
+    private String description;
 
+    private double hCM;
+    private double hTD;
+    private double hTP;
 
-    @Column(name = "hours_cm")
-    private double hoursCm;
+    private String typeEvaluation;
+    private double coefficientRessource;
+    private String evaluationsPrevues;
 
-    @Column(name = "hours_td")
-    private double hoursTd;
+    private double noteMinimale;
+    private String compensation;
+    private String rattrapage;
+    private String modaliteRattrapage;
 
-    @Column(name = "hours_tp")
-    private double hoursTp;
+    private String responsablePedagogique;
+    private String intervenants;
+    private String typeEnseignement;
+    @Column(columnDefinition = "TEXT")
+    private String sequencesRowsJson;
 
-    private String prerequisites = "Aucun";
-    private String modalities = "Présentiel";
-    private String status = "DRAFT";
-    private int version = 1;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
-
-    @Column(name = "updated_at")
-    private Instant updatedAt = Instant.now();
-
-    @PreUpdate
-    public void onUpdate() {
-        updatedAt = Instant.now();
-    }
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

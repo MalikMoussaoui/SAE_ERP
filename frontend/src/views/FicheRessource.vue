@@ -359,118 +359,21 @@ export default {
       editingId: null,
       isReadOnly: false,
       departements: [
-        'BUT Informatique',
-        'BUT GEA - Gestion des Entreprises et des Administrations',
-        'BUT TC - Techniques de Commercialisation',
-        'BUT Mesures Physiques (MP)',
-        'BUT Genie Mecanique et Productique (GMP)',
-        'BUT GEII - Genie Electrique et Informatique Industrielle',
-        'BUT Genie Civil - Construction Durable',
-        'BUT Genie Biologique (GB)',
-        "BUT MMI - Metiers du Multimedia et de l'Internet",
-        'BUT GIM - Genie Industriel et Maintenance',
-        'BUT HSE - Hygiene, Securite, Environnement',
-        'BUT Carrieres Sociales'
+        'BUT Informatique', 'BUT GEA - Gestion des Entreprises et des Administrations',
+        'BUT TC - Techniques de Commercialisation', 'BUT Mesures Physiques (MP)',
+        'BUT Genie Mecanique et Productique (GMP)', 'BUT GEII - Genie Electrique et Informatique Industrielle',
+        'BUT Genie Civil - Construction Durable', 'BUT Genie Biologique (GB)',
+        "BUT MMI - Metiers du Multimedia et de l'Internet", 'BUT GIM - Genie Industriel et Maintenance',
+        'BUT HSE - Hygiene, Securite, Environnement', 'BUT Carrieres Sociales'
       ],
       semestres: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
       typesEvaluation: ['Soutenance', 'QCM', 'SAé', 'Devoir sur table', 'Rapport de stage'],
       uesByDepartement: {
         'BUT Informatique': [
-          'UE Realiser des applications',
-          'UE Optimiser des applications',
-          'UE Administrer des systemes informatiques communicants',
-          "UE Gerer des donnees de l'information",
-          'UE Conduire un projet',
-          'UE Collaborer dans un environnement professionnel'
+          'UE Realiser des applications', 'UE Optimiser des applications',
+          'UE Administrer des systemes informatiques communicants', "UE Gerer des donnees de l'information",
+          'UE Conduire un projet', 'UE Collaborer dans un environnement professionnel'
         ],
-        'BUT GEA - Gestion des Entreprises et des Administrations': [
-          'UE Gerer les organisations',
-          'UE Piloter la performance',
-          "UE Produire l information comptable financiere et de gestion",
-          'UE Developper une activite economique',
-          'UE Conduire un projet',
-          'UE Communiquer et travailler en equipe'
-        ],
-        'BUT TC - Techniques de Commercialisation': [
-          'UE Developper la relation client',
-          'UE Mettre en oeuvre une strategie marketing',
-          'UE Vendre une offre commerciale',
-          "UE Analyser le marche et l environnement",
-          'UE Conduire un projet commercial',
-          'UE Communiquer dans un contexte professionnel'
-        ],
-        'BUT Mesures Physiques (MP)': [
-          'UE Realiser des mesures physiques',
-          'UE Exploiter des donnees experimentales',
-          'UE Mettre en oeuvre des protocoles experimentaux',
-          'UE Caracteriser des systemes physiques',
-          'UE Conduire un projet scientifique',
-          'UE Communiquer en milieu scientifique'
-        ],
-        'BUT Genie Mecanique et Productique (GMP)': [
-          'UE Concevoir des systemes mecaniques',
-          'UE Industrialiser un produit',
-          'UE Organiser et gerer la production',
-          'UE Ameliorer les performances industrielles',
-          'UE Conduire un projet industriel',
-          'UE Communiquer dans l industrie'
-        ],
-        'BUT GEII - Genie Electrique et Informatique Industrielle': [
-          'UE Concevoir des systemes electroniques et automatises',
-          'UE Programmer et exploiter des systemes industriels',
-          'UE Mettre en oeuvre des reseaux industriels',
-          'UE Maintenir et ameliorer des installations',
-          'UE Conduire un projet industriel',
-          'UE Communiquer dans un contexte technique'
-        ],
-        'BUT Genie Civil - Construction Durable': [
-          'UE Concevoir des ouvrages de construction',
-          'UE Dimensionner des structures',
-          'UE Organiser un chantier',
-          'UE Integrer le developpement durable',
-          'UE Conduire un projet de construction',
-          'UE Communiquer dans le secteur du BTP'
-        ],
-        'BUT Genie Biologique (GB)': [
-          'UE Realiser des analyses biologiques',
-          'UE Exploiter des resultats experimentaux',
-          'UE Mettre en oeuvre des procedes biologiques',
-          'UE Assurer la qualite et la securite',
-          'UE Conduire un projet scientifique',
-          'UE Communiquer dans un contexte biologique'
-        ],
-        "BUT MMI - Metiers du Multimedia et de l'Internet": [
-          'UE Concevoir des produits multimedia',
-          'UE Developper des dispositifs interactifs',
-          'UE Creer des contenus graphiques et audiovisuels',
-          'UE Mettre en oeuvre une strategie de communication',
-          'UE Conduire un projet multimedia',
-          'UE Travailler en equipe et communiquer'
-        ],
-        'BUT GIM - Genie Industriel et Maintenance': [
-          'UE Maintenir des systemes industriels',
-          'UE Ameliorer la fiabilite des equipements',
-          'UE Diagnostiquer des pannes',
-          'UE Optimiser la maintenance',
-          'UE Conduire un projet industriel',
-          'UE Communiquer en milieu professionnel'
-        ],
-        'BUT HSE - Hygiene, Securite, Environnement': [
-          'UE Prevenir les risques professionnels',
-          'UE Gerer la securite et la sante au travail',
-          "UE Proteger l environnement",
-          'UE Mettre en conformite reglementaire',
-          'UE Conduire un projet HSE',
-          'UE Communiquer et sensibiliser'
-        ],
-        'BUT Carrieres Sociales': [
-          'UE Analyser les situations sociales',
-          'UE Accompagner des publics',
-          'UE Concevoir des actions sociales',
-          'UE Travailler en reseau partenarial',
-          'UE Conduire un projet social',
-          'UE Communiquer dans le champ social'
-        ]
       },
       availableUes: [],
       sequencesRows: [
@@ -491,521 +394,232 @@ export default {
     this.loadFromRoute();
   },
   watch: {
-    'form.departement'(newDepartement) {
+    'form.departement'(newDepartement,oldDepartement) {
       this.availableUes = this.uesByDepartement[newDepartement] || [];
-      this.form.ue = '';
+      if (oldDepartement && !this.isReadOnly) {
+        this.form.ue = '';
+      }
       this.maybeAutoFillFromMccc();
     },
-    '$route.query.id'() {
-      this.loadFromRoute();
-    },
-    '$route.query.mode'() {
-      this.isReadOnly = this.$route.query.mode === 'view';
-    },
-    'form.code'() {
-      this.maybeAutoFillFromMccc();
-    },
-    'form.semestre'() {
-      this.maybeAutoFillFromMccc();
-    },
-    'form.ue'() {
-      this.maybeAutoFillFromMccc();
-    }
+    '$route.query.id'() { this.loadFromRoute(); },
+    '$route.query.mode'() { this.isReadOnly = this.$route.query.mode === 'view'; },
+    'form.code'() { this.maybeAutoFillFromMccc(); },
+    'form.semestre'() { this.maybeAutoFillFromMccc(); },
+    'form.ue'() { this.maybeAutoFillFromMccc(); }
   },
   computed: {
-    showAllSteps() {
-      return this.isReadOnly && this.$route.query.mode === 'view';
-    },
-    totalSequenceHours() {
-      return this.sequencesRows.reduce((acc, row) => acc + (Number(row.duration) || 0), 0);
-    }
+    showAllSteps() { return this.isReadOnly && this.$route.query.mode === 'view'; },
+    totalSequenceHours() { return this.sequencesRows.reduce((acc, row) => acc + (Number(row.duration) || 0), 0); }
   },
   methods: {
-    formatEvaluationType(value) {
-      if (!value) return '';
-      return String(value);
-    },
+    formatEvaluationType(value) { return value ? String(value) : ''; },
     formatEvaluationsPrevues(values) {
       if (!Array.isArray(values) || !values.length) return '';
-      const labels = {
-        DS: 'DS',
-        TP_NOTE: 'TP note',
-        PROJET: 'Projet',
-        ORAL: 'Oral',
-        RAPPORT: 'Rapport'
-      };
+      const labels = { DS: 'DS', TP_NOTE: 'TP note', PROJET: 'Projet', ORAL: 'Oral', RAPPORT: 'Rapport' };
       return values.map(value => labels[value] || value).join(', ');
     },
     formatTeachingType(value) {
-      const labels = {
-        PRESENTIEL: 'Presentiel',
-        DISTANCIEL: 'Distanciel',
-        HYBRIDE: 'Hybride'
-      };
+      const labels = { PRESENTIEL: 'Presentiel', DISTANCIEL: 'Distanciel', HYBRIDE: 'Hybride' };
       return labels[value] || value || '';
     },
-    openPdfPreview() {
-      this.openPdfWindow(false);
-    },
-    downloadPdf() {
-      this.openPdfWindow(true);
-    },
+    openPdfPreview() { this.openPdfWindow(false); },
+    downloadPdf() { this.openPdfWindow(true); },
     openPdfWindow(autoPrint) {
       const title = this.form.titre || 'Fiche ressource';
-      const content = `
-        <html>
-          <head>
-            <meta charset="utf-8" />
-            <title>${title}</title>
-            <style>
-              :root { --accent: #c00000; --muted: #666; --border: #e4e4e4; }
-              * { box-sizing: border-box; }
-              body { font-family: "Segoe UI", Arial, sans-serif; color: #111; margin: 28px; }
-              .header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                border-bottom: 2px solid var(--accent);
-                padding-bottom: 10px;
-                margin-bottom: 16px;
-              }
-              .title { font-size: 22px; font-weight: 700; margin: 0; }
-              .subtitle { color: var(--muted); font-size: 12px; }
-              .chip { display: inline-block; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); font-size: 11px; color: var(--muted); }
-              h2 { font-size: 14px; margin: 18px 0 8px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4px; }
-              .section { margin-bottom: 12px; }
-              .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; }
-              .field { padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; }
-              .label { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-              .value { font-size: 13px; white-space: pre-wrap; }
-              .full { grid-column: 1 / -1; }
-              table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12px; }
-              th, td { border: 1px solid var(--border); padding: 6px 8px; }
-              th { background: #f7f7f7; text-align: left; text-transform: uppercase; font-size: 11px; color: var(--muted); letter-spacing: 0.3px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <div>
-                <h1 class="title">${title}</h1>
-                <div class="subtitle">Fiche ressource</div>
-              </div>
-              <div class="chip">${this.form.departement || ''}</div>
-            </div>
-
-            <h2>Identification</h2>
-            <div class="section grid">
-              <div class="field">
-                <div class="label">Code</div>
-                <div class="value">${this.form.code || ''}</div>
-              </div>
-              <div class="field">
-                <div class="label">Semestre</div>
-                <div class="value">${this.form.semestre || ''}</div>
-              </div>
-              <div class="field full">
-                <div class="label">UE</div>
-                <div class="value">${this.form.ue || ''}</div>
-              </div>
-            </div>
-
-            <h2>Volume et description</h2>
-            <div class="section grid">
-              <div class="field">
-                <div class="label">Heures CM</div>
-                <div class="value">${this.form.hCM || 0}</div>
-              </div>
-              <div class="field">
-                <div class="label">Heures TD</div>
-                <div class="value">${this.form.hTD || 0}</div>
-              </div>
-              <div class="field">
-                <div class="label">Heures TP</div>
-                <div class="value">${this.form.hTP || 0}</div>
-              </div>
-              <div class="field full">
-                <div class="label">Description</div>
-                <div class="value">${this.form.description || ''}</div>
-              </div>
-            </div>
-
-            <h2>Evaluation</h2>
-            <div class="section grid">
-              <div class="field">
-                <div class="label">Type d'evaluation</div>
-                <div class="value">${this.formatEvaluationType(this.form.typeEvaluation)}</div>
-              </div>
-              <div class="field">
-                <div class="label">Evaluations prevues</div>
-                <div class="value">${this.formatEvaluationsPrevues(this.form.evaluationsPrevues)}</div>
-              </div>
-              <div class="field">
-                <div class="label">Coefficient ressource</div>
-                <div class="value">${this.form.coefficientRessource || 0}</div>
-              </div>
-            </div>
-
-            <h2>Regles de validation</h2>
-            <div class="section grid">
-              <div class="field">
-                <div class="label">Note minimale</div>
-                <div class="value">${this.form.noteMinimale || 0}</div>
-              </div>
-              <div class="field">
-                <div class="label">Compensation</div>
-                <div class="value">${this.form.compensation || ''}</div>
-              </div>
-              <div class="field">
-                <div class="label">Rattrapage</div>
-                <div class="value">${this.form.rattrapage || ''}</div>
-              </div>
-              <div class="field full">
-                <div class="label">Modalite rattrapage</div>
-                <div class="value">${this.form.modaliteRattrapage || ''}</div>
-              </div>
-            </div>
-
-            <h2>Organisation pedagogique</h2>
-            <div class="section grid">
-              <div class="field">
-                <div class="label">Responsable pedagogique</div>
-                <div class="value">${this.form.responsablePedagogique || ''}</div>
-              </div>
-              <div class="field">
-                <div class="label">Intervenants</div>
-                <div class="value">${this.form.intervenants || ''}</div>
-              </div>
-              <div class="field">
-                <div class="label">Type d'enseignement</div>
-                <div class="value">${this.formatTeachingType(this.form.typeEnseignement)}</div>
-              </div>
-            </div>
-
-            <h2>Sequences</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Sequence</th>
-                  <th>Type</th>
-                  <th>Duree (h)</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${this.sequencesRows.map(row => `
-                  <tr>
-                    <td>${row.label || ''}</td>
-                    <td>${row.type || ''}</td>
-                    <td>${row.duration || 0}</td>
-                    <td>${row.notes || ''}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </body>
-        </html>
-      `;
+      const content = `<html><head><meta charset="utf-8" /><title>${title}</title><style>:root { --accent: #c00000; --muted: #666; --border: #e4e4e4; } * { box-sizing: border-box; } body { font-family: "Segoe UI", Arial, sans-serif; color: #111; margin: 28px; } .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 16px; } .title { font-size: 22px; font-weight: 700; margin: 0; } .subtitle { color: var(--muted); font-size: 12px; } .chip { display: inline-block; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); font-size: 11px; color: var(--muted); } h2 { font-size: 14px; margin: 18px 0 8px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4px; } .section { margin-bottom: 12px; } .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; } .field { padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; } .label { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; } .value { font-size: 13px; white-space: pre-wrap; } .full { grid-column: 1 / -1; } table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12px; } th, td { border: 1px solid var(--border); padding: 6px 8px; } th { background: #f7f7f7; text-align: left; text-transform: uppercase; font-size: 11px; color: var(--muted); letter-spacing: 0.3px; }</style></head><body><div class="header"><div><h1 class="title">${title}</h1><div class="subtitle">Fiche ressource</div></div><div class="chip">${this.form.departement || ''}</div></div><h2>Identification</h2><div class="section grid"><div class="field"><div class="label">Code</div><div class="value">${this.form.code || ''}</div></div><div class="field"><div class="label">Semestre</div><div class="value">${this.form.semestre || ''}</div></div><div class="field full"><div class="label">UE</div><div class="value">${this.form.ue || ''}</div></div></div><h2>Volume et description</h2><div class="section grid"><div class="field"><div class="label">Heures CM</div><div class="value">${this.form.hCM || 0}</div></div><div class="field"><div class="label">Heures TD</div><div class="value">${this.form.hTD || 0}</div></div><div class="field"><div class="label">Heures TP</div><div class="value">${this.form.hTP || 0}</div></div><div class="field full"><div class="label">Description</div><div class="value">${this.form.description || ''}</div></div></div><h2>Evaluation</h2><div class="section grid"><div class="field"><div class="label">Type d'evaluation</div><div class="value">${this.formatEvaluationType(this.form.typeEvaluation)}</div></div><div class="field"><div class="label">Evaluations prevues</div><div class="value">${this.formatEvaluationsPrevues(this.form.evaluationsPrevues)}</div></div><div class="field"><div class="label">Coefficient ressource</div><div class="value">${this.form.coefficientRessource || 0}</div></div></div><h2>Regles de validation</h2><div class="section grid"><div class="field"><div class="label">Note minimale</div><div class="value">${this.form.noteMinimale || 0}</div></div><div class="field"><div class="label">Compensation</div><div class="value">${this.form.compensation || ''}</div></div><div class="field"><div class="label">Rattrapage</div><div class="value">${this.form.rattrapage || ''}</div></div><div class="field full"><div class="label">Modalite rattrapage</div><div class="value">${this.form.modaliteRattrapage || ''}</div></div></div><h2>Organisation pedagogique</h2><div class="section grid"><div class="field"><div class="label">Responsable pedagogique</div><div class="value">${this.form.responsablePedagogique || ''}</div></div><div class="field"><div class="label">Intervenants</div><div class="value">${this.form.intervenants || ''}</div></div><div class="field"><div class="label">Type d'enseignement</div><div class="value">${this.formatTeachingType(this.form.typeEnseignement)}</div></div></div><h2>Sequences</h2><table><thead><tr><th>Sequence</th><th>Type</th><th>Duree (h)</th><th>Details</th></tr></thead><tbody>${this.sequencesRows.map(row => `<tr><td>${row.label || ''}</td><td>${row.type || ''}</td><td>${row.duration || 0}</td><td>${row.notes || ''}</td></tr>`).join('')}</tbody></table></body></html>`;
       const pdfWindow = window.open('', '_blank');
       if (!pdfWindow) return;
       pdfWindow.document.open();
       pdfWindow.document.write(content);
       pdfWindow.document.close();
-      if (autoPrint) {
-        pdfWindow.onload = () => {
-          pdfWindow.focus();
-          pdfWindow.print();
-        };
-      }
+      if (autoPrint) { pdfWindow.onload = () => { pdfWindow.focus(); pdfWindow.print(); }; }
     },
-    normalizeValue(value) {
-      if (value === null || value === undefined) return '';
-      return String(value).trim().toLowerCase();
-    },
+    normalizeValue(value) { return (value === null || value === undefined) ? '' : String(value).trim().toLowerCase(); },
     mapMcccModaliteToEvaluation(modalite) {
-      const normalized = this.normalizeValue(modalite);
-      if (!normalized) return '';
-      if (normalized.includes('mixte') || normalized.includes('cci') || normalized.includes('final')) {
-        return 'CC_EXAMEN';
-      }
-      if (normalized.includes('terminal')) {
-        return 'EXAMEN';
-      }
-      if (normalized.includes('continu') || normalized.includes('projet')) {
-        return 'CC';
-      }
+      const n = this.normalizeValue(modalite);
+      if (!n) return '';
+      if (n.includes('mixte') || n.includes('cci') || n.includes('final')) return 'CC_EXAMEN';
+      if (n.includes('terminal')) return 'EXAMEN';
+      if (n.includes('continu') || n.includes('projet')) return 'CC';
       return '';
     },
     toNumber(value) {
       if (value === null || value === undefined) return 0;
-      const normalized = String(value).replace(',', '.');
-      const parsed = Number(normalized);
-      return Number.isFinite(parsed) ? parsed : 0;
+      const n = String(value).replace(',', '.');
+      const p = Number(n);
+      return Number.isFinite(p) ? p : 0;
     },
     async fetchMcccEntries() {
       if (this.mcccEntries) return this.mcccEntries;
-
       const response = await axios.get('/mccc');
       this.mcccEntries = response.data.map((entry) => {
-        const form = entry.form || {};
+        const f = entry.form || {};
         return {
           ...entry,
-          departement: entry.departement || entry.department || form.departement || '',
-          ue: entry.ue || form.ue || '',
-          semestre: entry.semestre || entry.semester || form.semestre || '',
-          code: form.code || form.ressource || '',
-          savedAt: entry.savedAt || entry.saved_at || form.savedAt || ''
+          departement: entry.departement || entry.department || f.departement || '',
+          ue: entry.ue || f.ue || '',
+          semestre: entry.semestre || entry.semester || f.semestre || '',
+          code: f.code || f.ressource || '',
+          savedAt: entry.savedAt || entry.saved_at || f.savedAt || ''
         };
       });
-
       return this.mcccEntries;
     },
     buildAutoFillKey() {
-      return [
-        this.normalizeValue(this.form.departement),
-        this.normalizeValue(this.form.code),
-        this.normalizeValue(this.form.semestre),
-        this.normalizeValue(this.form.ue)
-      ].join('|');
+      return [this.normalizeValue(this.form.departement), this.normalizeValue(this.form.code), this.normalizeValue(this.form.semestre), this.normalizeValue(this.form.ue)].join('|');
     },
     isDefaultSequences() {
-      return this.sequencesRows.length === 1
-        && !this.sequencesRows[0].label
-        && this.toNumber(this.sequencesRows[0].duration) === 0
-        && !this.sequencesRows[0].notes;
+      return this.sequencesRows.length === 1 && !this.sequencesRows[0].label && this.toNumber(this.sequencesRows[0].duration) === 0 && !this.sequencesRows[0].notes;
     },
     async maybeAutoFillFromMccc() {
       if (this.isReadOnly || this.isAutoFillLoading || this.currentStep !== 1) return;
       if (!this.form.departement || !this.form.code || !this.form.semestre || !this.form.ue) return;
-
       const key = this.buildAutoFillKey();
       if (this.lastAutoFillKey === key) return;
-
       this.isAutoFillLoading = true;
       try {
         const entries = await this.fetchMcccEntries();
-        const normalizedCode = this.normalizeValue(this.form.code);
-        const normalizedDepartement = this.normalizeValue(this.form.departement);
-        const normalizedSemestre = this.normalizeValue(this.form.semestre);
-        const normalizedUe = this.normalizeValue(this.form.ue);
-
-        const matches = entries.filter((entry) => {
-          if (this.normalizeValue(entry.departement) !== normalizedDepartement) return false;
-          if (this.normalizeValue(entry.semestre) !== normalizedSemestre) return false;
-          if (this.normalizeValue(entry.ue) !== normalizedUe) return false;
-          const entryCode = this.normalizeValue(entry.code);
-          return entryCode ? entryCode === normalizedCode : this.normalizeValue(entry.form?.ressource) === normalizedCode;
+        const nCode = this.normalizeValue(this.form.code);
+        const nDep = this.normalizeValue(this.form.departement);
+        const nSem = this.normalizeValue(this.form.semestre);
+        const nUe = this.normalizeValue(this.form.ue);
+        const matches = entries.filter((e) => {
+          if (this.normalizeValue(e.departement) !== nDep) return false;
+          if (this.normalizeValue(e.semestre) !== nSem) return false;
+          if (this.normalizeValue(e.ue) !== nUe) return false;
+          const eCode = this.normalizeValue(e.code);
+          return eCode ? eCode === nCode : this.normalizeValue(e.form?.ressource) === nCode;
         });
-
-        if (!matches.length) {
-          this.lastAutoFillKey = key;
-          return;
-        }
-
-        const sorted = matches
-          .map(entry => ({ entry, savedAt: entry.savedAt ? new Date(entry.savedAt).getTime() : 0 }))
-          .sort((a, b) => b.savedAt - a.savedAt);
-        this.applyMcccToResource(sorted[0].entry);
+        if (!matches.length) { this.lastAutoFillKey = key; return; }
+        const sorted = matches.map(e => ({ e, savedAt: e.savedAt ? new Date(e.savedAt).getTime() : 0 })).sort((a, b) => b.savedAt - a.savedAt);
+        this.applyMcccToResource(sorted[0].e);
         this.lastAutoFillKey = key;
-      } catch (error) {
-        console.error('Error loading MCCC for auto-fill', error);
-      } finally {
-        this.isAutoFillLoading = false;
-      }
+      } catch (e) { console.error('Error MCCC autofill', e); } finally { this.isAutoFillLoading = false; }
     },
     applyMcccToResource(mccc) {
-      const form = mccc.form || {};
+      const f = mccc.form || {};
       const rows = Array.isArray(mccc.ressourcesRows) ? mccc.ressourcesRows : [];
-
-      if (!this.form.titre) {
-        this.form.titre = form.ressource || form.titre || mccc.ue || '';
-      }
-
-      if (!this.form.departement) {
-        this.form.departement = mccc.departement || '';
-      }
-
-      if (!this.form.semestre) {
-        this.form.semestre = mccc.semestre || '';
-      }
-
-      if (!this.form.ue) {
-        this.form.ue = mccc.ue || '';
-      }
-
+      if (!this.form.titre) this.form.titre = f.ressource || f.titre || mccc.ue || '';
+      if (!this.form.departement) this.form.departement = mccc.departement || '';
+      if (!this.form.semestre) this.form.semestre = mccc.semestre || '';
+      if (!this.form.ue) this.form.ue = mccc.ue || '';
       if (!this.form.responsablePedagogique) {
-        const responsable =
-          form.responsable
-          || form.responsablePedagogique
-          || mccc.responsable
-          || mccc.responsablePedagogique
-          || mccc.pedagogicalManager;
-        if (responsable) {
-          this.form.responsablePedagogique = responsable;
-        }
+        const r = f.responsable || f.responsablePedagogique || mccc.responsable || mccc.responsablePedagogique || mccc.pedagogicalManager;
+        if (r) this.form.responsablePedagogique = r;
       }
-
       if (!this.form.typeEvaluation) {
-        const rawType = String(form.typeEvaluation || '').trim();
-        if (rawType) {
-          this.form.typeEvaluation = rawType;
-        } else {
-          const mappedType = this.mapMcccModaliteToEvaluation(form.modalite);
-          if (mappedType) {
-            this.form.typeEvaluation = mappedType;
-          }
-        }
+        const rt = String(f.typeEvaluation || '').trim();
+        if (rt) this.form.typeEvaluation = rt;
+        else { const mt = this.mapMcccModaliteToEvaluation(f.modalite); if (mt) this.form.typeEvaluation = mt; }
       }
-
-      if (this.toNumber(this.form.coefficientRessource) === 0) {
-        const coeff = this.toNumber(form.coeffRessource);
-        if (coeff > 0) {
-          this.form.coefficientRessource = coeff;
-        }
-      }
-
-      if (this.toNumber(this.form.hCM) === 0) {
-        this.form.hCM = rows.reduce((acc, row) => acc + this.toNumber(row.hCM), 0);
-      }
-      if (this.toNumber(this.form.hTD) === 0) {
-        this.form.hTD = rows.reduce((acc, row) => acc + this.toNumber(row.hTD), 0);
-      }
-      if (this.toNumber(this.form.hTP) === 0) {
-        this.form.hTP = rows.reduce((acc, row) => acc + this.toNumber(row.hTP), 0);
-      }
-
-      if (!this.form.description) {
-        const notes = rows
-          .map(row => row.notes)
-          .filter(Boolean)
-          .join('\n');
-        if (notes) {
-          this.form.description = notes;
-        }
-      }
-
+      if (this.toNumber(this.form.coefficientRessource) === 0) { const c = this.toNumber(f.coeffRessource); if (c > 0) this.form.coefficientRessource = c; }
+      if (this.toNumber(this.form.hCM) === 0) this.form.hCM = rows.reduce((acc, r) => acc + this.toNumber(r.hCM), 0);
+      if (this.toNumber(this.form.hTD) === 0) this.form.hTD = rows.reduce((acc, r) => acc + this.toNumber(r.hTD), 0);
+      if (this.toNumber(this.form.hTP) === 0) this.form.hTP = rows.reduce((acc, r) => acc + this.toNumber(r.hTP), 0);
+      if (!this.form.description) { const n = rows.map(r => r.notes).filter(Boolean).join('\n'); if (n) this.form.description = n; }
       if (this.isDefaultSequences() && rows.length) {
-        this.sequencesRows = rows.map((row, index) => {
-          const hcm = this.toNumber(row.hCM);
-          const htd = this.toNumber(row.hTD);
-          const htp = this.toNumber(row.hTP);
-          let type = 'Autre';
-          if (hcm > 0 && htd === 0 && htp === 0) type = 'CM';
-          if (htd > 0 && hcm === 0 && htp === 0) type = 'TD';
-          if (htp > 0 && hcm === 0 && htd === 0) type = 'TP';
-
-          const duration = hcm + htd + htp
-            + this.toNumber(row.hDSCM)
-            + this.toNumber(row.hDSTP);
-
-          return {
-            id: index + 1,
-            label: row.label || `Ressource ${index + 1}`,
-            type,
-            duration,
-            notes: row.notes || '',
-            showDetails: false
-          };
+        this.sequencesRows = rows.map((r, i) => {
+          const hcm = this.toNumber(r.hCM), htd = this.toNumber(r.hTD), htp = this.toNumber(r.hTP);
+          let t = 'Autre';
+          if (hcm > 0 && htd === 0 && htp === 0) t = 'CM';
+          if (htd > 0 && hcm === 0 && htp === 0) t = 'TD';
+          if (htp > 0 && hcm === 0 && htd === 0) t = 'TP';
+          return { id: i + 1, label: r.label || `Ressource ${i + 1}`, type: t, duration: hcm + htd + htp + this.toNumber(r.hDSCM) + this.toNumber(r.hDSTP), notes: r.notes || '', showDetails: false };
         });
         this.nextRowId = this.sequencesRows.length + 1;
       }
     },
-    loadFromRoute() {
+    async loadFromRoute() {
       const { id, mode } = this.$route.query;
       this.isReadOnly = mode === 'view';
+      if (!id) { this.editingId = null; return; }
 
-      if (!id) {
-        this.editingId = null;
-        return;
-      }
+      try {
+        const response = await axios.get(`/resource-sheets/${id}`);
+        const data = response.data;
+        console.log("🔥 DONNÉES REÇUES :", data);
 
-      const stored = JSON.parse(localStorage.getItem('resourceList') || '[]');
-      const entry = stored.find(item => String(item.id) === String(id));
+        this.editingId = data.id;
+        this.form.titre = data.titre || data.title || '';
+        this.form.departement = data.departement || data.departmentName || '';
+        this.form.code = data.code || '';
+        this.form.semestre = data.semestre || '';
+        this.form.ue = data.ue || '';
+        this.form.description = data.description || data.objectives || '';
+        this.form.hCM = data.hCM !== undefined ? data.hCM : (data.hoursCm || 0);
+        this.form.hTD = data.hTD !== undefined ? data.hTD : (data.hoursTd || 0);
+        this.form.hTP = data.hTP !== undefined ? data.hTP : (data.hoursTp || 0);
 
-      if (!entry) return;
+        this.form.typeEvaluation = data.typeEvaluation || '';
+        this.form.coefficientRessource = data.coefficientRessource || 0;
+        this.form.noteMinimale = data.noteMinimale || 0;
+        this.form.compensation = data.compensation || '';
+        this.form.rattrapage = data.rattrapage || '';
+        this.form.modaliteRattrapage = data.modaliteRattrapage || '';
+        this.form.responsablePedagogique = data.responsablePedagogique || '';
+        this.form.intervenants = data.intervenants || '';
+        this.form.typeEnseignement = data.typeEnseignement || data.modalities || '';
+        const ev = data.evaluationsPrevues;
+        this.form.evaluationsPrevues = Array.isArray(ev) ? ev : (typeof ev === 'string' ? ev.split(',') : []);
+        let rows = [];
+        const rawSeq = data.sequencesRowsJson || data.sequencesRows;
+        if (typeof rawSeq === 'string') {
+          try { rows = JSON.parse(rawSeq); } catch (e) { console.error("Err parse JSON", e); }
+        } else if (Array.isArray(rawSeq)) {
+          rows = rawSeq;
+        }
 
-      this.currentStep = 1;
-      this.editingId = entry.id;
-      this.form = { ...this.form, ...(entry.form || {}) };
-      this.availableUes = this.uesByDepartement[this.form.departement] || [];
+        if (rows.length > 0) {
+          this.sequencesRows = rows.map(r => ({ ...r, showDetails: false }));
+          this.nextRowId = Math.max(...this.sequencesRows.map(r => Number(r.id) || 0)) + 1;
+        } else {
+          this.sequencesRows = [{ id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }];
+          this.nextRowId = 2;
+        }
 
-      const loadedRows = (entry.sequencesRows || []).map(row => ({ ...row, showDetails: false }));
-      this.sequencesRows = loadedRows.length ? loadedRows : [{ id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }];
-      const maxId = this.sequencesRows.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0);
-      this.nextRowId = maxId + 1;
-    },
-    nextStep() {
-      if (this.currentStep < 6) {
-        this.currentStep++;
-      }
-    },
-    prevStep() {
-      if (this.currentStep > 1) {
-        this.currentStep--;
-      }
-    },
-    addRow() {
-      this.sequencesRows.push({
-        id: this.nextRowId++,
-        label: '',
-        type: 'CM',
-        duration: 0,
-        notes: '',
-        showDetails: false
-      });
-    },
-    deleteRow(rowId) {
-      if (this.sequencesRows.length <= 1) return;
-      this.sequencesRows = this.sequencesRows.filter(row => row.id !== rowId);
-    },
-    validatePositive(row, field) {
-      if (row[field] < 0) {
-        row[field] = 0;
-        this.errorMessage = this.$t('common.error.negativeValue');
-        if (this.errorTimeout) clearTimeout(this.errorTimeout);
-        this.errorTimeout = setTimeout(() => {
-          this.errorMessage = '';
-        }, 3000);
+        this.availableUes = this.uesByDepartement[this.form.departement] || [];
+      } catch (e) {
+        console.error("Erreur chargement BDD", e);
       }
     },
+
     async saveResource() {
-      // 1. Préparation des données
       const payload = {
-        titre: this.form.titre,
-        departement: this.form.departement,
-        description: this.form.description,
-        hCM: Number(this.form.hCM) || 0,
-        hTD: Number(this.form.hTD) || 0,
-        hTP: Number(this.form.hTP) || 0,
-        ue: this.form.ue,
-        semestre: this.form.semestre
+        ...this.form,
+        evaluationsPrevues: Array.isArray(this.form.evaluationsPrevues) ? this.form.evaluationsPrevues.join(',') : this.form.evaluationsPrevues,
+        sequencesRowsJson: JSON.stringify(this.sequencesRows),
+        hoursCm: this.form.hCM,
+        hoursTd: this.form.hTD,
+        hoursTp: this.form.hTP,
+        title: this.form.titre,
+        departmentName: this.form.departement,
+        objectives: this.form.description,
+        modalities: this.form.typeEnseignement
       };
 
       try {
-        // 2. Vérification : Édition ou Création ?
-        // On regarde si on est en mode 'edit' ET qu'on a bien un ID dans l'URL
         const id = this.$route.query.id;
         const mode = this.$route.query.mode;
 
         if (mode === 'edit' && id) {
-          // --- MODE MODIFICATION (PUT) ---
-          console.log("Mise à jour de la fiche n°", id);
           await axios.put(`/resource-sheets/${id}`, payload);
-          alert("Fiche modifiée avec succès !");
+          alert("Fiche modifiée !");
         } else {
-          // --- MODE CRÉATION (POST) ---
-          console.log("Création d'une nouvelle fiche");
           await axios.post('/resource-sheets', payload);
-          alert("Fiche créée avec succès !");
+          alert("Fiche créée !");
         }
-
-        // 3. Retour à la liste
         this.$router.push({ name: 'liste-fiches-ressources' });
-
-      } catch (error) {
-        console.error("Erreur lors de la sauvegarde :", error);
-        alert("Erreur technique. Vérifie la console.");
+      } catch (e) {
+        console.error("Erreur sauvegarde", e);
+        alert("Erreur technique lors de l'enregistrement.");
       }
-    }
+    },
+
+    addRow() { this.sequencesRows.push({ id: this.nextRowId++, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }); },
+    deleteRow(id) { if (this.sequencesRows.length > 1) this.sequencesRows = this.sequencesRows.filter(r => r.id !== id); },
+    validatePositive(row, field) { if (row[field] < 0) row[field] = 0; },
+    nextStep() { if (this.currentStep < 6) this.currentStep++; },
+    prevStep() { if (this.currentStep > 1) this.currentStep--; }
   }
 };
 </script>

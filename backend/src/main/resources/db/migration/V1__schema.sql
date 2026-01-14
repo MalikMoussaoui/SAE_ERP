@@ -46,16 +46,29 @@ CREATE TABLE sae (
 );
 
 CREATE TABLE resource_sheet (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    status TEXT NOT NULL DEFAULT 'DRAFT',
-    objectives TEXT NOT NULL,
-    modalities TEXT NOT NULL,
-    hours_cm INT NOT NULL DEFAULT 0,
-    hours_td INT NOT NULL DEFAULT 0,
-    hours_tp INT NOT NULL DEFAULT 0,
-    version INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now()
+     id UUID PRIMARY KEY,
+     titre VARCHAR(255),
+     code VARCHAR(50),
+     semestre VARCHAR(10),
+     ue VARCHAR(100),
+     departement VARCHAR(255),
+     description TEXT,
+     h_cm DOUBLE PRECISION,
+     h_td DOUBLE PRECISION,
+     h_tp DOUBLE PRECISION,
+     type_evaluation VARCHAR(100),
+     coefficient_ressource DOUBLE PRECISION,
+     evaluations_prevues VARCHAR(255),
+     note_minimale DOUBLE PRECISION,
+     compensation VARCHAR(10),
+     rattrapage VARCHAR(10),
+     modalite_rattrapage VARCHAR(255),
+     responsable_pedagogique VARCHAR(255),
+     intervenants VARCHAR(255),
+     type_enseignement VARCHAR(50),
+     sequences_rows_json TEXT,
+     created_at TIMESTAMP,
+     updated_at TIMESTAMP
 );
 
 

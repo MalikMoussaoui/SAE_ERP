@@ -1,51 +1,90 @@
-package com.unilim.erp.service;
+package com.unilim.erp.services;
 
+import com.unilim.erp.dto.ResourceSheetDto;
 import com.unilim.erp.entities.ResourceSheet;
 import com.unilim.erp.repositories.ResourceSheetRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ResourceSheetService {
 
-    private final ResourceSheetRepository resourceSheetRepository;
+    private final ResourceSheetRepository repository;
 
-
-    public ResourceSheetService(ResourceSheetRepository resourceSheetRepository) {
-        this.resourceSheetRepository = resourceSheetRepository;
+    public List<ResourceSheetDto> getAll() {
+        return repository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
-    public List<ResourceSheet> getAllResourceSheets() {
-        return resourceSheetRepository.findAll();
+    public ResourceSheetDto getById(UUID id) {
+        return repository.findById(id).map(this::mapToDto).orElseThrow();
     }
 
-    public Optional<ResourceSheet> getResourceSheetById(UUID id) {
-        return resourceSheetRepository.findById(id);
+    public ResourceSheetDto create(ResourceSheetDto dto) {
+        ResourceSheet entity = new ResourceSheet();
+        mapToEntity(dto, entity);
+        return mapToDto(repository.save(entity));
     }
 
-    public ResourceSheet createResourceSheet(ResourceSheet resourceSheet) {
-        return resourceSheetRepository.save(resourceSheet);
+    public ResourceSheetDto update(UUID id, ResourceSheetDto dto) {
+        ResourceSheet entity = repository.findById(id).orElseThrow();
+        mapToEntity(dto, entity);
+        return mapToDto(repository.save(entity));
     }
 
-    // Modifier une fiche existante
-    public ResourceSheet updateResourceSheet(UUID id, ResourceSheet resourceSheetDetails) {
-        return resourceSheetRepository.findById(id)
-                .map(existingSheet -> {
-                    existingSheet.setObjectives(resourceSheetDetails.getObjectives());
-                    existingSheet.setPrerequisites(resourceSheetDetails.getPrerequisites());
-                    existingSheet.setModalities(resourceSheetDetails.getModalities());
-                    existingSheet.setHoursCm(resourceSheetDetails.getHoursCm());
-                    existingSheet.setHoursTd(resourceSheetDetails.getHoursTd());
-                    existingSheet.setHoursTp(resourceSheetDetails.getHoursTp());
-                    return resourceSheetRepository.save(existingSheet);
-                })
-                .orElseThrow(() -> new RuntimeException("Fiche introuvable avec l'ID : " + id));
+    public void delete(UUID id) {
+        repository.deleteById(id);
     }
 
-    public void deleteResourceSheet(UUID id) {
-        resourceSheetRepository.deleteById(id);
+    private void mapToEntity(ResourceSheetDto dto, ResourceSheet entity) {
+        entity.setTitre(dto.getTitre());
+        entity.setDepartement(dto.getDepartement());
+        entity.setDescription(dto.getDescription());
+        entity.setHCM(dto.getHCM());
+        entity.setHTD(dto.getHTD());
+        entity.setHTP(dto.getHTP());
+        entity.setCode(dto.getCode());
+        entity.setUe(dto.getUe());
+        entity.setSemestre(dto.getSemestre());
+        entity.setTypeEvaluation(dto.getTypeEvaluation());
+        entity.setCoefficientRessource(dto.getCoefficientRessource());
+        entity.setEvaluationsPrevues(dto.getEvaluationsPrevues());
+        entity.setNoteMinimale(dto.getNoteMinimale());
+        entity.setCompensation(dto.getCompensation());
+        entity.setRattrapage(dto.getRattrapage());
+        entity.setModaliteRattrapage(dto.getModaliteRattrapage());
+        entity.setResponsablePedagogique(dto.getResponsablePedagogique());
+        entity.setIntervenants(dto.getIntervenants());
+        entity.setTypeEnseignement(dto.getTypeEnseignement()); // Remplace setModalities
+        entity.setSequencesRowsJson(dto.getSequencesRowsJson());
+    }
+
+    private ResourceSheetDto mapToDto(ResourceSheet entity) {
+        ResourceSheetDto dto = new ResourceSheetDto();
+        dto.setId(entity.getId());
+        dto.setTitre(entity.getTitre());
+        dto.setDepartement(entity.getDepartement());
+        dto.setDescription(entity.getDescription());
+        dto.setHCM(entity.getHCM());
+        dto.setHTD(entity.getHTD());
+        dto.setHTP(entity.getHTP());
+        dto.setCode(entity.getCode());
+        dto.setUe(entity.getUe());
+        dto.setSemestre(entity.getSemestre());
+        dto.setTypeEvaluation(entity.getTypeEvaluation());
+        dto.setCoefficientRessource(entity.getCoefficientRessource());
+        dto.setEvaluationsPrevues(entity.getEvaluationsPrevues());
+        dto.setNoteMinimale(entity.getNoteMinimale());
+        dto.setCompensation(entity.getCompensation());
+        dto.setRattrapage(entity.getRattrapage());
+        dto.setModaliteRattrapage(entity.getModaliteRattrapage());
+        dto.setResponsablePedagogique(entity.getResponsablePedagogique());
+        dto.setIntervenants(entity.getIntervenants());
+        dto.setTypeEnseignement(entity.getTypeEnseignement());
+        dto.setSequencesRowsJson(entity.getSequencesRowsJson());
+        return dto;
     }
 }

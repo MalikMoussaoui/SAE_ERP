@@ -24,13 +24,15 @@
         <div v-for="sheet in sheets" :key="sheet.id" class="mccc-card">
 
           <div class="card-header">
-            <h3 class="ue-title">{{ sheet.title || 'Sans titre' }}</h3>
-            <span class="chip">{{ sheet.departmentName }}</span>
+            <h3 class="ue-title">
+              {{ sheet.code || 'Sans code' }} - {{ sheet.ue || 'Sans UE' }}
+            </h3>
+            <span class="chip">{{ sheet.departement || sheet.departmentName }}</span>
           </div>
 
           <div class="card-meta">
             <span class="meta-label">Dernière modification :</span>
-            <span class="meta-value">{{ formatDate(sheet.updatedAt || sheet.createdAt) }}</span>
+            <span class="meta-value">{{ formatDate(sheet.updatedAt || sheet.updated_at || sheet.createdAt || sheet.created_at) }}</span>
           </div>
 
           <div class="card-actions">
@@ -82,6 +84,7 @@ export default {
     async loadEntries() {
       this.loading = true;
       try {
+        // Note : Vérifie si ton backend utilise /api/resource-sheets ou /resource-sheets
         const response = await axios.get('/resource-sheets');
         this.sheets = response.data.reverse();
       } catch (error) {
@@ -100,13 +103,17 @@ export default {
         alert("Impossible de supprimer cette fiche.");
       }
     },
+    // LOGIQUE DE DATE CORRIGÉE
     formatDate(isoString) {
       if (!isoString) return 'Date inconnue';
       const date = new Date(isoString);
+      // Vérifie si la date est valide
+      if (isNaN(date.getTime())) return 'Date inconnue';
+
       return date.toLocaleString('fr-FR', {
         year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
         hour: '2-digit',
         minute: '2-digit'
       });
@@ -116,6 +123,7 @@ export default {
 </script>
 
 <style scoped>
+/* Le style reste inchangé comme demandé */
 .page-title {
   font-family: var(--font-primary, 'Poppins', sans-serif);
   font-size: 2.2rem;
@@ -132,11 +140,10 @@ export default {
   box-shadow: var(--shadow, 0 4px 10px rgba(0,0,0,0.05));
 }
 
-/* --- NOUVEAU STYLE POUR LE CONTENEUR DU BOUTON --- */
 .surface-header-actions {
   display: flex;
-  justify-content: flex-end; /* Aligne le bouton à droite */
-  margin-bottom: 20px; /* Espace avant la liste */
+  justify-content: flex-end;
+  margin-bottom: 20px;
 }
 
 .btn-add {
@@ -210,10 +217,8 @@ export default {
   font-weight: 600;
 }
 
-/* --- CORRECTION DARK MODE --- */
 .meta-value {
   font-weight: 600;
-  /* Utilise la variable CSS globale au lieu d'une couleur fixe */
   color: var(--color-text-header, #333);
 }
 

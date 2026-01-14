@@ -3,71 +3,122 @@ package com.unilim.erp.controller;
 import com.unilim.erp.dto.ResourceSheetDto;
 import com.unilim.erp.entities.ResourceSheet;
 import com.unilim.erp.repositories.ResourceSheetRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/resource-sheets")
-@CrossOrigin(origins = "*")
+@RequiredArgsConstructor
 public class ResourceSheetController {
 
-    @Autowired
-    private ResourceSheetRepository resourceSheetRepository;
+    private final ResourceSheetRepository resourceSheetRepository;
 
     @GetMapping
-    public List<ResourceSheet> getAll() {
-        return resourceSheetRepository.findAll();
+    public List<ResourceSheetDto> getAllResourceSheets() {
+        return resourceSheetRepository.findAll().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResourceSheet> getOne(@PathVariable UUID id) {
+    public ResponseEntity<ResourceSheetDto> getResourceSheetById(@PathVariable UUID id) {
         return resourceSheetRepository.findById(id)
+                .map(this::mapToDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
-    public ResponseEntity<ResourceSheet> create(@RequestBody ResourceSheetDto dto) {
-        ResourceSheet sheet = new ResourceSheet();
-        updateEntityFromDto(sheet, dto); // On utilise une méthode commune pour remplir
-        return ResponseEntity.ok(resourceSheetRepository.save(sheet));
+    public ResourceSheetDto createResourceSheet(@RequestBody ResourceSheetDto resourceSheetDto) {
+        ResourceSheet resourceSheet = new ResourceSheet();
+        mapToEntity(resourceSheetDto, resourceSheet);
+        ResourceSheet savedSheet = resourceSheetRepository.save(resourceSheet);
+        return mapToDto(savedSheet);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResourceSheet> update(@PathVariable UUID id, @RequestBody ResourceSheetDto dto) {
-        // 1. On cherche la fiche existante
+    public ResponseEntity<ResourceSheetDto> updateResourceSheet(@PathVariable UUID id, @RequestBody ResourceSheetDto resourceSheetDto) {
         return resourceSheetRepository.findById(id)
                 .map(existingSheet -> {
-                    // 2. On met à jour ses infos
-                    updateEntityFromDto(existingSheet, dto);
-                    // 3. On sauvegarde (JPA comprend que c'est une mise à jour car l'ID existe déjà)
-                    return ResponseEntity.ok(resourceSheetRepository.save(existingSheet));
+                    mapToEntity(resourceSheetDto, existingSheet);
+                    ResourceSheet updatedSheet = resourceSheetRepository.save(existingSheet);
+                    return ResponseEntity.ok(mapToDto(updatedSheet));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> deleteResourceSheet(@PathVariable UUID id) {
         if (resourceSheetRepository.existsById(id)) {
             resourceSheetRepository.deleteById(id);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
 
-    private void updateEntityFromDto(ResourceSheet sheet, ResourceSheetDto dto) {
-        sheet.setTitle(dto.getTitre());
-        sheet.setDepartmentName(dto.getDepartement());
-        sheet.setObjectives(dto.getDescription());
-        sheet.setHoursCm(dto.getHCM());
-        sheet.setHoursTd(dto.getHTD());
-        sheet.setHoursTp(dto.getHTP());
+    private void mapToEntity(ResourceSheetDto dto, ResourceSheet entity) {
+        entity.setTitre(dto.getTitre());
+        entity.setDepartement(dto.getDepartement());
+        entity.setCode(dto.getCode());
+        entity.setUe(dto.getUe());
+        entity.setSemestre(dto.getSemestre());
+        entity.setDescription(dto.getDescription());
 
-        if (sheet.getStatus() == null) sheet.setStatus("DRAFT");
-        if (sheet.getVersion() == 0) sheet.setVersion(1);
+        entity.setHCM(dto.getHCM());
+        entity.setHTD(dto.getHTD());
+        entity.setHTP(dto.getHTP());
+
+        entity.setTypeEvaluation(dto.getTypeEvaluation());
+        entity.setCoefficientRessource(dto.getCoefficientRessource());
+        entity.setEvaluationsPrevues(dto.getEvaluationsPrevues());
+
+        entity.setNoteMinimale(dto.getNoteMinimale());
+        entity.setCompensation(dto.getCompensation());
+        entity.setRattrapage(dto.getRattrapage());
+        entity.setModaliteRattrapage(dto.getModaliteRattrapage());
+
+        entity.setTypeEnseignement(dto.getTypeEnseignement());
+        entity.setResponsablePedagogique(dto.getResponsablePedagogique());
+        entity.setIntervenants(dto.getIntervenants());
+        entity.setSequencesRowsJson(dto.getSequencesRowsJson());
+    }
+
+    private ResourceSheetDto mapToDto(ResourceSheet entity) {
+        ResourceSheetDto dto = new ResourceSheetDto();
+        dto.setId(entity.getId());
+
+        dto.setTitre(entity.getTitre());
+        dto.setDepartement(entity.getDepartement());
+        dto.setCode(entity.getCode());
+        dto.setUe(entity.getUe());
+        dto.setSemestre(entity.getSemestre());
+        dto.setDescription(entity.getDescription());
+
+        dto.setHCM(entity.getHCM());
+        dto.setHTD(entity.getHTD());
+        dto.setHTP(entity.getHTP());
+
+        dto.setTypeEvaluation(entity.getTypeEvaluation());
+        dto.setCoefficientRessource(entity.getCoefficientRessource());
+        dto.setEvaluationsPrevues(entity.getEvaluationsPrevues());
+
+        dto.setNoteMinimale(entity.getNoteMinimale());
+        dto.setCompensation(entity.getCompensation());
+        dto.setRattrapage(entity.getRattrapage());
+        dto.setModaliteRattrapage(entity.getModaliteRattrapage());
+
+        dto.setTypeEnseignement(entity.getTypeEnseignement());
+        dto.setResponsablePedagogique(entity.getResponsablePedagogique());
+        dto.setIntervenants(entity.getIntervenants());
+        dto.setSequencesRowsJson(entity.getSequencesRowsJson());
+        dto.setCreatedAt(entity.getCreatedAt());
+        dto.setUpdatedAt(entity.getUpdatedAt());
+
+        return dto;
     }
 }
