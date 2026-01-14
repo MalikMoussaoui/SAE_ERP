@@ -64,20 +64,6 @@ export const messages = {
             connect: "Se connecter",
             error: "Nom d'utilisateur ou mot de passe incorrect."
         },
-        addUser: {
-            headerTitle: "Gestionnaire",
-            formTitle: "Ajouter/Modifier un utilisateur",
-            firstName: "Prénom",
-            firstNamePlaceholder: "Entrer le prénom",
-            lastName: "Nom",
-            lastNamePlaceholder: "Entrer le nom",
-            position: "Poste",
-            positionPlaceholder: "Entrer le poste",
-            department: "Département",
-            departmentPlaceholder: "Entrer le département",
-            validate: "Valider",
-            back: "Retour"
-        },
         mccc: {
             generalOrganization: "Organisation générale",
             department: "Département",
@@ -287,20 +273,6 @@ export const messages = {
             connect: "Login",
             error: "Incorrect username or password."
         },
-        addUser: {
-            headerTitle: "Manager",
-            formTitle: "Add/Edit a user",
-            firstName: "First Name",
-            firstNamePlaceholder: "Enter first name",
-            lastName: "Last Name",
-            lastNamePlaceholder: "Enter last name",
-            position: "Position",
-            positionPlaceholder: "Enter position",
-            department: "Department",
-            departmentPlaceholder: "Enter department",
-            validate: "Validate",
-            back: "Back"
-        },
         mccc: {
             generalOrganization: "General Organization",
             department: "Department",
@@ -446,14 +418,3 @@ export const messages = {
         }
     }
 };
-
-
-
-
-
-
-
-
-
-
-

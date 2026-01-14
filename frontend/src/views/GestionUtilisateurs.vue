@@ -58,10 +58,6 @@
         </table>
       </div>
     </div>
-
-    <div class="footer-actions">
-      <button class="btn-add" @click="$router.push('/user-management/add')">{{ $t('roleManagement.addUser') }}</button>
-    </div>
     </div>
   </DashboardLayout>
 </template>
@@ -150,11 +146,6 @@ tr:hover { background-color: var(--color-hover-bg, #fdfdfd); }
 .actions { text-align: right; }
 .action-link { color: var(--color-primary, #C00000); text-decoration: none; margin-left: 10px; font-size: 0.9rem; font-weight: 500; }
 .action-link:hover { text-decoration: underline; }
-
-/* --- Bouton Ajouter --- */
-.footer-actions { display: flex; justify-content: center; padding-bottom: 2rem; }
-.btn-add { background-color: var(--color-primary, #C00000); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-size: 1.1rem; font-family: var(--font-primary, 'Poppins', sans-serif); font-weight: 600; cursor: pointer; box-shadow: 0 4px 10px rgba(192, 0, 0, 0.2); transition: background 0.3s; }
-.btn-add:hover { background-color: var(--color-primary-dark, #a00000); }
 
 .table-scroll::-webkit-scrollbar { width: 8px; }
 .table-scroll::-webkit-scrollbar-track { background: var(--color-sidebar-bg, #f1f1f1); }

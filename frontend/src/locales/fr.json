@@ -63,20 +63,6 @@
     "connect": "Se connecter",
     "error": "Nom d'utilisateur ou mot de passe incorrect."
   },
-  "addUser": {
-    "headerTitle": "Gestionnaire",
-    "formTitle": "Ajouter/Modifier un utilisateur",
-    "firstName": "Prenom",
-    "firstNamePlaceholder": "Entrer le prenom",
-    "lastName": "Nom",
-    "lastNamePlaceholder": "Entrer le nom",
-    "position": "Poste",
-    "positionPlaceholder": "Entrer le poste",
-    "department": "Departement",
-    "departmentPlaceholder": "Entrer le departement",
-    "validate": "Valider",
-    "back": "Retour"
-  },
   "mccc": {
     "generalOrganization": "Organisation generale",
     "department": "Departement",

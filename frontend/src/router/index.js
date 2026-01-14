@@ -3,7 +3,6 @@ import ConnexionView from '../views/Connexion.vue'
 import DashboardView from '../views/Dashboard.vue'
 import GestionUtilisateurs from '../views/GestionUtilisateurs.vue'
 import Parametres from '../views/Parametres.vue'
-import AjoutUtilisateur from '../views/AjoutUtilisateur.vue'
 import McccView from '../views/Mccc.vue'
 import FicheRessourceView from '../views/FicheRessource.vue'
 import ListeFichesRessources from '../views/ListeFichesRessources.vue'
@@ -44,11 +43,6 @@ const router = createRouter({
       path: '/user-management',
       name: 'user-management',
       component: GestionUtilisateurs
-    },
-    {
-      path: '/user-management/add',
-      name: 'user-management-add',
-      component: AjoutUtilisateur
     },
     {
       path: '/mccc',
