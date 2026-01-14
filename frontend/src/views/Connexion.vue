@@ -53,13 +53,15 @@ export default {
       this.isLoading = true;
 
       try {
-        const response = await axios.post('http://164.81.120.78:8080/api/auth/login', {
+        const response = await axios.post('http://localhost:8080/api/auth/login', {
           email: this.username,
           password: this.password
         });
 
         const token = response.data.token;
         localStorage.setItem('user-token', token);
+        localStorage.setItem('userRole', response.data.role);
+         localStorage.setItem('userName', response.data.name);
 
         // Redirection vers le dashboard
         this.$router.push('/dashboard');
