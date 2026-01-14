@@ -204,8 +204,8 @@ export default {
 
 html[data-theme="dark"] {
   /* Thème Sombre (Overrides) */
-  --color-primary: #f90e0e;
-  --color-primary-rgb: 249, 14, 14;
+  --color-primary: #C00000;
+  --color-primary-rgb: 192, 0, 0;
   --color-bg: #1a1a1a;
   --color-sidebar-bg: #252525;
   --color-card-bg: #2c2c2c;

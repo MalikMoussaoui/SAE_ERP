@@ -86,6 +86,10 @@ export default {
     const theme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', theme);
     document.title = "Gest'IUT";
+  },
+  mounted() {
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
   }
 };
 </script>
@@ -96,6 +100,9 @@ export default {
   --bg-color: #f8f9fa;
   --card-bg: #ffffff;
   --text-main: #333;
+  --color-primary: #C00000;
+  --color-primary-dark: #a00000;
+  --color-primary-rgb: 192, 0, 0;
   --text-muted: rgba(51, 51, 51, 0.6); /* Remplace color #333 + opacity 60% */
   --input-border: #ddd;
   --input-focus: #C00000;
@@ -109,7 +116,7 @@ export default {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: var(--bg-color);
   font-family: 'Montserrat', sans-serif;
   padding: 2rem 0;
   box-sizing: border-box;
@@ -121,7 +128,7 @@ export default {
 }
 
 .login-card {
-  background: #ffffff;
+  background: var(--card-bg);
   padding: 2.5rem 3rem;
   border-radius: 20px;
   box-shadow: 0 10px 30px var(--shadow-color);
@@ -144,11 +151,11 @@ export default {
 h2 {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-main);
   margin-bottom: 2rem;
   font-family: 'Poppins', sans-serif;
   margin-top: 1.5rem;
-  opacity: 60%;
+  opacity: 0.6;
 }
 
 .input-group {
@@ -161,13 +168,13 @@ h2 {
   width: 100%;
   padding: 12px 12px 12px 40px; /* Espace à gauche pour l'icône */
   border: none;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--input-border);
   font-size: 1rem;
   transition: border-color 0.3s;
   background-color: transparent;
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
-  color: var(--color-text-body, #333);
+  color: var(--text-main);
 }
 
 /* Corrige le fond jaune de l'autocomplétion Chrome */
@@ -175,14 +182,14 @@ h2 {
 .input-group input:-webkit-autofill:hover,
 .input-group input:-webkit-autofill:focus,
 .input-group input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px var(--color-card-bg, white) inset !important;
-  box-shadow: 0 0 0 30px var(--color-card-bg, white) inset !important;
-  -webkit-text-fill-color: var(--color-text-body, #333) !important;
+  -webkit-box-shadow: 0 0 0 30px var(--card-bg, white) inset !important;
+  box-shadow: 0 0 0 30px var(--card-bg, white) inset !important;
+  -webkit-text-fill-color: var(--text-main, #333) !important;
 }
 
 .input-group input:focus {
   outline: none;
-  border-bottom-color: #C00000;
+  border-bottom-color: var(--color-primary);
 }
 
 .input-group .icon-img {
@@ -255,33 +262,13 @@ button:focus {
   100% { transform: rotate(360deg); }
 }
 
-/* --- DEFINITION DU MODE SOMBRE --- */
-/* Appliqué si préférence système OU classe .dark sur body/html */
+</style>
 
-@media (prefers-color-scheme: dark) {
-  .page-container {
-    --bg-color: #121212;
-    --card-bg: #1e1e1e;
-    --text-main: #f5f5f5;
-    --text-muted: rgba(245, 245, 245, 0.9);
-    --input-border: #555;
-    --shadow-color: rgba(0, 0, 0, 0.5);
-    --icon-filter: brightness(0) invert(1);
-    --overlay-bg: rgba(30, 30, 30, 0.9);
-    --spinner-border: #444;
-  }
-  .input-group input:-webkit-autofill,
-  .input-group input:-webkit-autofill:hover,
-  .input-group input:-webkit-autofill:focus,
-  .input-group input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 30px #1e1e1e inset !important;
-    box-shadow: 0 0 0 30px #1e1e1e inset !important;
-    -webkit-text-fill-color: #f5f5f5 !important;
-  }
-}
+<style>
+/* --- DEFINITION DU MODE SOMBRE (GLOBAL) --- */
+/* Sorti du scoped pour garantir la priorité sur html[data-theme="dark"] */
 
-/* Support manuel via classe .dark (ex: toggle dans l'app) */
-:global(.dark) .page-container {
+html[data-theme="dark"] .page-container {
   --bg-color: #121212;
   --card-bg: #1e1e1e;
   --text-main: #f5f5f5;
@@ -291,12 +278,14 @@ button:focus {
   --icon-filter: brightness(0) invert(1);
   --overlay-bg: rgba(30, 30, 30, 0.9);
   --spinner-border: #444;
+  --color-primary: #C00000; /* Rouge standard conservé */
+  --color-primary-dark: #a00000;
 }
 
-:global(.dark) .input-group input:-webkit-autofill,
-:global(.dark) .input-group input:-webkit-autofill:hover,
-:global(.dark) .input-group input:-webkit-autofill:focus,
-:global(.dark) .input-group input:-webkit-autofill:active {
+html[data-theme="dark"] .input-group input:-webkit-autofill,
+html[data-theme="dark"] .input-group input:-webkit-autofill:hover,
+html[data-theme="dark"] .input-group input:-webkit-autofill:focus,
+html[data-theme="dark"] .input-group input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 30px #1e1e1e inset !important;
   box-shadow: 0 0 0 30px #1e1e1e inset !important;
   -webkit-text-fill-color: #f5f5f5 !important;
