@@ -100,6 +100,8 @@
     "totalCoefficient": "Total Coefficient",
     "total": "Total",
     "validationRule": "Validation Rule",
+    "compensation": "Compensation",
+    "retake": "Retake",
     "attachment": "Attachment",
     "validationAndMore": "Validation Rules and Attachment",
     "baseline": "Baseline",
@@ -130,9 +132,9 @@
     "save": "Save",
     "saveMissingFields": "Please fill in the department and UE before saving.",
     "step1_label": "General Information",
-    "step2_label": "Details and Rules",
-    "step3_label": "Resources Table",
-    "resourceToWrite": "Resource (to write)"
+    "step2_label": "Details",
+    "step3_label": "Evaluation",
+    "resourceToWrite": "Resource sheet code"
   },
   "mcccList": {
     "empty": "No MCCC sheet saved for now.",
@@ -143,7 +145,7 @@
   "resourceSheet": {
     "step1_label": "Identification",
     "step2_label": "Volume & Details",
-    "step3_label": "Sequences",
+    "step3_label": "Hourly volume",
     "generalInfo": "General Information",
     "resourceTitle": "Resource Title",
     "resourceCode": "Code (ex: R1.01)",
@@ -165,6 +167,8 @@
     "addSequence": "Add a sequence"
   },
   "common": {
+    "yes": "Yes",
+    "no": "No",
     "loading": "Loading...",
     "connecting": "Connecting...",
     "error": {

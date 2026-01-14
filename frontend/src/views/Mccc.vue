@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <DashboardLayout>
     <template #header>
       <h1 class="page-title">{{ $t('nav.mccc') }}</h1>
@@ -61,22 +61,8 @@
               </select>
             </label>
             <label class="field">
-              <span>{{ $t('mccc.modality') }}</span>
-              <select v-model="form.modalite" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.chooseModality') }}</option>
-                <option v-for="option in modalites" :key="option" :value="option">{{ option }}</option>
-              </select>
-            </label>
-            <label class="field">
               <span>{{ $t('mccc.resourceToWrite') }}</span>
-              <input v-model="form.ressource" class="pill-select pill-input" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
-            </label>
-            <label class="field">
-              <span>{{ $t('mccc.evaluationType') }}</span>
-              <select v-model="form.typeEvaluation" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.select') }}</option>
-                <option v-for="option in typesEvaluation" :key="option" :value="option">{{ option }}</option>
-              </select>
+              <input v-model="form.code" class="pill-select pill-input" :placeholder="$t('resourceSheet.resourceCode')" :disabled="isReadOnly" />
             </label>
             <label class="field">
               <span>{{ $t('mccc.competenceLevel') }}</span>
@@ -112,6 +98,13 @@
           <h3>{{ $t('mccc.validationAndMore') }}</h3>
           <div class="card-fields">
             <label class="field">
+              <span>{{ $t('mccc.evaluationType') }}</span>
+              <select v-model="form.typeEvaluation" class="pill-select" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
+                <option v-for="option in typesEvaluation" :key="option" :value="option">{{ option }}</option>
+              </select>
+            </label>
+            <label class="field">
               <span>{{ $t('mccc.validationRule') }}</span>
               <select v-model="form.regleValidation" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
@@ -119,25 +112,21 @@
               </select>
             </label>
             <label class="field">
-              <span>{{ $t('mccc.attachment') }}</span>
-              <select v-model="form.rattachement" class="pill-select" :disabled="isReadOnly">
+              <span>{{ $t('mccc.retake') }}</span>
+              <select v-model="form.rattrapage" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
-                <option v-for="option in rattachements" :key="option" :value="option">{{ option }}</option>
+                <option value="OUI">{{ $t('common.yes') }}</option>
+                <option value="NON">{{ $t('common.no') }}</option>
               </select>
             </label>
             <label class="field">
-              <span>{{ $t('mccc.bareme') }}</span>
-              <select v-model="form.bareme" class="pill-select" :disabled="isReadOnly">
+              <span>{{ $t('mccc.compensation') }}</span>
+              <select v-model="form.compensation" class="pill-select" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
-                <option v-for="option in baremes" :key="option" :value="option">{{ option }}</option>
+                <option value="OUI">{{ $t('common.yes') }}</option>
+                <option value="NON">{{ $t('common.no') }}</option>
               </select>
             </label>
-          </div>
-        </div>
-
-        <div class="info-card">
-          <h3>{{ $t('mccc.pedagogicalDetails') }}</h3>
-          <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.pedagogicalManager') }}</span>
               <select v-model="form.responsable" class="pill-select" :disabled="isReadOnly">
@@ -252,8 +241,7 @@ export default {
         departement: '',
         annee: '',
         semestre: '',
-        modalite: '',
-        ressource: '',
+        code: '',
         typeEvaluation: '',
         ue: '',
         niveauCompetence: '',
@@ -261,6 +249,8 @@ export default {
         coeffRessource: '',
         coeffTotal: '',
         regleValidation: '',
+        rattrapage: '',
+        compensation: '',
         rattachement: '',
         bareme: '',
         responsable: '',
@@ -284,8 +274,7 @@ export default {
       ],
       semestres: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
       annees: ['1ere annee (BUT1)', '2eme annee (BUT2)', '3eme annee (BUT3)'],
-      modalites: ['Controle continu integral', 'Controle terminal', 'Mixte (CCI + final)', 'Projet tutore'],
-      typesEvaluation: ['Dossier + soutenance', 'QCM / ecrit surveille', 'Projet en equipe', 'Etude de cas', 'Oral individuel'],
+      typesEvaluation: ['Soutenance', 'QCM', 'SAé', 'Devoir sur table', 'Rapport de stage'],
       uesByDepartement: {
         'BUT Informatique': [
           'UE Realiser des applications',
@@ -389,10 +378,10 @@ export default {
       coeffsSae: ['0,5', '1', '1,5', '2', '3'],
       coeffsRessource: ['0,25', '0,5', '1', '1,5', '2'],
       coeffsTotal: ['2', '3', '4', '5', '6'],
-      reglesValidation: ['Compensation de semestre', 'Capitalisation dUE', 'Seuil minimal par ressource', 'Session de rattrapage'],
+      reglesValidation: ['Compensation de semestre', 'Capitalisation UE', 'Seuil minimal par ressource', 'Session de rattrapage'],
       rattachements: ['Tronc commun', 'Parcours cybersecurite (INF)', 'Parcours data / IA', 'Parcours creation numerique (MMI)', 'Parcours commerce international (TC)'],
       baremes: ['Referentiel national BUT 2024', 'Adaptation locale IUT', 'Maquette formation initiale', 'Maquette apprentissage'],
-      responsables: ['Coordonnateur de semestre', 'Responsable de diplome', 'Responsable dUE', 'Referent SAE'],
+      responsables: ['Vacataire', 'Responsable dUE', 'Referent SAE','Professeur'],
       objectifs: [
         'Valider les competences du semestre',
         'Preparer la professionnalisation',
@@ -465,7 +454,8 @@ export default {
             departement: mccc.departement || mccc.department || mccc.form?.departement || '',
             ue: mccc.ue || mccc.form?.ue || '',
             annee: mccc.annee || mccc.years || mccc.form?.annee || '',
-            semestre: mccc.semestre || mccc.semester || mccc.form?.semestre || ''
+            semestre: mccc.semestre || mccc.semester || mccc.form?.semestre || '',
+            code: mccc.form?.code || mccc.form?.ressource || ''
         };
 
         if(this.form.departement) {
@@ -526,7 +516,7 @@ export default {
         ue: this.form.ue,
         years: this.form.annee,
         semester: this.form.semestre,
-        form: { ...this.form },
+        form: { ...this.form, ressource: this.form.code || this.form.ressource || '' },
         ressourcesRows: this.ressourcesRows
       };
 

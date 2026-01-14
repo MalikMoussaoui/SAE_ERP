@@ -100,7 +100,9 @@ export const messages = {
             resourceCoefficient: "Coefficient ressource",
             totalCoefficient: "Coefficient total",
             total: "Total",
-            validationRule: "Règle de validation",
+            validationRule: "R\u00e8gle de validation",
+            retake: "Rattrapage",
+            compensation: "Compensation",
             attachment: "Rattachement",
             validationAndMore: "Règles de validation et rattachement",
             bareme: "Barème",
@@ -132,9 +134,9 @@ export const messages = {
             save: "Enregistrer",
             saveMissingFields: "Veuillez renseigner le département et l'UE avant d'enregistrer.",
             step1_label: "Informations générales",
-            step2_label: "Volume & Détails",
-            step3_label: "Modalités d'évaluation",
-            resourceToWrite: "Ressource (à écrire)"
+            step2_label: "Details",
+            step3_label: "Volume horaire",
+            resourceToWrite: "Code de la fiche ressource"
         },
         mcccList: {
             empty: "Aucune fiche MCCC enregistrée pour le moment.",
@@ -145,7 +147,7 @@ export const messages = {
         resourceSheet: {
             step1_label: "Identification",
             step2_label: "Volume & D\u00e9tails",
-            step3_label: "Modalit\u00e9s d'\u00e9valuation",
+            step3_label: "Evaluation",
             step4_label: "R\u00e8gles de validation",
             step5_label: "Organisation p\u00e9dagogique",
             step6_label: "S\u00e9quences",
@@ -322,6 +324,8 @@ export const messages = {
             totalCoefficient: "Total Coefficient",
             total: "Total",
             validationRule: "Validation Rule",
+            retake: "Retake",
+            compensation: "Compensation",
             attachment: "Attachment",
             validationAndMore: "Validation Rules and Attachment",
             bareme: "Grading Scale",
@@ -353,9 +357,9 @@ export const messages = {
             save: "Save",
             saveMissingFields: "Please fill in the department and UE before saving.",
             step1_label: "General Information",
-            step2_label: "Details and Rules",
-            step3_label: "Resources Table",
-            resourceToWrite: "Resource (to write)"
+            step2_label: "Details",
+            step3_label: "Hourly volume",
+            resourceToWrite: "Resource sheet code"
         },
         mcccList: {
             empty: "No MCCC sheet saved for now.",
@@ -366,7 +370,7 @@ export const messages = {
         resourceSheet: {
             step1_label: "Identification",
             step2_label: "Volume & Details",
-            step3_label: "Assessment Methods",
+            step3_label: "Evaluation",
             step4_label: "Validation Rules",
             step5_label: "Pedagogical Organization",
             step6_label: "Sequences",
@@ -442,3 +446,14 @@ export const messages = {
         }
     }
 };
+
+
+
+
+
+
+
+
+
+
+

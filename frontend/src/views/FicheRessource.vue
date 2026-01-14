@@ -113,20 +113,10 @@
           <div class="card-fields single-col">
             <label class="field full">
               <span>{{ $t('resourceSheet.evaluationType') }}</span>
-              <div class="choice-group">
-                <label class="choice">
-                  <input v-model="form.typeEvaluation" type="radio" value="CC" :disabled="isReadOnly" />
-                  <span>{{ $t('resourceSheet.evaluationTypeCc') }}</span>
-                </label>
-                <label class="choice">
-                  <input v-model="form.typeEvaluation" type="radio" value="EXAMEN" :disabled="isReadOnly" />
-                  <span>{{ $t('resourceSheet.evaluationTypeExam') }}</span>
-                </label>
-                <label class="choice">
-                  <input v-model="form.typeEvaluation" type="radio" value="CC_EXAMEN" :disabled="isReadOnly" />
-                  <span>{{ $t('resourceSheet.evaluationTypeBoth') }}</span>
-                </label>
-              </div>
+              <select v-model="form.typeEvaluation" class="pill-select" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('mccc.select') }}</option>
+                <option v-for="option in typesEvaluation" :key="option" :value="option">{{ option }}</option>
+              </select>
             </label>
             <label class="field full">
               <span>{{ $t('resourceSheet.evaluationsPlanned') }}</span>
@@ -375,6 +365,7 @@ export default {
         'BUT Carrieres Sociales'
       ],
       semestres: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
+      typesEvaluation: ['Soutenance', 'QCM', 'SAé', 'Devoir sur table', 'Rapport de stage'],
       uesByDepartement: {
         'BUT Informatique': [
           'UE Realiser des applications',
@@ -384,7 +375,94 @@ export default {
           'UE Conduire un projet',
           'UE Collaborer dans un environnement professionnel'
         ],
-        // ... (Autres départements identiques à Mccc.vue, abrégé pour l'exemple)
+        'BUT GEA - Gestion des Entreprises et des Administrations': [
+          'UE Gerer les organisations',
+          'UE Piloter la performance',
+          "UE Produire l information comptable financiere et de gestion",
+          'UE Developper une activite economique',
+          'UE Conduire un projet',
+          'UE Communiquer et travailler en equipe'
+        ],
+        'BUT TC - Techniques de Commercialisation': [
+          'UE Developper la relation client',
+          'UE Mettre en oeuvre une strategie marketing',
+          'UE Vendre une offre commerciale',
+          "UE Analyser le marche et l environnement",
+          'UE Conduire un projet commercial',
+          'UE Communiquer dans un contexte professionnel'
+        ],
+        'BUT Mesures Physiques (MP)': [
+          'UE Realiser des mesures physiques',
+          'UE Exploiter des donnees experimentales',
+          'UE Mettre en oeuvre des protocoles experimentaux',
+          'UE Caracteriser des systemes physiques',
+          'UE Conduire un projet scientifique',
+          'UE Communiquer en milieu scientifique'
+        ],
+        'BUT Genie Mecanique et Productique (GMP)': [
+          'UE Concevoir des systemes mecaniques',
+          'UE Industrialiser un produit',
+          'UE Organiser et gerer la production',
+          'UE Ameliorer les performances industrielles',
+          'UE Conduire un projet industriel',
+          'UE Communiquer dans l industrie'
+        ],
+        'BUT GEII - Genie Electrique et Informatique Industrielle': [
+          'UE Concevoir des systemes electroniques et automatises',
+          'UE Programmer et exploiter des systemes industriels',
+          'UE Mettre en oeuvre des reseaux industriels',
+          'UE Maintenir et ameliorer des installations',
+          'UE Conduire un projet industriel',
+          'UE Communiquer dans un contexte technique'
+        ],
+        'BUT Genie Civil - Construction Durable': [
+          'UE Concevoir des ouvrages de construction',
+          'UE Dimensionner des structures',
+          'UE Organiser un chantier',
+          'UE Integrer le developpement durable',
+          'UE Conduire un projet de construction',
+          'UE Communiquer dans le secteur du BTP'
+        ],
+        'BUT Genie Biologique (GB)': [
+          'UE Realiser des analyses biologiques',
+          'UE Exploiter des resultats experimentaux',
+          'UE Mettre en oeuvre des procedes biologiques',
+          'UE Assurer la qualite et la securite',
+          'UE Conduire un projet scientifique',
+          'UE Communiquer dans un contexte biologique'
+        ],
+        "BUT MMI - Metiers du Multimedia et de l'Internet": [
+          'UE Concevoir des produits multimedia',
+          'UE Developper des dispositifs interactifs',
+          'UE Creer des contenus graphiques et audiovisuels',
+          'UE Mettre en oeuvre une strategie de communication',
+          'UE Conduire un projet multimedia',
+          'UE Travailler en equipe et communiquer'
+        ],
+        'BUT GIM - Genie Industriel et Maintenance': [
+          'UE Maintenir des systemes industriels',
+          'UE Ameliorer la fiabilite des equipements',
+          'UE Diagnostiquer des pannes',
+          'UE Optimiser la maintenance',
+          'UE Conduire un projet industriel',
+          'UE Communiquer en milieu professionnel'
+        ],
+        'BUT HSE - Hygiene, Securite, Environnement': [
+          'UE Prevenir les risques professionnels',
+          'UE Gerer la securite et la sante au travail',
+          "UE Proteger l environnement",
+          'UE Mettre en conformite reglementaire',
+          'UE Conduire un projet HSE',
+          'UE Communiquer et sensibiliser'
+        ],
+        'BUT Carrieres Sociales': [
+          'UE Analyser les situations sociales',
+          'UE Accompagner des publics',
+          'UE Concevoir des actions sociales',
+          'UE Travailler en reseau partenarial',
+          'UE Conduire un projet social',
+          'UE Communiquer dans le champ social'
+        ]
       },
       availableUes: [],
       sequencesRows: [
@@ -408,15 +486,13 @@ export default {
     'form.departement'(newDepartement) {
       this.availableUes = this.uesByDepartement[newDepartement] || [];
       this.form.ue = '';
+      this.maybeAutoFillFromMccc();
     },
     '$route.query.id'() {
       this.loadFromRoute();
     },
     '$route.query.mode'() {
       this.isReadOnly = this.$route.query.mode === 'view';
-    },
-    'form.departement'() {
-      this.maybeAutoFillFromMccc();
     },
     'form.code'() {
       this.maybeAutoFillFromMccc();
@@ -441,6 +517,20 @@ export default {
       if (value === null || value === undefined) return '';
       return String(value).trim().toLowerCase();
     },
+    mapMcccModaliteToEvaluation(modalite) {
+      const normalized = this.normalizeValue(modalite);
+      if (!normalized) return '';
+      if (normalized.includes('mixte') || normalized.includes('cci') || normalized.includes('final')) {
+        return 'CC_EXAMEN';
+      }
+      if (normalized.includes('terminal')) {
+        return 'EXAMEN';
+      }
+      if (normalized.includes('continu') || normalized.includes('projet')) {
+        return 'CC';
+      }
+      return '';
+    },
     toNumber(value) {
       if (value === null || value === undefined) return 0;
       const normalized = String(value).replace(',', '.');
@@ -450,7 +540,7 @@ export default {
     async fetchMcccEntries() {
       if (this.mcccEntries) return this.mcccEntries;
 
-      const response = await axios.get('/api/mccc');
+      const response = await axios.get('/mccc');
       this.mcccEntries = response.data.map((entry) => {
         const form = entry.form || {};
         return {
@@ -536,6 +626,37 @@ export default {
 
       if (!this.form.ue) {
         this.form.ue = mccc.ue || '';
+      }
+
+      if (!this.form.responsablePedagogique) {
+        const responsable =
+          form.responsable
+          || form.responsablePedagogique
+          || mccc.responsable
+          || mccc.responsablePedagogique
+          || mccc.pedagogicalManager;
+        if (responsable) {
+          this.form.responsablePedagogique = responsable;
+        }
+      }
+
+      if (!this.form.typeEvaluation) {
+        const rawType = String(form.typeEvaluation || '').trim();
+        if (rawType) {
+          this.form.typeEvaluation = rawType;
+        } else {
+          const mappedType = this.mapMcccModaliteToEvaluation(form.modalite);
+          if (mappedType) {
+            this.form.typeEvaluation = mappedType;
+          }
+        }
+      }
+
+      if (this.toNumber(this.form.coefficientRessource) === 0) {
+        const coeff = this.toNumber(form.coeffRessource);
+        if (coeff > 0) {
+          this.form.coefficientRessource = coeff;
+        }
       }
 
       if (this.toNumber(this.form.hCM) === 0) {
