@@ -5,6 +5,14 @@
     </template>
 
     <div class="page-surface resource-surface">
+      <div v-if="isReadOnly" class="pdf-actions">
+        <button type="button" class="btn btn-secondary" @click="openPdfPreview">
+          Consulter PDF
+        </button>
+        <button type="button" class="btn btn-primary" @click="downloadPdf">
+          Telecharger PDF
+        </button>
+      </div>
       <!-- Indicateur d'étapes (Wizard) -->
       <div v-if="!showAllSteps" class="step-indicator">
         <div class="step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
@@ -513,6 +521,202 @@ export default {
     }
   },
   methods: {
+    formatEvaluationType(value) {
+      if (!value) return '';
+      return String(value);
+    },
+    formatEvaluationsPrevues(values) {
+      if (!Array.isArray(values) || !values.length) return '';
+      const labels = {
+        DS: 'DS',
+        TP_NOTE: 'TP note',
+        PROJET: 'Projet',
+        ORAL: 'Oral',
+        RAPPORT: 'Rapport'
+      };
+      return values.map(value => labels[value] || value).join(', ');
+    },
+    formatTeachingType(value) {
+      const labels = {
+        PRESENTIEL: 'Presentiel',
+        DISTANCIEL: 'Distanciel',
+        HYBRIDE: 'Hybride'
+      };
+      return labels[value] || value || '';
+    },
+    openPdfPreview() {
+      this.openPdfWindow(false);
+    },
+    downloadPdf() {
+      this.openPdfWindow(true);
+    },
+    openPdfWindow(autoPrint) {
+      const title = this.form.titre || 'Fiche ressource';
+      const content = `
+        <html>
+          <head>
+            <meta charset="utf-8" />
+            <title>${title}</title>
+            <style>
+              :root { --accent: #c00000; --muted: #666; --border: #e4e4e4; }
+              * { box-sizing: border-box; }
+              body { font-family: "Segoe UI", Arial, sans-serif; color: #111; margin: 28px; }
+              .header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                border-bottom: 2px solid var(--accent);
+                padding-bottom: 10px;
+                margin-bottom: 16px;
+              }
+              .title { font-size: 22px; font-weight: 700; margin: 0; }
+              .subtitle { color: var(--muted); font-size: 12px; }
+              .chip { display: inline-block; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); font-size: 11px; color: var(--muted); }
+              h2 { font-size: 14px; margin: 18px 0 8px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4px; }
+              .section { margin-bottom: 12px; }
+              .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; }
+              .field { padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; }
+              .label { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+              .value { font-size: 13px; white-space: pre-wrap; }
+              .full { grid-column: 1 / -1; }
+              table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12px; }
+              th, td { border: 1px solid var(--border); padding: 6px 8px; }
+              th { background: #f7f7f7; text-align: left; text-transform: uppercase; font-size: 11px; color: var(--muted); letter-spacing: 0.3px; }
+            </style>
+          </head>
+          <body>
+            <div class="header">
+              <div>
+                <h1 class="title">${title}</h1>
+                <div class="subtitle">Fiche ressource</div>
+              </div>
+              <div class="chip">${this.form.departement || ''}</div>
+            </div>
+
+            <h2>Identification</h2>
+            <div class="section grid">
+              <div class="field">
+                <div class="label">Code</div>
+                <div class="value">${this.form.code || ''}</div>
+              </div>
+              <div class="field">
+                <div class="label">Semestre</div>
+                <div class="value">${this.form.semestre || ''}</div>
+              </div>
+              <div class="field full">
+                <div class="label">UE</div>
+                <div class="value">${this.form.ue || ''}</div>
+              </div>
+            </div>
+
+            <h2>Volume et description</h2>
+            <div class="section grid">
+              <div class="field">
+                <div class="label">Heures CM</div>
+                <div class="value">${this.form.hCM || 0}</div>
+              </div>
+              <div class="field">
+                <div class="label">Heures TD</div>
+                <div class="value">${this.form.hTD || 0}</div>
+              </div>
+              <div class="field">
+                <div class="label">Heures TP</div>
+                <div class="value">${this.form.hTP || 0}</div>
+              </div>
+              <div class="field full">
+                <div class="label">Description</div>
+                <div class="value">${this.form.description || ''}</div>
+              </div>
+            </div>
+
+            <h2>Evaluation</h2>
+            <div class="section grid">
+              <div class="field">
+                <div class="label">Type d'evaluation</div>
+                <div class="value">${this.formatEvaluationType(this.form.typeEvaluation)}</div>
+              </div>
+              <div class="field">
+                <div class="label">Evaluations prevues</div>
+                <div class="value">${this.formatEvaluationsPrevues(this.form.evaluationsPrevues)}</div>
+              </div>
+              <div class="field">
+                <div class="label">Coefficient ressource</div>
+                <div class="value">${this.form.coefficientRessource || 0}</div>
+              </div>
+            </div>
+
+            <h2>Regles de validation</h2>
+            <div class="section grid">
+              <div class="field">
+                <div class="label">Note minimale</div>
+                <div class="value">${this.form.noteMinimale || 0}</div>
+              </div>
+              <div class="field">
+                <div class="label">Compensation</div>
+                <div class="value">${this.form.compensation || ''}</div>
+              </div>
+              <div class="field">
+                <div class="label">Rattrapage</div>
+                <div class="value">${this.form.rattrapage || ''}</div>
+              </div>
+              <div class="field full">
+                <div class="label">Modalite rattrapage</div>
+                <div class="value">${this.form.modaliteRattrapage || ''}</div>
+              </div>
+            </div>
+
+            <h2>Organisation pedagogique</h2>
+            <div class="section grid">
+              <div class="field">
+                <div class="label">Responsable pedagogique</div>
+                <div class="value">${this.form.responsablePedagogique || ''}</div>
+              </div>
+              <div class="field">
+                <div class="label">Intervenants</div>
+                <div class="value">${this.form.intervenants || ''}</div>
+              </div>
+              <div class="field">
+                <div class="label">Type d'enseignement</div>
+                <div class="value">${this.formatTeachingType(this.form.typeEnseignement)}</div>
+              </div>
+            </div>
+
+            <h2>Sequences</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>Sequence</th>
+                  <th>Type</th>
+                  <th>Duree (h)</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${this.sequencesRows.map(row => `
+                  <tr>
+                    <td>${row.label || ''}</td>
+                    <td>${row.type || ''}</td>
+                    <td>${row.duration || 0}</td>
+                    <td>${row.notes || ''}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </body>
+        </html>
+      `;
+      const pdfWindow = window.open('', '_blank');
+      if (!pdfWindow) return;
+      pdfWindow.document.open();
+      pdfWindow.document.write(content);
+      pdfWindow.document.close();
+      if (autoPrint) {
+        pdfWindow.onload = () => {
+          pdfWindow.focus();
+          pdfWindow.print();
+        };
+      }
+    },
     normalizeValue(value) {
       if (value === null || value === undefined) return '';
       return String(value).trim().toLowerCase();
@@ -828,6 +1032,11 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 20px;
+}
+.pdf-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
 }
 
 /* Step Indicator Styles */
