@@ -1,5 +1,14 @@
 <template>
   <DashboardLayout>
+    <CustomModal
+      v-if="modal.show"
+      :title="modal.title"
+      :message="modal.message"
+      :type="modal.type"
+      :confirmLabel="modal.confirmLabel"
+      @close="modal.show = false"
+      @confirm="handleModalConfirm"
+    />
     <template #header>
       <h1 class="page-title">{{ $t('nav.resourceSheets') }}</h1>
     </template>
@@ -335,11 +344,13 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import CustomModal from '@/components/CustomModal.vue';
 import axios from 'axios';
+import logoIut from '@/assets/logo-iut.jpg';
 
 export default {
   name: 'FicheRessourceView',
-  components: { DashboardLayout },
+  components: { DashboardLayout, CustomModal },
   data() {
     return {
       currentStep: 1,
@@ -395,6 +406,13 @@ export default {
       lastAutoFillKey: null,
       isAutoFillLoading: false,
       fieldErrors: {},
+      modal: {
+        show: false,
+        title: '',
+        message: '',
+        type: 'info',
+        confirmLabel: 'OK'
+      }
     };
 
   },
@@ -435,9 +453,153 @@ export default {
     },
     openPdfPreview() { this.openPdfWindow(false); },
     downloadPdf() { this.openPdfWindow(true); },
-    openPdfWindow(autoPrint) {
+        openPdfWindow(autoPrint) {
       const title = this.form.titre || 'Fiche ressource';
-      const content = `<html><head><meta charset="utf-8" /><title>${title}</title><style>:root { --accent: #c00000; --muted: #666; --border: #e4e4e4; } * { box-sizing: border-box; } body { font-family: "Segoe UI", Arial, sans-serif; color: #111; margin: 28px; } .header { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 16px; } .title { font-size: 22px; font-weight: 700; margin: 0; } .subtitle { color: var(--muted); font-size: 12px; } .chip { display: inline-block; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border); font-size: 11px; color: var(--muted); } h2 { font-size: 14px; margin: 18px 0 8px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4px; } .section { margin-bottom: 12px; } .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 18px; } .field { padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; } .label { font-weight: 700; font-size: 11px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; } .value { font-size: 13px; white-space: pre-wrap; } .full { grid-column: 1 / -1; } table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12px; } th, td { border: 1px solid var(--border); padding: 6px 8px; } th { background: #f7f7f7; text-align: left; text-transform: uppercase; font-size: 11px; color: var(--muted); letter-spacing: 0.3px; }</style></head><body><div class="header"><div><h1 class="title">${title}</h1><div class="subtitle">Fiche ressource</div></div><div class="chip">${this.form.departement || ''}</div></div><h2>Identification</h2><div class="section grid"><div class="field"><div class="label">Code</div><div class="value">${this.form.code || ''}</div></div><div class="field"><div class="label">Semestre</div><div class="value">${this.form.semestre || ''}</div></div><div class="field full"><div class="label">UE</div><div class="value">${this.form.ue || ''}</div></div></div><h2>Volume et description</h2><div class="section grid"><div class="field"><div class="label">Heures CM</div><div class="value">${this.form.hCM || 0}</div></div><div class="field"><div class="label">Heures TD</div><div class="value">${this.form.hTD || 0}</div></div><div class="field"><div class="label">Heures TP</div><div class="value">${this.form.hTP || 0}</div></div><div class="field full"><div class="label">Description</div><div class="value">${this.form.description || ''}</div></div></div><h2>Evaluation</h2><div class="section grid"><div class="field"><div class="label">Type d'evaluation</div><div class="value">${this.formatEvaluationType(this.form.typeEvaluation)}</div></div><div class="field"><div class="label">Evaluations prevues</div><div class="value">${this.formatEvaluationsPrevues(this.form.evaluationsPrevues)}</div></div><div class="field"><div class="label">Coefficient ressource</div><div class="value">${this.form.coefficientRessource || 0}</div></div></div><h2>Regles de validation</h2><div class="section grid"><div class="field"><div class="label">Note minimale</div><div class="value">${this.form.noteMinimale || 0}</div></div><div class="field"><div class="label">Compensation</div><div class="value">${this.form.compensation || ''}</div></div><div class="field"><div class="label">Rattrapage</div><div class="value">${this.form.rattrapage || ''}</div></div><div class="field full"><div class="label">Modalite rattrapage</div><div class="value">${this.form.modaliteRattrapage || ''}</div></div></div><h2>Organisation pedagogique</h2><div class="section grid"><div class="field"><div class="label">Responsable pedagogique</div><div class="value">${this.form.responsablePedagogique || ''}</div></div><div class="field"><div class="label">Intervenants</div><div class="value">${this.form.intervenants || ''}</div></div><div class="field"><div class="label">Type d'enseignement</div><div class="value">${this.formatTeachingType(this.form.typeEnseignement)}</div></div></div><h2>Sequences</h2><table><thead><tr><th>Sequence</th><th>Type</th><th>Duree (h)</th><th>Details</th></tr></thead><tbody>${this.sequencesRows.map(row => `<tr><td>${row.label || ''}</td><td>${row.type || ''}</td><td>${row.duration || 0}</td><td>${row.notes || ''}</td></tr>`).join('')}</tbody></table></body></html>`;
+      const totalStudentHours = this.toNumber(this.form.hCM) + this.toNumber(this.form.hTD) + this.toNumber(this.form.hTP);
+      const totalSequenceHours = this.sequencesRows.reduce((acc, row) => acc + (this.toNumber(row.duration) || 0), 0);
+      const byType = this.sequencesRows.reduce((acc, row) => {
+        const key = (row.type || 'Autre').toUpperCase();
+        acc[key] = (acc[key] || 0) + (this.toNumber(row.duration) || 0);
+        return acc;
+      }, {});
+      const evals = this.formatEvaluationsPrevues(this.form.evaluationsPrevues);
+      const today = new Date().toLocaleDateString('fr-FR');
+      const content = `<html><head><meta charset="utf-8" /><title>${title}</title>
+<style>
+:root { --accent: #c00000; --accent-soft: #f9e7e7; --border: #cfcfcf; --muted: #666; --text: #111; }
+* { box-sizing: border-box; }
+body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0; background: #fff; }
+.page { position: relative; padding: 18mm 16mm 18mm; min-height: 270mm; }
+.page + .page { page-break-before: always; }
+.doc-header { display: grid; grid-template-columns: 110px 1fr 1fr 220px; gap: 0; border: 1px solid var(--border); align-items: stretch; }
+.doc-header .cell { border-right: 1px solid var(--border); padding: 8px 10px; font-size: 11px; min-height: 60px; display: flex; align-items: center; }
+.doc-header .cell:last-child { border-right: 0; }
+.logo-box { justify-content: center; font-weight: 700; font-size: 18px; color: var(--accent); }
+.logo-box img { max-height: 48px; max-width: 90px; object-fit: contain; display: block; }
+.dept-box { text-align: center; font-weight: 700; font-size: 12px; justify-content: center; background: #fff5f5; }
+.title-box { text-align: center; font-weight: 700; font-size: 12px; justify-content: center; }
+.meta-box { font-size: 10px; line-height: 1.4; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; }
+.meta-box strong { color: var(--accent); }
+.section-title { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--border); padding: 8px 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; font-size: 13px; margin: 20px 0 12px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 20px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px 20px; }
+.field { border: 1px solid var(--border); padding: 12px 14px; font-size: 12px; min-height: 46px; }
+.field .label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; }
+.field .value { font-size: 13px; white-space: pre-wrap; }
+.table { width: 100%; border-collapse: collapse; font-size: 12px; border: 1px solid var(--border); }
+.table th, .table td { border: 1px solid var(--border); padding: 10px 12px; vertical-align: top; }
+.table th { background: var(--accent-soft); color: var(--accent); text-transform: uppercase; font-size: 11px; letter-spacing: 0.4px; text-align: center; }
+.table td:nth-child(2), .table th:nth-child(2) { text-align: center; width: 80px; }
+.table td:nth-child(3), .table th:nth-child(3) { text-align: center; width: 90px; }
+.table td:nth-child(4), .table th:nth-child(4) { width: 38%; }
+.table tbody tr:nth-child(even) { background: #fff7f7; }
+.note { font-size: 10px; color: var(--muted); margin-top: 6px; }
+.footer { position: absolute; bottom: 10mm; left: 16mm; right: 16mm; display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); border-top: 1px solid var(--border); padding-top: 4px; }
+</style></head><body>
+<div class="page">
+  <div class="doc-header">
+    <div class="cell logo-box"><img src="${logoIut}" alt="IUT" /></div>
+    <div class="cell dept-box">${this.form.departement || ''}</div>
+    <div class="cell title-box">FICHE RESSOURCE</div>
+    <div class="cell meta-box">
+      <div><strong>Reference:</strong> IU EN FOR 001</div>
+      <div>Date de creation: ${today}</div>
+      <div>Date de modification: ${today}</div>
+      <div>Indice de revision: 001</div>
+    </div>
+  </div>
+
+  <div class="section-title">Identification</div>
+  <div class="grid-2">
+    <div class="field"><div class="label">Nom formation</div><div class="value">${this.form.departement || ''}</div></div>
+    <div class="field"><div class="label">UE</div><div class="value">${this.form.ue || ''}</div></div>
+    <div class="field"><div class="label">Code ressource</div><div class="value">${this.form.code || ''}</div></div>
+    <div class="field"><div class="label">Semestre</div><div class="value">${this.form.semestre || ''}</div></div>
+    <div class="field"><div class="label">Titre</div><div class="value">${title}</div></div>
+    <div class="field"><div class="label">Volume etudiant</div><div class="value">${totalStudentHours || 0} h</div></div>
+  </div>
+
+  <div class="section-title">Descriptif</div>
+  <div class="field"><div class="label">Objectif de la ressource</div><div class="value">${this.form.description || ''}</div></div>
+
+  <div class="section-title">Evaluation</div>
+  <div class="grid-3">
+    <div class="field"><div class="label">Type d'evaluation</div><div class="value">${this.formatEvaluationType(this.form.typeEvaluation)}</div></div>
+    <div class="field"><div class="label">Evaluations prevues</div><div class="value">${evals || ''}</div></div>
+    <div class="field"><div class="label">Coefficient ressource</div><div class="value">${this.form.coefficientRessource || 0}</div></div>
+  </div>
+
+  <div class="section-title">Regles de validation</div>
+  <div class="grid-3">
+    <div class="field"><div class="label">Note minimale</div><div class="value">${this.form.noteMinimale || 0}</div></div>
+    <div class="field"><div class="label">Compensation</div><div class="value">${this.form.compensation || ''}</div></div>
+    <div class="field"><div class="label">Rattrapage</div><div class="value">${this.form.rattrapage || ''}</div></div>
+  </div>
+  <div class="field" style="margin-top:10px;"><div class="label">Modalite de rattrapage</div><div class="value">${this.form.modaliteRattrapage || ''}</div></div>
+
+  <div class="footer"><span>IU EN FOR 001</span><span>NOM UE / FICHE RESSOURCE</span><span>Page 1 sur 3</span></div>
+</div>
+
+<div class="page">
+  <div class="doc-header">
+    <div class="cell logo-box"><img src="${logoIut}" alt="IUT" /></div>
+    <div class="cell dept-box">${this.form.departement || ''}</div>
+    <div class="cell title-box">FICHE RESSOURCE</div>
+    <div class="cell meta-box">
+      <div><strong>Reference:</strong> IU EN FOR 001</div>
+      <div>Date de creation: ${today}</div>
+      <div>Date de modification: ${today}</div>
+      <div>Indice de revision: 001</div>
+    </div>
+  </div>
+
+  <div class="section-title">Contenu pedagogique</div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Sequence</th>
+        <th>Type</th>
+        <th>Duree (h)</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${this.sequencesRows.map(row => (
+        '<tr><td>' + (row.label || '') + '</td><td>' + (row.type || '') + '</td><td>' + (this.toNumber(row.duration) || 0) + '</td><td>' + (row.notes || '') + '</td></tr>'
+      )).join('')}
+    </tbody>
+  </table>
+
+  <div class="footer"><span>IU EN FOR 001</span><span>NOM UE / FICHE RESSOURCE</span><span>Page 2 sur 3</span></div>
+</div>
+
+<div class="page">
+  <div class="doc-header">
+    <div class="cell logo-box"><img src="${logoIut}" alt="IUT" /></div>
+    <div class="cell dept-box">${this.form.departement || ''}</div>
+    <div class="cell title-box">FICHE RESSOURCE</div>
+    <div class="cell meta-box">
+      <div><strong>Reference:</strong> IU EN FOR 001</div>
+      <div>Date de creation: ${today}</div>
+      <div>Date de modification: ${today}</div>
+      <div>Indice de revision: 001</div>
+    </div>
+  </div>
+
+  <div class="section-title">Organisation pedagogique</div>
+  <div class="grid-2">
+    <div class="field"><div class="label">Responsable pedagogique</div><div class="value">${this.form.responsablePedagogique || ''}</div></div>
+    <div class="field"><div class="label">Intervenants</div><div class="value">${this.form.intervenants || ''}</div></div>
+    <div class="field"><div class="label">Type d'enseignement</div><div class="value">${this.formatTeachingType(this.form.typeEnseignement)}</div></div>
+    <div class="field"><div class="label">Total sequences</div><div class="value">${totalSequenceHours || 0} h</div></div>
+  </div>
+
+  <div class="section-title">Repartition / Ressources</div>
+  <div class="field"><div class="label">Totaux</div><div class="value">CM ${byType.CM || 0} h, TD ${byType.TD || 0} h, TP ${byType.TP || 0} h, Autre ${byType.AUTRE || 0} h</div></div>
+
+  <div class="footer"><span>IU EN FOR 001</span><span>NOM UE / FICHE RESSOURCE</span><span>Page 3 sur 3</span></div>
+</div>
+</body></html>`;
       const pdfWindow = window.open('', '_blank');
       if (!pdfWindow) return;
       pdfWindow.document.open();
@@ -446,6 +608,14 @@ export default {
       if (autoPrint) { pdfWindow.onload = () => { pdfWindow.focus(); pdfWindow.print(); }; }
     },
     normalizeValue(value) { return (value === null || value === undefined) ? '' : String(value).trim().toLowerCase(); },
+    normalizeYesNo(value) {
+      if (value === null || value === undefined) return '';
+      const n = String(value).trim().toLowerCase();
+      if (!n) return '';
+      if (['oui','o','yes','y','true','1'].includes(n)) return 'OUI';
+      if (['non','n','no','false','0'].includes(n)) return 'NON';
+      return String(value).trim();
+    },
     mapMcccModaliteToEvaluation(modalite) {
       const n = this.normalizeValue(modalite);
       if (!n) return '';
@@ -524,6 +694,16 @@ export default {
         else { const mt = this.mapMcccModaliteToEvaluation(f.modalite); if (mt) this.form.typeEvaluation = mt; }
       }
       if (this.toNumber(this.form.coefficientRessource) === 0) { const c = this.toNumber(f.coeffRessource); if (c > 0) this.form.coefficientRessource = c; }
+      if (!this.form.compensation) {
+        const v = f.compensation ?? mccc.compensation;
+        const mapped = this.normalizeYesNo(v);
+        if (mapped) this.form.compensation = mapped;
+      }
+      if (!this.form.rattrapage) {
+        const v = f.rattrapage ?? mccc.rattrapage;
+        const mapped = this.normalizeYesNo(v);
+        if (mapped) this.form.rattrapage = mapped;
+      }
       if (this.toNumber(this.form.hCM) === 0) this.form.hCM = rows.reduce((acc, r) => acc + this.toNumber(r.hCM), 0);
       if (this.toNumber(this.form.hTD) === 0) this.form.hTD = rows.reduce((acc, r) => acc + this.toNumber(r.hTD), 0);
       if (this.toNumber(this.form.hTP) === 0) this.form.hTP = rows.reduce((acc, r) => acc + this.toNumber(r.hTP), 0);
@@ -595,6 +775,13 @@ export default {
     },
 
     async saveResource() {
+      const token = localStorage.getItem('user-token');
+      if (!token) {
+        alert("Vous devez etre connecte pour enregistrer.");
+        return;
+      }
+      const authConfig = { headers: { Authorization: `Bearer ${token}` } };
+
       const payload = {
         ...this.form,
         evaluationsPrevues: Array.isArray(this.form.evaluationsPrevues) ? this.form.evaluationsPrevues.join(',') : this.form.evaluationsPrevues,
@@ -613,16 +800,32 @@ export default {
         const mode = this.$route.query.mode;
 
         if (mode === 'edit' && id) {
-          await axios.put(`/resource-sheets/${id}`, payload);
-          alert("Fiche modifiée !");
+          await axios.put(`/resource-sheets/${id}`, payload, authConfig);
         } else {
-          await axios.post('/resource-sheets', payload);
-          alert("Fiche créée !");
+          await axios.post('/resource-sheets', payload, authConfig);
         }
-        this.$router.push({ name: 'liste-fiches-ressources' });
+        this.modal = {
+          show: true,
+          title: 'Succes',
+          message: mode === 'edit' ? 'Fiche modifiee avec succes !' : 'Fiche creee avec succes !',
+          type: 'success',
+          confirmLabel: 'Retour a la liste'
+        };
       } catch (e) {
         console.error("Erreur sauvegarde", e);
-        alert("Erreur technique lors de l'enregistrement.");
+        this.modal = {
+          show: true,
+          title: 'Erreur',
+          message: "Erreur technique lors de l'enregistrement.",
+          type: 'error',
+          confirmLabel: 'Fermer'
+        };
+      }
+    },
+    handleModalConfirm() {
+      this.modal.show = false;
+      if (this.modal.type === 'success') {
+        this.$router.push({ name: 'liste-fiches-ressources' });
       }
     },
 
@@ -797,6 +1000,7 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
 .choice-group { display: flex; flex-wrap: wrap; gap: 10px; }
 .choice { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-card-bg); }
 .choice input { margin: 0; }
+<<<<<<< HEAD
 
 .pill-invalid {
   border: 2px solid #ff4d4d !important;
@@ -839,3 +1043,6 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
   padding-bottom: 20px;
 }
 </style>
+=======
+</style>
+>>>>>>> origin/V4

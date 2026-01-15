@@ -1,5 +1,6 @@
-﻿<template>
+﻿﻿<template>
   <DashboardLayout>
+    <CustomModal v-if="modal.show" :title="modal.title" :message="modal.message" :type="modal.type" :confirmLabel="modal.confirmLabel" @close="modal.show = false" @confirm="handleModalConfirm" />
     <template #header>
       <h1 class="page-title">{{ $t('nav.mccc') }}</h1>
     </template>
@@ -229,11 +230,12 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import CustomModal from '@/components/CustomModal.vue';
 import axios from 'axios';
 
 export default {
   name: 'McccView',
-  components: { DashboardLayout },
+  components: { DashboardLayout, CustomModal },
     data() {
     return {
       currentStep: 1,
@@ -393,7 +395,14 @@ export default {
       ],
       nextRowId: 2,
       errorMessage: '',
-      errorTimeout: null
+      errorTimeout: null,
+      modal: {
+        show: false,
+        title: '',
+        message: '',
+        type: 'info',
+        confirmLabel: 'OK'
+      }
     };
   },
   created() {
@@ -526,11 +535,28 @@ export default {
         } else {
              await axios.post('/mccc', payload);
         }
-        alert('MCCC enregistrée !');
-        this.$router.push({ name: 'liste-mccc' });
+        this.modal = {
+          show: true,
+          title: 'Succès',
+          message: 'La fiche MCCC a été enregistrée avec succès.',
+          type: 'success',
+          confirmLabel: 'Retour à la liste'
+        };
       } catch (e) {
         console.error("Error saving MCCC", e);
-        alert("Erreur lors de l'enregistrement");
+        this.modal = {
+          show: true,
+          title: 'Erreur',
+          message: "Une erreur est survenue lors de l'enregistrement.",
+          type: 'error',
+          confirmLabel: 'Fermer'
+        };
+      }
+    },
+    handleModalConfirm() {
+      this.modal.show = false;
+      if (this.modal.type === 'success') {
+        this.$router.push({ name: 'liste-mccc' });
       }
     }
   }
