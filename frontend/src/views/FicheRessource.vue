@@ -1,5 +1,14 @@
 <template>
   <DashboardLayout>
+    <CustomModal
+      v-if="modal.show"
+      :title="modal.title"
+      :message="modal.message"
+      :type="modal.type"
+      :confirmLabel="modal.confirmLabel"
+      @close="modal.show = false"
+      @confirm="handleModalConfirm"
+    />
     <template #header>
       <h1 class="page-title">{{ $t('nav.resourceSheets') }}</h1>
     </template>
@@ -326,12 +335,13 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import CustomModal from '@/components/CustomModal.vue';
 import axios from 'axios';
 import logoIut from '@/assets/logo-iut.jpg';
 
 export default {
   name: 'FicheRessourceView',
-  components: { DashboardLayout },
+  components: { DashboardLayout, CustomModal },
   data() {
     return {
       currentStep: 1,
@@ -385,7 +395,14 @@ export default {
       errorTimeout: null,
       mcccEntries: null,
       lastAutoFillKey: null,
-      isAutoFillLoading: false
+      isAutoFillLoading: false,
+      modal: {
+        show: false,
+        title: '',
+        message: '',
+        type: 'info',
+        confirmLabel: 'OK'
+      }
     };
   },
   created() {
@@ -773,15 +790,31 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
 
         if (mode === 'edit' && id) {
           await axios.put(`/resource-sheets/${id}`, payload, authConfig);
-          alert("Fiche modifiée !");
         } else {
           await axios.post('/resource-sheets', payload, authConfig);
-          alert("Fiche créée !");
         }
-        this.$router.push({ name: 'liste-fiches-ressources' });
+        this.modal = {
+          show: true,
+          title: 'Succes',
+          message: mode === 'edit' ? 'Fiche modifiee avec succes !' : 'Fiche creee avec succes !',
+          type: 'success',
+          confirmLabel: 'Retour a la liste'
+        };
       } catch (e) {
         console.error("Erreur sauvegarde", e);
-        alert("Erreur technique lors de l'enregistrement.");
+        this.modal = {
+          show: true,
+          title: 'Erreur',
+          message: "Erreur technique lors de l'enregistrement.",
+          type: 'error',
+          confirmLabel: 'Fermer'
+        };
+      }
+    },
+    handleModalConfirm() {
+      this.modal.show = false;
+      if (this.modal.type === 'success') {
+        this.$router.push({ name: 'liste-fiches-ressources' });
       }
     },
 
@@ -935,16 +968,3 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
 .choice { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-card-bg); }
 .choice input { margin: 0; }
 </style>
-
-
-
-
-
-
-
-
-
-
-
-
-
