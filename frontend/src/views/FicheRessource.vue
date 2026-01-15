@@ -13,7 +13,8 @@
           Telecharger PDF
         </button>
       </div>
-      <!-- Indicateur d'étapes (Wizard) -->
+
+
       <div v-if="!showAllSteps" class="step-indicator">
         <div class="step" :class="{ active: currentStep >= 1, completed: currentStep > 1 }">
           <div class="step-number">1</div>
@@ -87,15 +88,18 @@
           <div class="card-fields hours-grid">
             <label class="field">
               <span>{{ $t('resourceSheet.hCM') }}</span>
-              <input v-model="form.hCM" type="number" min="0" step="0.5" class="pill-select" :disabled="isReadOnly" />
+              <input v-model.number="form.hCM" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'hCM')" @input="validatePositive(form, 'hCM')" :class="{ 'pill-invalid': fieldErrors['hCM'] }" class="pill-select" />
+              <span v-if="fieldErrors['hCM']" class="error-hint">{{ fieldErrors['hCM'] }}</span>
             </label>
             <label class="field">
               <span>{{ $t('resourceSheet.hTD') }}</span>
-              <input v-model="form.hTD" type="number" min="0" step="0.5" class="pill-select" :disabled="isReadOnly" />
+              <input v-model.number="form.hTD" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'hTD')" @input="validatePositive(form, 'hTD')" :class="{ 'pill-invalid': fieldErrors['hTD'] }" class="pill-select" :disabled="isReadOnly" />
+              <span v-if="fieldErrors['hTD']" class="error-hint">{{ fieldErrors['hTD'] }}</span>
             </label>
             <label class="field">
               <span>{{ $t('resourceSheet.hTP') }}</span>
-              <input v-model="form.hTP" type="number" min="0" step="0.5" class="pill-select" :disabled="isReadOnly" />
+              <input v-model.number="form.hTP" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'hTP')" @input="validatePositive(form, 'hTP')" :class="{ 'pill-invalid': fieldErrors['hTP'] }" class="pill-select" :disabled="isReadOnly" />
+              <span v-if="fieldErrors['hTP']" class="error-hint">{{ fieldErrors['hTP'] }}</span>
             </label>
           </div>
         </div>
@@ -114,7 +118,7 @@
         </div>
       </section>
 
-      <!-- ?%TAPE 3 : Modalit??s d'??valuation -->
+      <!-- ETAPE 3 : Modalités d'évaluation -->
       <section v-if="showAllSteps || currentStep === 3" class="cards-grid mid-grid">
         <div class="info-card full-width">
           <h3>{{ $t('resourceSheet.step3_label') }}</h3>
@@ -153,7 +157,8 @@
             </label>
             <label class="field">
               <span>{{ $t('resourceSheet.resourceCoefficient') }}</span>
-              <input v-model="form.coefficientRessource" type="number" min="0" step="0.1" class="pill-select" :disabled="isReadOnly" />
+              <input v-model.number="form.coefficientRessource" type="number" min="0" step="0.1" @keydown="onlyNumbers($event, 'coefficientRessource')" @input="validatePositive(form, 'coefficientRessource')" :class="{ 'pill-invalid': fieldErrors['coefficientRessource'] }" class="pill-select" :disabled="isReadOnly" />
+              <span v-if="fieldErrors['coefficientRessource']" class="error-hint">{{ fieldErrors['coefficientRessource'] }}</span>
             </label>
           </div>
         </div>
@@ -166,7 +171,8 @@
           <div class="card-fields single-col">
             <label class="field">
               <span>{{ $t('resourceSheet.validationMinScore') }}</span>
-              <input v-model="form.noteMinimale" type="number" min="0" step="0.1" class="pill-select" :disabled="isReadOnly" />
+              <input v-model.number="form.noteMinimale" type="number" min="0" step="0.1" @keydown="onlyNumbers($event, 'noteMinimale')" @input="validatePositive(form, 'noteMinimale')" :class="{ 'pill-invalid': fieldErrors['noteMinimale'] }" class="pill-select" :disabled="isReadOnly" />
+              <span v-if="fieldErrors['noteMinimale']" class="error-hint">{{ fieldErrors['noteMinimale'] }}</span>
             </label>
             <label class="field full">
               <span>{{ $t('resourceSheet.validationCompensation') }}</span>
@@ -202,7 +208,7 @@
         </div>
       </section>
 
-      <!-- ?%TAPE 5 : Organisation p??dagogique -->
+      <!-- ETAPE 5 : Organisation pédagogique -->
       <section v-if="showAllSteps || currentStep === 5" class="cards-grid mid-grid">
         <div class="info-card full-width">
           <h3>{{ $t('resourceSheet.step5_label') }}</h3>
@@ -236,7 +242,7 @@
         </div>
       </section>
 
-      <!-- ?%TAPE 6 : Tableau des S??quences -->
+      <!-- ETAPE 6 : Tableau des Séquences -->
       <section v-if="showAllSteps || currentStep === 6" class="table-section">
         <div class="table-card">
           <div class="table-scroll">
@@ -264,7 +270,10 @@
                     </select>
                   </td>
                   <td>
-                    <input class="table-input" v-model="row.duration" type="number" min="0" step="0.5" @input="validatePositive(row, 'duration')" :disabled="isReadOnly" />
+                    <input class="table-input" v-model.number="row.duration" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'duration', row.id)" @input="validatePositive(row, 'duration', true)" :class="{ 'pill-invalid': fieldErrors['duration_' + row.id] }" />
+                    <span v-if="fieldErrors['duration_' + row.id]" class="error-hint-table">
+                      {{ fieldErrors['duration_' + row.id] }}
+                    </span>
                   </td>
                   <td class="info-cell">
                     <div v-if="row.showDetails" class="info-editor">
@@ -384,8 +393,10 @@ export default {
       errorTimeout: null,
       mcccEntries: null,
       lastAutoFillKey: null,
-      isAutoFillLoading: false
+      isAutoFillLoading: false,
+      fieldErrors: {},
     };
+
   },
   created() {
     if (this.form.departement) {
@@ -617,7 +628,29 @@ export default {
 
     addRow() { this.sequencesRows.push({ id: this.nextRowId++, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }); },
     deleteRow(id) { if (this.sequencesRows.length > 1) this.sequencesRows = this.sequencesRows.filter(r => r.id !== id); },
-    validatePositive(row, field) { if (row[field] < 0) row[field] = 0; },
+    validatePositive(target, field, isTable = false) {
+      const key = isTable ? `${field}_${target.id}` : field;
+      if (target[field] < 0) {
+        target[field] = 0;
+        this.fieldErrors[key] = "Les nombres négatifs ne sont pas autorisés.";
+        setTimeout(() => {
+          this.fieldErrors[key] = "";
+        }, 4000);
+      } else {
+        this.fieldErrors[key] = "";
+      }
+    },
+
+    onlyNumbers(event, field, targetId = null) {
+      const key = targetId ? `${field}_${targetId}` : field;
+      if (['-', '+', 'e', 'E'].includes(event.key)) {
+        event.preventDefault();
+        this.fieldErrors[key] = "Seuls les chiffres positifs sont acceptés.";
+        setTimeout(() => {
+          this.fieldErrors[key] = "";
+        }, 4000);
+      }
+    },
     nextStep() { if (this.currentStep < 6) this.currentStep++; },
     prevStep() { if (this.currentStep > 1) this.currentStep--; }
   }
@@ -764,4 +797,45 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
 .choice-group { display: flex; flex-wrap: wrap; gap: 10px; }
 .choice { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-card-bg); }
 .choice input { margin: 0; }
+
+.pill-invalid {
+  border: 2px solid #ff4d4d !important;
+  background-color: #fff5f5 !important;
+  animation: shake 0.4s ease-in-out;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.error-hint {
+  color: #ff4d4d;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 4px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.error-hint-table {
+  color: #ff4d4d;
+  font-size: 0.7rem;
+  font-weight: 700;
+  position: absolute;
+  bottom: 2px;
+  left: 18px;
+  white-space: nowrap;
+  animation: fadeIn 0.3s ease;
+}
+
+.table-section td {
+  position: relative;
+  vertical-align: top;
+  padding-bottom: 20px;
+}
 </style>
