@@ -5,7 +5,9 @@
         :title="modal.title"
         :message="modal.message"
         :type="modal.type"
+        :showCancel="modal.showCancel"
         :confirmLabel="modal.confirmLabel"
+        :cancelLabel="modal.cancelLabel"
         @close="modal.show = false"
         @confirm="handleModalConfirm"
     />
@@ -334,6 +336,9 @@
         <button v-if="currentStep < 6" @click="nextStep" class="btn btn-primary">
           {{ $t('mccc.continue') }}
         </button>
+        <button v-if="currentStep === 6 && editingId" class="btn btn-danger" type="button" @click="confirmDelete" :disabled="isReadOnly">
+          Supprimer
+        </button>
         <button v-if="currentStep === 6" class="btn btn-primary" type="button" @click="saveResource" :disabled="isReadOnly">
           {{ $t('mccc.save') }}
         </button>
@@ -411,7 +416,9 @@ export default {
         title: '',
         message: '',
         type: 'info',
-        confirmLabel: 'OK'
+        confirmLabel: 'OK',
+        showCancel: false,
+        action: null
       }
     };
 
@@ -809,7 +816,8 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
           title: 'Succes',
           message: mode === 'edit' ? 'Fiche modifiee avec succes !' : 'Fiche creee avec succes !',
           type: 'success',
-          confirmLabel: 'Retour a la liste'
+          confirmLabel: 'Retour a la liste',
+          showCancel: false
         };
       } catch (e) {
         console.error("Erreur sauvegarde", e);
@@ -818,13 +826,37 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
           title: 'Erreur',
           message: "Erreur technique lors de l'enregistrement.",
           type: 'error',
-          confirmLabel: 'Fermer'
+          confirmLabel: 'Fermer',
+          showCancel: false
         };
+      }
+    },
+    confirmDelete() {
+      this.modal = {
+        show: true,
+        title: 'Supprimer la fiche ?',
+        message: 'Cette action est irréversible. Voulez-vous vraiment supprimer cette fiche ressource ?',
+        type: 'warning',
+        showCancel: true,
+        confirmLabel: 'Supprimer',
+        cancelLabel: 'Annuler',
+        action: 'delete'
+      };
+    },
+    async deleteResource() {
+      try {
+        await axios.delete(`/resource-sheets/${this.editingId}`);
+        this.$router.push({ name: 'liste-fiches-ressources' });
+      } catch (e) {
+        console.error(e);
+        this.modal = { show: true, title: 'Erreur', message: "Impossible de supprimer.", type: 'error', confirmLabel: 'Fermer', showCancel: false };
       }
     },
     handleModalConfirm() {
       this.modal.show = false;
-      if (this.modal.type === 'success') {
+      if (this.modal.action === 'delete') {
+        this.deleteResource();
+      } else if (this.modal.type === 'success') {
         this.$router.push({ name: 'liste-fiches-ressources' });
       }
     },
@@ -1041,5 +1073,15 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
   position: relative;
   vertical-align: top;
   padding-bottom: 20px;
+}
+
+.btn-danger {
+  background-color: #fff;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+  margin-right: 10px;
+}
+.btn-danger:hover {
+  background-color: #fee2e2;
 }
 </style>

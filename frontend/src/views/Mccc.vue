@@ -1,6 +1,16 @@
 ﻿﻿<template>
   <DashboardLayout>
-    <CustomModal v-if="modal.show" :title="modal.title" :message="modal.message" :type="modal.type" :confirmLabel="modal.confirmLabel" @close="modal.show = false" @confirm="handleModalConfirm" />
+    <CustomModal
+      v-if="modal.show"
+      :title="modal.title"
+      :message="modal.message"
+      :type="modal.type"
+      :showCancel="modal.showCancel"
+      :confirmLabel="modal.confirmLabel"
+      :cancelLabel="modal.cancelLabel"
+      @close="modal.show = false"
+      @confirm="handleModalConfirm"
+    />
     <template #header>
       <h1 class="page-title">{{ $t('nav.mccc') }}</h1>
     </template>
@@ -220,6 +230,9 @@
         <button v-if="currentStep < 3" @click="nextStep" class="btn btn-primary">
           {{ $t('mccc.continue') }}
         </button>
+        <button v-if="currentStep === 3 && editingId" class="btn btn-danger" type="button" @click="confirmDelete" :disabled="isReadOnly">
+          Supprimer
+        </button>
         <button v-if="currentStep === 3" class="btn btn-primary" type="button" @click="saveMccc" :disabled="isReadOnly">
           {{ $t('mccc.save') }}
         </button>
@@ -401,7 +414,9 @@ export default {
         title: '',
         message: '',
         type: 'info',
-        confirmLabel: 'OK'
+        confirmLabel: 'OK',
+        showCancel: false,
+        action: null
       }
     };
   },
@@ -540,7 +555,8 @@ export default {
           title: 'Succès',
           message: 'La fiche MCCC a été enregistrée avec succès.',
           type: 'success',
-          confirmLabel: 'Retour à la liste'
+          confirmLabel: 'Retour à la liste',
+          showCancel: false
         };
       } catch (e) {
         console.error("Error saving MCCC", e);
@@ -549,13 +565,37 @@ export default {
           title: 'Erreur',
           message: "Une erreur est survenue lors de l'enregistrement.",
           type: 'error',
-          confirmLabel: 'Fermer'
+          confirmLabel: 'Fermer',
+          showCancel: false
         };
+      }
+    },
+    confirmDelete() {
+      this.modal = {
+        show: true,
+        title: 'Supprimer la MCCC ?',
+        message: 'Cette action est irréversible. Voulez-vous vraiment supprimer cette fiche ?',
+        type: 'warning',
+        showCancel: true,
+        confirmLabel: 'Supprimer',
+        cancelLabel: 'Annuler',
+        action: 'delete'
+      };
+    },
+    async deleteMccc() {
+      try {
+        await axios.delete(`/mccc/${this.editingId}`);
+        this.$router.push({ name: 'liste-mccc' });
+      } catch (e) {
+        console.error(e);
+        this.modal = { show: true, title: 'Erreur', message: "Impossible de supprimer.", type: 'error', confirmLabel: 'Fermer', showCancel: false };
       }
     },
     handleModalConfirm() {
       this.modal.show = false;
-      if (this.modal.type === 'success') {
+      if (this.modal.action === 'delete') {
+        this.deleteMccc();
+      } else if (this.modal.type === 'success') {
         this.$router.push({ name: 'liste-mccc' });
       }
     }
@@ -1069,5 +1109,15 @@ tr:nth-child(even) td {
   .table-card {
     padding: 10px;
   }
+}
+
+.btn-danger {
+  background-color: #fff;
+  color: #dc2626;
+  border: 1px solid #dc2626;
+  margin-right: 10px;
+}
+.btn-danger:hover {
+  background-color: #fee2e2;
 }
 </style>
