@@ -1,13 +1,13 @@
 <template>
   <DashboardLayout>
     <CustomModal
-      v-if="modal.show"
-      :title="modal.title"
-      :message="modal.message"
-      :type="modal.type"
-      :confirmLabel="modal.confirmLabel"
-      @close="modal.show = false"
-      @confirm="handleModalConfirm"
+        v-if="modal.show"
+        :title="modal.title"
+        :message="modal.message"
+        :type="modal.type"
+        :confirmLabel="modal.confirmLabel"
+        @close="modal.show = false"
+        @confirm="handleModalConfirm"
     />
     <template #header>
       <h1 class="page-title">{{ $t('nav.resourceSheets') }}</h1>
@@ -116,12 +116,12 @@
         <div class="info-card full-width">
           <h3>{{ $t('resourceSheet.description') }}</h3>
           <div class="card-fields single-col">
-            <textarea 
-              v-model="form.description" 
-              class="info-textarea main-desc" 
-              rows="5" 
-              :placeholder="$t('resourceSheet.descriptionPlaceholder')"
-              :disabled="isReadOnly"
+            <textarea
+                v-model="form.description"
+                class="info-textarea main-desc"
+                rows="5"
+                :placeholder="$t('resourceSheet.descriptionPlaceholder')"
+                :disabled="isReadOnly"
             ></textarea>
           </div>
         </div>
@@ -257,59 +257,59 @@
           <div class="table-scroll">
             <table>
               <thead>
-                <tr>
-                  <th>{{ $t('resourceSheet.table.sequence') }}</th>
-                  <th>{{ $t('resourceSheet.table.type') }}</th>
-                  <th>{{ $t('resourceSheet.table.duration') }}</th>
-                  <th>{{ $t('resourceSheet.table.details') }}</th>
-                  <th class="action-header">{{ $t('resourceSheet.table.action') }}</th>
-                </tr>
+              <tr>
+                <th>{{ $t('resourceSheet.table.sequence') }}</th>
+                <th>{{ $t('resourceSheet.table.type') }}</th>
+                <th>{{ $t('resourceSheet.table.duration') }}</th>
+                <th>{{ $t('resourceSheet.table.details') }}</th>
+                <th class="action-header">{{ $t('resourceSheet.table.action') }}</th>
+              </tr>
               </thead>
               <tbody>
-                <tr v-for="row in sequencesRows" :key="row.id">
-                  <td>
-                    <input class="table-input" v-model="row.label" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
-                  </td>
-                  <td>
-                    <select v-model="row.type" class="table-input" :disabled="isReadOnly">
-                      <option value="CM">CM</option>
-                      <option value="TD">TD</option>
-                      <option value="TP">TP</option>
-                      <option value="Autre">Autre</option>
-                    </select>
-                  </td>
-                  <td>
-                    <input class="table-input" v-model.number="row.duration" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'duration', row.id)" @input="validatePositive(row, 'duration', true)" :class="{ 'pill-invalid': fieldErrors['duration_' + row.id] }" />
-                    <span v-if="fieldErrors['duration_' + row.id]" class="error-hint-table">
+              <tr v-for="row in sequencesRows" :key="row.id">
+                <td>
+                  <input class="table-input" v-model="row.label" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
+                </td>
+                <td>
+                  <select v-model="row.type" class="table-input" :disabled="isReadOnly">
+                    <option value="CM">CM</option>
+                    <option value="TD">TD</option>
+                    <option value="TP">TP</option>
+                    <option value="Autre">Autre</option>
+                  </select>
+                </td>
+                <td>
+                  <input class="table-input" v-model.number="row.duration" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'duration', row.id)" @input="validatePositive(row, 'duration', true)" :class="{ 'pill-invalid': fieldErrors['duration_' + row.id] }" />
+                  <span v-if="fieldErrors['duration_' + row.id]" class="error-hint-table">
                       {{ fieldErrors['duration_' + row.id] }}
                     </span>
-                  </td>
-                  <td class="info-cell">
-                    <div v-if="row.showDetails" class="info-editor">
+                </td>
+                <td class="info-cell">
+                  <div v-if="row.showDetails" class="info-editor">
                       <textarea
-                        v-model="row.notes"
-                        rows="2"
-                        class="info-textarea"
-                        :placeholder="$t('mccc.infoPlaceholder')"
-                        :disabled="isReadOnly"
+                          v-model="row.notes"
+                          rows="2"
+                          class="info-textarea"
+                          :placeholder="$t('mccc.infoPlaceholder')"
+                          :disabled="isReadOnly"
                       ></textarea>
-                      <div class="info-actions">
-                        <button type="button" class="btn-finish" @click="row.showDetails = false" :disabled="isReadOnly">{{ $t('mccc.finish') }}</button>
-                      </div>
+                    <div class="info-actions">
+                      <button type="button" class="btn-finish" @click="row.showDetails = false" :disabled="isReadOnly">{{ $t('mccc.finish') }}</button>
                     </div>
-                    <div v-else class="info-collapsed">
-                      <div class="info-preview" :class="{ 'has-content': row.notes }">{{ row.notes || $t('mccc.noInfo') }}</div>
-                      <button type="button" class="btn-add" @click="row.showDetails = true" :disabled="isReadOnly">
-                        {{ row.notes ? $t('mccc.edit') : $t('mccc.addInfo') }}
-                      </button>
-                    </div>
-                  </td>
-                  <td class="action-cell">
-                    <button v-if="sequencesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('mccc.deleteRow')" :disabled="isReadOnly">
-                      &times;
+                  </div>
+                  <div v-else class="info-collapsed">
+                    <div class="info-preview" :class="{ 'has-content': row.notes }">{{ row.notes || $t('mccc.noInfo') }}</div>
+                    <button type="button" class="btn-add" @click="row.showDetails = true" :disabled="isReadOnly">
+                      {{ row.notes ? $t('mccc.edit') : $t('mccc.addInfo') }}
                     </button>
-                  </td>
-                </tr>
+                  </div>
+                </td>
+                <td class="action-cell">
+                  <button v-if="sequencesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('mccc.deleteRow')" :disabled="isReadOnly">
+                    &times;
+                  </button>
+                </td>
+              </tr>
               </tbody>
             </table>
           </div>
@@ -405,6 +405,7 @@ export default {
       mcccEntries: null,
       lastAutoFillKey: null,
       isAutoFillLoading: false,
+      fieldErrors: {},
       modal: {
         show: false,
         title: '',
@@ -452,7 +453,7 @@ export default {
     },
     openPdfPreview() { this.openPdfWindow(false); },
     downloadPdf() { this.openPdfWindow(true); },
-        openPdfWindow(autoPrint) {
+    openPdfWindow(autoPrint) {
       const title = this.form.titre || 'Fiche ressource';
       const totalStudentHours = this.toNumber(this.form.hCM) + this.toNumber(this.form.hTD) + this.toNumber(this.form.hTP);
       const totalSequenceHours = this.sequencesRows.reduce((acc, row) => acc + (this.toNumber(row.duration) || 0), 0);
@@ -564,7 +565,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
     </thead>
     <tbody>
       ${this.sequencesRows.map(row => (
-        '<tr><td>' + (row.label || '') + '</td><td>' + (row.type || '') + '</td><td>' + (this.toNumber(row.duration) || 0) + '</td><td>' + (row.notes || '') + '</td></tr>'
+          '<tr><td>' + (row.label || '') + '</td><td>' + (row.type || '') + '</td><td>' + (this.toNumber(row.duration) || 0) + '</td><td>' + (row.notes || '') + '</td></tr>'
       )).join('')}
     </tbody>
   </table>
@@ -799,16 +800,16 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         const mode = this.$route.query.mode;
 
         if (mode === 'edit' && id) {
-          await axios.put(`/resource-sheets/${id}`, payload);
+          await axios.put(`/resource-sheets/${id}`, payload, authConfig);
         } else {
-          await axios.post('/resource-sheets', payload);
+          await axios.post('/resource-sheets', payload, authConfig);
         }
         this.modal = {
           show: true,
-          title: 'Succès',
-          message: mode === 'edit' ? 'Fiche modifiée avec succès !' : 'Fiche créée avec succès !',
+          title: 'Succes',
+          message: mode === 'edit' ? 'Fiche modifiee avec succes !' : 'Fiche creee avec succes !',
           type: 'success',
-          confirmLabel: 'Retour à la liste'
+          confirmLabel: 'Retour a la liste'
         };
       } catch (e) {
         console.error("Erreur sauvegarde", e);
@@ -948,10 +949,10 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
 }
 .info-card h3 { margin: 0 0 12px; color: var(--color-primary); font-size: 1.05rem; text-align: center; }
-.card-fields { 
-  display: grid; 
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-  gap: 16px; 
+.card-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
   align-items: start;
 }
 .hours-grid {
@@ -1001,11 +1002,11 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
 .choice input { margin: 0; }
 <<<<<<< HEAD
 
-.pill-invalid {
-  border: 2px solid #ff4d4d !important;
-  background-color: #fff5f5 !important;
-  animation: shake 0.4s ease-in-out;
-}
+        .pill-invalid {
+          border: 2px solid #ff4d4d !important;
+          background-color: #fff5f5 !important;
+          animation: shake 0.4s ease-in-out;
+        }
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-4px); }
