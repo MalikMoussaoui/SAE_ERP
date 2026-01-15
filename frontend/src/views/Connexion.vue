@@ -60,6 +60,13 @@ export default {
 
         const token = response.data.token;
         localStorage.setItem('user-token', token);
+        if (response.data.role) {
+          localStorage.setItem('userRole', response.data.role);
+        }
+        if (response.data.name) {
+          localStorage.setItem('userName', response.data.name);
+        }
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
         localStorage.setItem('userRole', response.data.role);
          localStorage.setItem('userName', response.data.name);
 
