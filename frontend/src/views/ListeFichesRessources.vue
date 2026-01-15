@@ -1,5 +1,16 @@
 <template>
   <DashboardLayout>
+    <CustomModal
+      v-if="modal.show"
+      :title="modal.title"
+      :message="modal.message"
+      :type="modal.type"
+      :showCancel="modal.showCancel"
+      :confirmLabel="modal.confirmLabel"
+      :cancelLabel="modal.cancelLabel"
+      @close="closeModal"
+      @confirm="handleModalConfirm"
+    />
     <template #header>
       <h1 class="page-title">{{ $t('nav.resourceSheetsList') || 'Liste des Fiches Ressources' }}</h1>
     </template>
@@ -66,15 +77,27 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import CustomModal from '@/components/CustomModal.vue';
 import axios from 'axios';
 
 export default {
   name: 'ListeFichesRessources',
-  components: { DashboardLayout },
+  components: { DashboardLayout, CustomModal },
   data() {
     return {
       sheets: [],
-      loading: true
+      loading: true,
+      modal: {
+        show: false,
+        title: '',
+        message: '',
+        type: 'info',
+        showCancel: false,
+        confirmLabel: 'OK',
+        cancelLabel: 'Annuler',
+        action: null
+      },
+      sheetToDelete: null
     };
   },
   created() {
@@ -93,14 +116,47 @@ export default {
         this.loading = false;
       }
     },
-    async deleteSheet(id) {
-      if (!confirm("Voulez-vous vraiment supprimer cette fiche ?")) return;
+    deleteSheet(id) {
+      this.sheetToDelete = id;
+      this.modal = {
+        show: true,
+        title: 'Supprimer la fiche ?',
+        message: 'Cette action est irréversible. Voulez-vous vraiment supprimer cette fiche ressource ?',
+        type: 'warning',
+        showCancel: true,
+        confirmLabel: 'Supprimer',
+        action: 'delete'
+      };
+    },
+    closeModal() {
+      this.modal.show = false;
+    },
+    handleModalConfirm() {
+      if (this.modal.action === 'delete') {
+        this.confirmDelete();
+      } else {
+        this.closeModal();
+      }
+    },
+    async confirmDelete() {
+      this.closeModal();
+      if (!this.sheetToDelete) return;
+
       try {
-        await axios.delete(`/resource-sheets/${id}`);
-        this.sheets = this.sheets.filter(s => s.id !== id);
+        await axios.delete(`/resource-sheets/${this.sheetToDelete}`);
+        this.sheets = this.sheets.filter(s => s.id !== this.sheetToDelete);
       } catch (error) {
         console.error("Erreur suppression:", error);
-        alert("Impossible de supprimer cette fiche.");
+        this.modal = {
+          show: true,
+          title: 'Erreur',
+          message: "Impossible de supprimer cette fiche.",
+          type: 'error',
+          showCancel: false,
+          confirmLabel: 'Fermer'
+        };
+      } finally {
+        this.sheetToDelete = null;
       }
     },
     // LOGIQUE DE DATE CORRIGÉE

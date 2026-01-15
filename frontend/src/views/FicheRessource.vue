@@ -1,5 +1,14 @@
 <template>
   <DashboardLayout>
+    <CustomModal
+      v-if="modal.show"
+      :title="modal.title"
+      :message="modal.message"
+      :type="modal.type"
+      :confirmLabel="modal.confirmLabel"
+      @close="modal.show = false"
+      @confirm="handleModalConfirm"
+    />
     <template #header>
       <h1 class="page-title">{{ $t('nav.resourceSheets') }}</h1>
     </template>
@@ -326,11 +335,12 @@
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import CustomModal from '@/components/CustomModal.vue';
 import axios from 'axios';
 
 export default {
   name: 'FicheRessourceView',
-  components: { DashboardLayout },
+  components: { DashboardLayout, CustomModal },
   data() {
     return {
       currentStep: 1,
@@ -384,7 +394,14 @@ export default {
       errorTimeout: null,
       mcccEntries: null,
       lastAutoFillKey: null,
-      isAutoFillLoading: false
+      isAutoFillLoading: false,
+      modal: {
+        show: false,
+        title: '',
+        message: '',
+        type: 'info',
+        confirmLabel: 'OK'
+      }
     };
   },
   created() {
@@ -603,15 +620,31 @@ export default {
 
         if (mode === 'edit' && id) {
           await axios.put(`/resource-sheets/${id}`, payload);
-          alert("Fiche modifiée !");
         } else {
           await axios.post('/resource-sheets', payload);
-          alert("Fiche créée !");
         }
-        this.$router.push({ name: 'liste-fiches-ressources' });
+        this.modal = {
+          show: true,
+          title: 'Succès',
+          message: mode === 'edit' ? 'Fiche modifiée avec succès !' : 'Fiche créée avec succès !',
+          type: 'success',
+          confirmLabel: 'Retour à la liste'
+        };
       } catch (e) {
         console.error("Erreur sauvegarde", e);
-        alert("Erreur technique lors de l'enregistrement.");
+        this.modal = {
+          show: true,
+          title: 'Erreur',
+          message: "Erreur technique lors de l'enregistrement.",
+          type: 'error',
+          confirmLabel: 'Fermer'
+        };
+      }
+    },
+    handleModalConfirm() {
+      this.modal.show = false;
+      if (this.modal.type === 'success') {
+        this.$router.push({ name: 'liste-fiches-ressources' });
       }
     },
 
