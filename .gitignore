@@ -11,3 +11,5 @@ backend/target/
 # Logs et fichiers système
 .DS_Store
 *.log
+
+.idea/
