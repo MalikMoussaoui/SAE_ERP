@@ -395,10 +395,101 @@ export default {
       typesEvaluation: ['Soutenance', 'QCM', 'SAé', 'Devoir sur table', 'Rapport de stage'],
       uesByDepartement: {
         'BUT Informatique': [
-          'UE Realiser des applications', 'UE Optimiser des applications',
-          'UE Administrer des systemes informatiques communicants', "UE Gerer des donnees de l'information",
-          'UE Conduire un projet', 'UE Collaborer dans un environnement professionnel'
+          'UE Realiser des applications',
+          'UE Optimiser des applications',
+          'UE Administrer des systemes informatiques communicants',
+          "UE Gerer des donnees de l'information",
+          'UE Conduire un projet',
+          'UE Collaborer dans un environnement professionnel'
         ],
+        'BUT GEA - Gestion des Entreprises et des Administrations': [
+          'UE Gerer les organisations',
+          'UE Piloter la performance',
+          "UE Produire l information comptable financiere et de gestion",
+          'UE Developper une activite economique',
+          'UE Conduire un projet',
+          'UE Communiquer et travailler en equipe'
+        ],
+        'BUT TC - Techniques de Commercialisation': [
+          'UE Developper la relation client',
+          'UE Mettre en oeuvre une strategie marketing',
+          'UE Vendre une offre commerciale',
+          "UE Analyser le marche et l environnement",
+          'UE Conduire un projet commercial',
+          'UE Communiquer dans un contexte professionnel'
+        ],
+        'BUT Mesures Physiques (MP)': [
+          'UE Realiser des mesures physiques',
+          'UE Exploiter des donnees experimentales',
+          'UE Mettre en oeuvre des protocoles experimentaux',
+          'UE Caracteriser des systemes physiques',
+          'UE Conduire un projet scientifique',
+          'UE Communiquer en milieu scientifique'
+        ],
+        'BUT Genie Mecanique et Productique (GMP)': [
+          'UE Concevoir des systemes mecaniques',
+          'UE Industrialiser un produit',
+          'UE Organiser et gerer la production',
+          'UE Ameliorer les performances industrielles',
+          'UE Conduire un projet industriel',
+          'UE Communiquer dans l industrie'
+        ],
+        'BUT GEII - Genie Electrique et Informatique Industrielle': [
+          'UE Concevoir des systemes electroniques et automatises',
+          'UE Programmer et exploiter des systemes industriels',
+          'UE Mettre en oeuvre des reseaux industriels',
+          'UE Maintenir et ameliorer des installations',
+          'UE Conduire un projet industriel',
+          'UE Communiquer dans un contexte technique'
+        ],
+        'BUT Genie Civil - Construction Durable': [
+          'UE Concevoir des ouvrages de construction',
+          'UE Dimensionner des structures',
+          'UE Organiser un chantier',
+          'UE Integrer le developpement durable',
+          'UE Conduire un projet de construction',
+          'UE Communiquer dans le secteur du BTP'
+        ],
+        'BUT Genie Biologique (GB)': [
+          'UE Realiser des analyses biologiques',
+          'UE Exploiter des resultats experimentaux',
+          'UE Mettre en oeuvre des procedes biologiques',
+          'UE Assurer la qualite et la securite',
+          'UE Conduire un projet scientifique',
+          'UE Communiquer dans un contexte biologique'
+        ],
+        "BUT MMI - Metiers du Multimedia et de l'Internet": [
+          'UE Concevoir des produits multimedia',
+          'UE Developper des dispositifs interactifs',
+          'UE Creer des contenus graphiques et audiovisuels',
+          'UE Mettre en oeuvre une strategie de communication',
+          'UE Conduire un projet multimedia',
+          'UE Travailler en equipe et communiquer'
+        ],
+        'BUT GIM - Genie Industriel et Maintenance': [
+          'UE Maintenir des systemes industriels',
+          'UE Ameliorer la fiabilite des equipements',
+          'UE Diagnostiquer des pannes',
+          'UE Optimiser la maintenance',
+          'UE Conduire un projet industriel',
+          'UE Communiquer en milieu professionnel'
+        ],
+        'BUT HSE - Hygiene, Securite, Environnement': [
+          'UE Prevenir les risques professionnels',
+          'UE Gerer la securite et la sante au travail',
+          "UE Proteger l environnement",
+          'UE Mettre en conformite reglementaire',
+          'UE Conduire un projet HSE',
+          'UE Communiquer et sensibiliser'
+        ],
+        'BUT Carrieres Sociales': [
+          'UE Analyser les situations sociales',
+          'UE Accompagner des publics',
+          'UE Concevoir des actions sociales',
+          'UE Travailler en reseau partenarial',
+          'UE Conduire un projet social',
+          'UE Communiquer dans le champ social'
+        ]
       },
       availableUes: [],
       sequencesRows: [
@@ -1032,7 +1123,6 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
 .choice-group { display: flex; flex-wrap: wrap; gap: 10px; }
 .choice { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-card-bg); }
 .choice input { margin: 0; }
-<<<<<<< HEAD
 
         .pill-invalid {
           border: 2px solid #ff4d4d !important;
