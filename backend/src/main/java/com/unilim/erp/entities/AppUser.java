@@ -1,6 +1,5 @@
 package com.unilim.erp.entities;
 
-
 import com.unilim.erp.domain.UserRole;
 import com.unilim.erp.domain.UserStatus;
 import jakarta.persistence.Entity;
@@ -35,6 +34,9 @@ public class AppUser {
     @Column
     private String phone;
 
+    @Column
+    private String departement;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
     private UserRole role;
@@ -53,21 +55,15 @@ public class AppUser {
     public AppUser() {
     }
 
-    public AppUser(UUID id,String email, String passwordHash, String displayName, String phone, UserRole role, UserStatus status, Instant createdAt) {
+    public AppUser(UUID id,String email, String passwordHash, String displayName, String phone, String departement, UserRole role, UserStatus status, Instant createdAt) {
         this.id = id;
         this.email = email;
         this.passwordHash = passwordHash;
         this.displayName = displayName;
         this.phone = phone;
+        this.departement = departement;
         this.role = role;
         this.status = status;
         this.createdAt = createdAt;
     }
-
-
-
-
-
-
-
 }
