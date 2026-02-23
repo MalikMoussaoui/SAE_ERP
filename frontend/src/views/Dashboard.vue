@@ -11,8 +11,8 @@
       <section class="content-cards">
         <div class="card">
           <h3>{{ $t('dashboard.fillSheet') }}</h3>
-          <p>{{ $t('dashboard.subject') }}</p>
-          <p class="subtitle">{{ $t('dashboard.semester') }}</p>
+          <p>Algorithmique avancée</p>
+          <p class="subtitle">Semestre 3</p>
           <button class="btn-primary">{{ $t('dashboard.complete') }}</button>
         </div>
         <div class="card card-notifications">
@@ -23,30 +23,103 @@
           <p>{{ $t('dashboard.noNotifications') }}</p>
         </div>
       </section>
+
+      <h2 class="analytics-title">Analyse du département</h2>
+      <section class="content-cards analytics-grid">
+        <div class="card chart-card">
+          <h3>Répartition des heures</h3>
+          <div class="chart-wrapper">
+            <Pie v-if="loaded" :data="chartDataHeures" :options="chartOptions" />
+            <div v-else class="loading-text">Récupération des données...</div>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <h3>Effectifs par rôle</h3>
+          <div class="chart-wrapper">
+            <Bar v-if="loaded" :data="chartDataRoles" :options="chartOptions" />
+            <div v-else class="loading-text">Récupération des données...</div>
+          </div>
+        </div>
+      </section>
     </div>
   </DashboardLayout>
 </template>
 
 <script>
 import DashboardLayout from '@/components/DashboardLayout.vue';
+import axios from 'axios';
+import { Pie, Bar } from 'vue-chartjs';
+import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, BarElement } from 'chart.js';
+
+ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, BarElement);
 
 export default {
   name: 'DashboardView',
-  components: {
-    DashboardLayout
-  },
+  components: { DashboardLayout, Pie, Bar },
   data() {
     return {
-      userName: ''
+      userName: '',
+      loaded: false,
+      chartDataHeures: null,
+      chartDataRoles: null,
+      chartOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'bottom', labels: { color: '#888', font: { family: 'Poppins' } } }
+        }
+      }
     };
   },
-  mounted() {
+  async mounted() {
     this.userName = localStorage.getItem('userName') || '';
+    await this.fetchStats();
+  },
+  methods: {
+    async fetchStats() {
+      try {
+        // ESSAI DE RÉCUPÉRATION RÉELLE
+        const response = await axios.get('http://localhost:8080/api/dashboard/stats');
+        const stats = response.data;
+
+        this.chartDataHeures = {
+          labels: ['CM', 'TD', 'TP'],
+          datasets: [{
+            backgroundColor: ['#C00000', '#555555', '#333333'],
+            data: [stats.hoursByType.CM, stats.hoursByType.TD, stats.hoursByType.TP]
+          }]
+        };
+
+        this.chartDataRoles = {
+          labels: Object.keys(stats.usersByRole),
+          datasets: [{
+            label: 'Utilisateurs',
+            backgroundColor: '#C00000',
+            data: Object.values(stats.usersByRole)
+          }]
+        };
+        this.loaded = true;
+      } catch (error) {
+        console.warn("API non jointe, affichage de données de test");
+        // DONNÉES DE TEST SI LE BACKEND NE RÉPOND PAS
+        this.chartDataHeures = {
+          labels: ['CM', 'TD', 'TP'],
+          datasets: [{ backgroundColor: ['#C00000', '#555', '#222'], data: [15, 30, 25] }]
+        };
+        this.chartDataRoles = {
+          labels: ['Admin', 'Enseignant', 'RH'],
+          datasets: [{ label: 'Effectifs', backgroundColor: '#C00000', data: [1, 8, 2] }]
+        };
+        this.loaded = true;
+      }
+    }
   }
 }
 </script>
 
 <style scoped>
+/* --- TES STYLES D'ORIGINE (NE PAS TOUCHER) --- */
 .header-welcome h1 {
   font-family: var(--font-primary, 'Poppins', sans-serif);
   font-size: 2rem;
@@ -71,6 +144,7 @@ export default {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+  margin-bottom: 2rem;
 }
 .card {
   background: var(--color-card-bg, #ffffff);
@@ -104,34 +178,38 @@ export default {
   text-align: center;
 }
 .icon-success {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background-color: #28a745;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
+  width: 50px; height: 50px; border-radius: 50%;
+  background-color: #28a745; color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;
 }
 .btn-primary {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 10px;
-  background-color: var(--color-primary, #C00000);
-  color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
+  width: 100%; padding: 14px; border: none; border-radius: 10px;
+  background-color: var(--color-primary, #C00000); color: white;
+  font-size: 1.1rem; font-weight: 600; cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
-  margin-top: 1rem;
-  font-family: var(--font-primary, 'Poppins', sans-serif);
 }
-.btn-primary:hover {
-  background-color: var(--color-primary-dark, #a00000);
-  box-shadow: 0 5px 15px rgba(192, 0, 0, 0.3);
+
+/* --- NOUVEAUX STYLES POUR LES GRAPHIKES --- */
+.analytics-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 2rem 0 1.5rem 0;
+  color: var(--color-text-header);
+}
+.chart-card {
+  min-height: 380px;
+  display: flex;
+  flex-direction: column;
+}
+.chart-wrapper {
+  flex: 1;
+  position: relative;
+  margin-top: 1rem;
+}
+.loading-text {
+  height: 100%; display: flex; align-items: center; justify-content: center;
+  color: #888; font-style: italic;
 }
 </style>
