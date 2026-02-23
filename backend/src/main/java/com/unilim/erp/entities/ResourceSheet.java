@@ -30,8 +30,13 @@ public class ResourceSheet {
     @Column(columnDefinition = "TEXT")
     private String description;
 
+    @Column(name = "h_cm") // <--- On force le lien avec h_cm du SQL
     private double hCM;
+
+    @Column(name = "h_td")
     private double hTD;
+
+    @Column(name = "h_tp")
     private double hTP;
 
     private String typeEvaluation;

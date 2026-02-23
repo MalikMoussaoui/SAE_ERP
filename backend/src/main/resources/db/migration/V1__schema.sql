@@ -12,7 +12,7 @@ CREATE TABLE app_user (
     display_name TEXT NOT NULL,
     phone TEXT,
     role TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'ACTIF',
+    status TEXT NOT NULL DEFAULT 'ACTIVE',
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
@@ -25,7 +25,8 @@ CREATE TABLE ue (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     department_id UUID REFERENCES department(id),
     title TEXT NOT NULL,
-    semester INT NOT NULL
+    semester INT NOT NULL,
+    objectives TEXT
 );
 
 CREATE TABLE resource (
