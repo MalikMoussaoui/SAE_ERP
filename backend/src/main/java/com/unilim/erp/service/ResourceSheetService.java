@@ -16,7 +16,7 @@ public class ResourceSheetService {
     private final ResourceSheetRepository repository;
 
     public List<ResourceSheetDto> getAll() {
-        return repository.findAll().stream().map(this::mapToDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(this::mapToDto).toList();
     }
 
     public ResourceSheetDto getById(UUID id) {

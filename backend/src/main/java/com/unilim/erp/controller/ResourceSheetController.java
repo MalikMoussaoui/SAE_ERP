@@ -32,14 +32,13 @@ public class ResourceSheetController {
         if (currentUser.getRole().name().contains("ADMIN")) {
             return resourceSheetRepository.findAll().stream()
                     .map(this::mapToDto)
-                    .collect(Collectors.toList());
+                    .toList();
         }
 
         //temporaire le temps de mettre en place les mêmes départements dans app_user et resource_sheet
-
         return resourceSheetRepository.findByDepartementIgnoreCase(currentUser.getDepartement()).stream()
                 .map(this::mapToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @GetMapping("/{id}")

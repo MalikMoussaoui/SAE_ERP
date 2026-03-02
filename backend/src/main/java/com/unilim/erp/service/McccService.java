@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unilim.erp.dto.McccDto;
 import com.unilim.erp.entities.Mccc;
+import com.unilim.erp.exceptions.JsonSerializationException;
 import com.unilim.erp.repositories.McccRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class McccService {
     public List<McccDto> getAll() {
         return mcccRepository.findAll().stream()
                 .map(this::convertToDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public McccDto getById(UUID id) {
@@ -99,7 +100,7 @@ public class McccService {
                 entity.setRessourcesRows(objectMapper.writeValueAsString(dto.getRessourcesRows()));
             }
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error serializing JSON", e);
+            throw new JsonSerializationException("Échec de la conversion des données MCCC en JSON", e);
         }
     }
 }

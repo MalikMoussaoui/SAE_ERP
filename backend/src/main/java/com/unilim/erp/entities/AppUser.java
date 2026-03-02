@@ -4,8 +4,7 @@ import com.unilim.erp.domain.UserRole;
 import com.unilim.erp.domain.UserStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Instant;
@@ -17,6 +16,9 @@ import java.util.Set;
 @Table(name = "app_user")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -52,18 +54,4 @@ public class AppUser {
     @JsonIgnore
     private Set<Course> courses = new HashSet<>();
 
-    public AppUser() {
-    }
-
-    public AppUser(UUID id,String email, String passwordHash, String displayName, String phone, String departement, UserRole role, UserStatus status, Instant createdAt) {
-        this.id = id;
-        this.email = email;
-        this.passwordHash = passwordHash;
-        this.displayName = displayName;
-        this.phone = phone;
-        this.departement = departement;
-        this.role = role;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
 }

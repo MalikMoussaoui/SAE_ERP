@@ -4,6 +4,7 @@ import com.unilim.erp.domain.UserRole;
 import com.unilim.erp.domain.UserStatus;
 import com.unilim.erp.entities.*;
 import com.unilim.erp.repositories.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Arrays;
 import java.util.HashSet;
 
+@Slf4j
 @Component
 public class DatabaseSeeder implements CommandLineRunner {
 
@@ -43,7 +45,7 @@ public class DatabaseSeeder implements CommandLineRunner {
             return;
         }
 
-        System.out.println("Seeding : Création du personnel IUT (Admin, RH, Profs, Vacataires)...");
+        log.info("Seeding : Création du personnel IUT (Admin, RH, Profs, Vacataires)...");
         Department deptInfo = new Department();
         deptInfo.setLabel("Informatique");
         departmentRepository.save(deptInfo);
@@ -87,7 +89,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         coursProjet.getTeachers().add(vacataire);
         courseRepository.save(coursProjet);
 
-        System.out.println("Seeding terminé : Base prête avec RH, Vacataires et Admin !");
+        log.info("Seeding terminé : Base prête avec RH, Vacataires et Admin !");
     }
 
     private AppUser createUser(String nom, String prenom, String email, UserRole role, UserStatus status) {

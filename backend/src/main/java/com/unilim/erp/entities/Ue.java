@@ -33,7 +33,7 @@ public class Ue {
     public Ue() {
     }
 
-    public Ue(Department department, String code, String title, int semester, String objectives) {
+    public Ue(Department department, String title, int semester, String objectives) {
         this.department = department;
         this.title = title;
         this.semester = semester;

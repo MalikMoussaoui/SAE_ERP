@@ -28,7 +28,7 @@ public class CourseController {
     @GetMapping("/{id}")
     public ResponseEntity<Course> getById(@PathVariable UUID id) {
         return service.findById(id)
-                .map(course -> ResponseEntity.ok(course))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
