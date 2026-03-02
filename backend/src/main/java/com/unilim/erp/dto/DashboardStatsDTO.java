@@ -1,5 +1,6 @@
 package com.unilim.erp.dto;
 
+import com.unilim.erp.entities.ResourceSheet;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,5 +14,6 @@ public class DashboardStatsDTO {
     private long totalResourceSheets; // total des fiches de ressources
     private Map<String, Double> hoursByType; // CM, TD, TP
     private Map<String, Long> usersByRole; // TEACHER, VACATAIRE, REFERENT, RESPONSABLE_PEDAGOGIQUE, RH, ADMINISTRATEUR
+    private ResourceSheet latestSheet;
 }
 

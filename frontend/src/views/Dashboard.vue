@@ -11,10 +11,24 @@
       <section class="content-cards">
         <div class="card">
           <h3>{{ $t('dashboard.fillSheet') }}</h3>
-          <p>Algorithmique avancée</p>
-          <p class="subtitle">Semestre 3</p>
-          <button class="btn-primary">{{ $t('dashboard.complete') }}</button>
+
+          <template v-if="latestSheet">
+            <p>{{ latestSheet.titre || 'Sans titre' }}</p>
+            <p class="subtitle">{{ latestSheet.code }} — {{ latestSheet.semestre }}</p>
+            <button @click="goToSheet(latestSheet.id)" class="btn-primary">
+              {{ $t('dashboard.complete') }}
+            </button>
+          </template>
+
+          <template v-else>
+            <p>Aucune fiche trouvée</p>
+            <p class="subtitle">Commencez par créer une ressource</p>
+            <button @click="$router.push('/fiche-ressource')" class="btn-primary">
+              Créer une fiche
+            </button>
+          </template>
         </div>
+
         <div class="card card-notifications">
           <div class="icon-success">
             <span>✔</span>
@@ -50,13 +64,20 @@
 import DashboardLayout from '@/components/DashboardLayout.vue';
 import axios from 'axios';
 import { Pie, Bar } from 'vue-chartjs';
-import { Chart as ChartJS, Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import {
+  Chart as ChartJS, Title, Tooltip, Legend, ArcElement,
+  CategoryScale, LinearScale, BarElement
+} from 'chart.js';
 
 ChartJS.register(Title, Tooltip, Legend, ArcElement, CategoryScale, LinearScale, BarElement);
 
 export default {
   name: 'DashboardView',
-  components: { DashboardLayout, Pie, Bar },
+  components: {
+    DashboardLayout,
+    Pie,
+    Bar
+  },
   data() {
     return {
       userName: '',
@@ -67,26 +88,32 @@ export default {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'bottom', labels: { color: '#888', font: { family: 'Poppins' } } }
+          legend: {
+            position: 'bottom',
+            labels: { color: '#888', font: { family: 'Poppins', size: 12 } }
+          }
         }
-      }
+      },
+      latestSheet: null
     };
   },
   async mounted() {
-    this.userName = localStorage.getItem('userName') || '';
+    this.userName = localStorage.getItem('userName') || 'Utilisateur';
     await this.fetchStats();
   },
   methods: {
     async fetchStats() {
       try {
-        // ESSAI DE RÉCUPÉRATION RÉELLE
         const response = await axios.get('http://localhost:8080/api/dashboard/stats');
         const stats = response.data;
+
+        this.latestSheet = stats.latestSheet;
 
         this.chartDataHeures = {
           labels: ['CM', 'TD', 'TP'],
           datasets: [{
             backgroundColor: ['#C00000', '#555555', '#333333'],
+            borderWidth: 0,
             data: [stats.hoursByType.CM, stats.hoursByType.TD, stats.hoursByType.TP]
           }]
         };
@@ -96,13 +123,12 @@ export default {
           datasets: [{
             label: 'Utilisateurs',
             backgroundColor: '#C00000',
+            borderRadius: 4,
             data: Object.values(stats.usersByRole)
           }]
         };
         this.loaded = true;
       } catch (error) {
-        console.warn("API non jointe, affichage de données de test");
-        // DONNÉES DE TEST SI LE BACKEND NE RÉPOND PAS
         this.chartDataHeures = {
           labels: ['CM', 'TD', 'TP'],
           datasets: [{ backgroundColor: ['#C00000', '#555', '#222'], data: [15, 30, 25] }]
@@ -113,13 +139,15 @@ export default {
         };
         this.loaded = true;
       }
+    },
+    goToSheet(id) {
+      this.$router.push(`/fiche-ressource/${id}`);
     }
   }
 }
 </script>
 
 <style scoped>
-/* --- TES STYLES D'ORIGINE (NE PAS TOUCHER) --- */
 .header-welcome h1 {
   font-family: var(--font-primary, 'Poppins', sans-serif);
   font-size: 2rem;
@@ -178,19 +206,36 @@ export default {
   text-align: center;
 }
 .icon-success {
-  width: 50px; height: 50px; border-radius: 50%;
-  background-color: #28a745; color: white;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.5rem; font-weight: bold; margin-bottom: 1rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #28a745;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
 }
 .btn-primary {
-  width: 100%; padding: 14px; border: none; border-radius: 10px;
-  background-color: var(--color-primary, #C00000); color: white;
-  font-size: 1.1rem; font-weight: 600; cursor: pointer;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--color-primary, #C00000);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
+  margin-top: 1rem;
+  font-family: var(--font-primary, 'Poppins', sans-serif);
 }
-
-/* --- NOUVEAUX STYLES POUR LES GRAPHIKES --- */
+.btn-primary:hover {
+  background-color: var(--color-primary-dark, #a00000);
+  box-shadow: 0 5px 15px rgba(192, 0, 0, 0.3);
+}
 .analytics-title {
   font-family: 'Poppins', sans-serif;
   font-size: 1.5rem;
@@ -199,7 +244,7 @@ export default {
   color: var(--color-text-header);
 }
 .chart-card {
-  min-height: 380px;
+  min-height: 400px;
   display: flex;
   flex-direction: column;
 }
@@ -207,9 +252,14 @@ export default {
   flex: 1;
   position: relative;
   margin-top: 1rem;
+  min-height: 250px;
 }
 .loading-text {
-  height: 100%; display: flex; align-items: center; justify-content: center;
-  color: #888; font-style: italic;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #888;
+  font-style: italic;
 }
 </style>

@@ -521,6 +521,7 @@ export default {
     this.loadFromRoute();
   },
   watch: {
+    '$route.params.id'() { this.loadFromRoute(); },
     'form.departement'(newDepartement,oldDepartement) {
       this.availableUes = this.uesByDepartement[newDepartement] || [];
       if (oldDepartement && !this.isReadOnly) {
@@ -819,9 +820,14 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
       }
     },
     async loadFromRoute() {
-      const { id, mode } = this.$route.query;
+      const id = this.$route.params.id || this.$route.query.id;
+      const mode = this.$route.query.mode;
       this.isReadOnly = mode === 'view';
-      if (!id) { this.editingId = null; return; }
+      if (!id) {
+        this.editingId = null;
+        this.resetForm();
+        return;
+      }
 
       try {
         const response = await axios.get(`/resource-sheets/${id}`);
@@ -874,12 +880,18 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
 
     async saveResource() {
       const token = localStorage.getItem('user-token');
+      // on teste si la personne est bien connecté
       if (!token) {
-        alert("Vous devez etre connecte pour enregistrer.");
+        alert("Vous devez être connecté pour enregistrer.");
         return;
       }
       const authConfig = { headers: { Authorization: `Bearer ${token}` } };
 
+      // On regarde si on est en édition ou en création
+      const currentId = this.editingId || this.$route.params.id || this.$route.query.id;
+      const isEditing = !!currentId;
+
+      //on assure que les données de chaque champs correspondent entre frontend et backend
       const payload = {
         ...this.form,
         evaluationsPrevues: Array.isArray(this.form.evaluationsPrevues) ? this.form.evaluationsPrevues.join(',') : this.form.evaluationsPrevues,
@@ -894,22 +906,22 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
       };
 
       try {
-        const id = this.$route.query.id;
-        const mode = this.$route.query.mode;
-
-        if (mode === 'edit' && id) {
-          await axios.put(`/resource-sheets/${id}`, payload, authConfig);
-        } else {
+        if (isEditing) { //cas pour edition
+          await axios.put(`/resource-sheets/${currentId}`, payload, authConfig);
+        } else { // pour la creation
           await axios.post('/resource-sheets', payload, authConfig);
         }
+
+        // message de succès
         this.modal = {
           show: true,
-          title: 'Succes',
-          message: mode === 'edit' ? 'Fiche modifiee avec succes !' : 'Fiche creee avec succes !',
+          title: 'Succès',
+          message: isEditing ? 'Fiche modifiée avec succès !' : 'Fiche créée avec succès !',
           type: 'success',
-          confirmLabel: 'Retour a la liste',
+          confirmLabel: 'Retour à la liste',
           showCancel: false
         };
+        // message d'erreur
       } catch (e) {
         console.error("Erreur sauvegarde", e);
         this.modal = {

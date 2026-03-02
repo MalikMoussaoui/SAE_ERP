@@ -30,9 +30,10 @@ const router = createRouter({
       component: DashboardView
     },
     {
-      path: '/fiche-ressource',
-      name: 'fiche-ressource',
-      component: FicheRessourceView
+        path: '/fiche-ressource/:id?',
+        name: 'fiche-ressource',
+        component: FicheRessourceView,
+        props: true
     },
     {
       path: '/liste-fiches-ressources',
