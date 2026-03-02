@@ -90,7 +90,17 @@ export default {
         plugins: {
           legend: {
             position: 'bottom',
-            labels: { color: '#888', font: { family: 'Poppins', size: 12 } }
+            labels: {
+              color: '#333',
+              font: {
+                family: "'Inter', sans-serif",
+                size: 13,
+                weight: '600'
+              },
+              padding: 20,
+              usePointStyle: true,
+              pointStyle: 'circle'
+            }
           }
         }
       },
