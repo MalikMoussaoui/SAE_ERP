@@ -1,6 +1,7 @@
 package com.unilim.erp.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAlias;
 import lombok.Data;
 import java.util.UUID;
 
@@ -28,6 +29,8 @@ public class ResourceSheetDto {
     private String modaliteRattrapage;
     private String responsablePedagogique;
     private String intervenants;
+    @JsonAlias({"pedagogicalFeedback"})
+    private String retourEquipePedagogique;
     private String typeEnseignement;
     private String sequencesRowsJson;
     private java.time.LocalDateTime createdAt;

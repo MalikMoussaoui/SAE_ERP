@@ -233,6 +233,16 @@
               <input v-model="form.intervenants" class="pill-select pill-input" :disabled="isReadOnly" />
             </label>
             <label class="field full">
+              <span>{{ $t('resourceSheet.pedagogicalFeedback') }}</span>
+              <textarea
+                v-model="form.pedagogicalFeedback"
+                class="info-textarea"
+                rows="3"
+                :placeholder="$t('resourceSheet.pedagogicalFeedbackPlaceholder')"
+                :disabled="isReadOnly"
+              ></textarea>
+            </label>
+            <label class="field full">
               <span>{{ $t('resourceSheet.teachingType') }}</span>
               <div class="choice-group">
                 <label class="choice">
@@ -377,6 +387,7 @@ export default {
         modaliteRattrapage: '',
         responsablePedagogique: '',
         intervenants: '',
+        pedagogicalFeedback: '',
         typeEnseignement: '',
         modalitesEvaluation: '',
         description: ''
@@ -689,6 +700,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
   <div class="grid-2">
     <div class="field"><div class="label">Responsable pedagogique</div><div class="value">${this.form.responsablePedagogique || ''}</div></div>
     <div class="field"><div class="label">Intervenants</div><div class="value">${this.form.intervenants || ''}</div></div>
+    <div class="field" style="grid-column: 1 / -1;"><div class="label">Retour equipe pedagogique</div><div class="value">${this.form.pedagogicalFeedback || ''}</div></div>
     <div class="field"><div class="label">Type d'enseignement</div><div class="value">${this.formatTeachingType(this.form.typeEnseignement)}</div></div>
     <div class="field"><div class="label">Total sequences</div><div class="value">${totalSequenceHours || 0} h</div></div>
   </div>
@@ -819,6 +831,35 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         this.nextRowId = this.sequencesRows.length + 1;
       }
     },
+    resetForm() {
+      this.form = {
+        departement: '',
+        titre: '',
+        code: '',
+        semestre: '',
+        ue: '',
+        hCM: 0,
+        hTD: 0,
+        hTP: 0,
+        typeEvaluation: '',
+        evaluationsPrevues: [],
+        coefficientRessource: 0,
+        noteMinimale: 0,
+        compensation: '',
+        rattrapage: '',
+        modaliteRattrapage: '',
+        responsablePedagogique: '',
+        intervenants: '',
+        pedagogicalFeedback: '',
+        typeEnseignement: '',
+        modalitesEvaluation: '',
+        description: ''
+      };
+      this.sequencesRows = [{ id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }];
+      this.nextRowId = 2;
+      this.fieldErrors = {};
+      this.lastAutoFillKey = null;
+    },
     async loadFromRoute() {
       const id = this.$route.params.id || this.$route.query.id;
       const mode = this.$route.query.mode;
@@ -853,6 +894,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         this.form.modaliteRattrapage = data.modaliteRattrapage || '';
         this.form.responsablePedagogique = data.responsablePedagogique || '';
         this.form.intervenants = data.intervenants || '';
+        this.form.pedagogicalFeedback = data.pedagogicalFeedback || data.retourEquipePedagogique || '';
         this.form.typeEnseignement = data.typeEnseignement || data.modalities || '';
         const ev = data.evaluationsPrevues;
         this.form.evaluationsPrevues = Array.isArray(ev) ? ev : (typeof ev === 'string' ? ev.split(',') : []);
@@ -896,6 +938,8 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         ...this.form,
         evaluationsPrevues: Array.isArray(this.form.evaluationsPrevues) ? this.form.evaluationsPrevues.join(',') : this.form.evaluationsPrevues,
         sequencesRowsJson: JSON.stringify(this.sequencesRows),
+        pedagogicalFeedback: this.form.pedagogicalFeedback,
+        retourEquipePedagogique: this.form.pedagogicalFeedback,
         hoursCm: this.form.hCM,
         hoursTd: this.form.hTD,
         hoursTp: this.form.hTP,

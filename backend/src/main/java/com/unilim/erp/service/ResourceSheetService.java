@@ -58,6 +58,7 @@ public class ResourceSheetService {
         entity.setModaliteRattrapage(dto.getModaliteRattrapage());
         entity.setResponsablePedagogique(dto.getResponsablePedagogique());
         entity.setIntervenants(dto.getIntervenants());
+        entity.setRetourEquipePedagogique(dto.getRetourEquipePedagogique());
         entity.setTypeEnseignement(dto.getTypeEnseignement()); // Remplace setModalities
         entity.setSequencesRowsJson(dto.getSequencesRowsJson());
     }
@@ -83,6 +84,7 @@ public class ResourceSheetService {
         dto.setModaliteRattrapage(entity.getModaliteRattrapage());
         dto.setResponsablePedagogique(entity.getResponsablePedagogique());
         dto.setIntervenants(entity.getIntervenants());
+        dto.setRetourEquipePedagogique(entity.getRetourEquipePedagogique());
         dto.setTypeEnseignement(entity.getTypeEnseignement());
         dto.setSequencesRowsJson(entity.getSequencesRowsJson());
         return dto;

@@ -50,6 +50,8 @@ public class ResourceSheet {
 
     private String responsablePedagogique;
     private String intervenants;
+    @Column(columnDefinition = "TEXT")
+    private String retourEquipePedagogique;
     private String typeEnseignement;
     @Column(columnDefinition = "TEXT")
     private String sequencesRowsJson;

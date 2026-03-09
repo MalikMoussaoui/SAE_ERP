@@ -409,6 +409,7 @@ export default {
       nextRowId: 2,
       errorMessage: '',
       errorTimeout: null,
+      isHydratingForm: false,
       modal: {
         show: false,
         title: '',
@@ -427,9 +428,11 @@ export default {
     this.loadFromRoute();
   },
   watch: {
-    'form.departement'(newDepartement) {
+    'form.departement'(newDepartement, oldDepartement) {
       this.availableUes = this.uesByDepartement[newDepartement] || [];
-      this.form.ue = '';
+      if (!this.isHydratingForm && newDepartement !== oldDepartement) {
+        this.form.ue = '';
+      }
     },
     '$route.query.id'() {
       this.loadFromRoute();
@@ -467,6 +470,7 @@ export default {
       }
 
       try {
+        this.isHydratingForm = true;
         const response = await axios.get(`/mccc/${id}`);
         const mccc = response.data;
 
@@ -495,6 +499,8 @@ export default {
 
       } catch (error) {
         console.error("Error loading MCCC", error);
+      } finally {
+        this.isHydratingForm = false;
       }
     },
     nextStep() {
