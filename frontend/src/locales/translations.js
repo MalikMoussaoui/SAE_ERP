@@ -3,8 +3,10 @@ export const messages = {
         nav: {
             dashboard: "Tableau de bord",
             resourceSheets: "Fiche ressource",
+            resourceSheetsFill: "Remplir une fiche ressource",
             resourceSheetsList: "Liste des fiches ressources",
             mccc: "MCCC",
+            mcccFill: "Remplir une fiche MCCC",
             mcccList: "Liste MCCC",
             tac: "TAC",
             teachers: "Enseignants et vacataires",
@@ -212,8 +214,10 @@ export const messages = {
         nav: {
             dashboard: "Dashboard",
             resourceSheets: "Resource Sheet",
+            resourceSheetsFill: "Fill a resource sheet",
             resourceSheetsList: "Resource Sheets List",
             mccc: "MCCC",
+            mcccFill: "Fill an MCCC sheet",
             mcccList: "MCCC List",
             tac: "TAC",
             teachers: "Teachers and Contractors",

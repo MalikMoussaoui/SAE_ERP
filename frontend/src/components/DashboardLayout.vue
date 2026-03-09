@@ -18,7 +18,7 @@
               type="button"
               class="nav-group"
               :class="{ open: isGroupOpen(item.key), active: isGroupActive(item) }"
-              @click="toggleGroup(item.key)"
+              @click="handleGroupClick(item)"
             >
               <img :src="item.icon" :alt="item.text" class="nav-icon" />
               <span class="nav-text">{{ item.text }}</span>
@@ -123,7 +123,7 @@ export default {
           text: this.$t('nav.resourceSheets'),
           icon: iconFiche,
           children: [
-            { path: '/fiche-ressource', text: this.$t('nav.resourceSheets') },
+            { path: '/fiche-ressource', text: this.$t('nav.resourceSheetsFill') },
             { path: '/liste-fiches-ressources', text: this.$t('nav.resourceSheetsList') }
           ]
         },
@@ -133,7 +133,7 @@ export default {
           text: this.$t('nav.mccc'),
           icon: iconMcc,
           children: [
-            { path: '/mccc', text: this.$t('nav.mccc') },
+            { path: '/mccc', text: this.$t('nav.mcccFill') },
             { path: '/liste-mccc', text: this.$t('nav.mcccList') }
           ]
         },
@@ -170,6 +170,15 @@ export default {
     },
     isGroupOpen(key) {
       return this.openGroups[key];
+    },
+    handleGroupClick(item) {
+      if (this.isSidebarCollapsed) {
+        this.isSidebarCollapsed = false;
+        localStorage.setItem('sidebarCollapsed', this.isSidebarCollapsed);
+        this.openGroups[item.key] = true;
+        return;
+      }
+      this.toggleGroup(item.key);
     },
     toggleGroup(key) {
       this.openGroups[key] = !this.openGroups[key];
