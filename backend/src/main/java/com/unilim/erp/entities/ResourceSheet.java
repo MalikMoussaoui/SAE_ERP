@@ -61,4 +61,7 @@ public class ResourceSheet {
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @Column(name = "is_validated", nullable = false)
+    private boolean isValidated = false;
 }

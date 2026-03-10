@@ -13,11 +13,14 @@ import java.util.UUID;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @Service
 @RequiredArgsConstructor
 public class AppUserService {
 
     private final AppUserRepository repository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<AppUser> getAllAppUsers() {
         return repository.findAll();
@@ -29,6 +32,9 @@ public class AppUserService {
 
     public AppUser createAppUser(AppUser appUser) {
         appUser.setId(null);
+        if (appUser.getPasswordHash() != null) {
+            appUser.setPasswordHash(passwordEncoder.encode(appUser.getPasswordHash()));
+        }
         return repository.save(appUser);
     }
 
@@ -43,6 +49,7 @@ public class AppUserService {
             return repository.save(existingUser);
         }).orElseThrow(() -> new RuntimeException("Utilisateur non trouvé avec l'ID : " + id));
     }
+
     public void deleteAppUser(UUID id) {
         repository.deleteById(id);
     }

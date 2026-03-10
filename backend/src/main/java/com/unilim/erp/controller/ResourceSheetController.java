@@ -35,7 +35,6 @@ public class ResourceSheetController {
                     .toList();
         }
 
-        //temporaire le temps de mettre en place les mêmes départements dans app_user et resource_sheet
         return resourceSheetRepository.findByDepartementIgnoreCase(currentUser.getDepartement()).stream()
                 .map(this::mapToDto)
                 .toList();
@@ -58,7 +57,8 @@ public class ResourceSheetController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ResourceSheetDto> updateResourceSheet(@PathVariable UUID id, @RequestBody ResourceSheetDto resourceSheetDto) {
+    public ResponseEntity<ResourceSheetDto> updateResourceSheet(@PathVariable UUID id,
+            @RequestBody ResourceSheetDto resourceSheetDto) {
         return resourceSheetRepository.findById(id)
                 .map(existingSheet -> {
                     mapToEntity(resourceSheetDto, existingSheet);
@@ -98,6 +98,21 @@ public class ResourceSheetController {
         entity.setResponsablePedagogique(dto.getResponsablePedagogique());
         entity.setIntervenants(dto.getIntervenants());
         entity.setSequencesRowsJson(dto.getSequencesRowsJson());
+
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser currentUser = appUserRepository.findByEmail(currentEmail).orElse(null);
+        if (currentUser != null) {
+            boolean isAdminOrResponsable = currentUser.getRole().name().equals("ADMINISTRATEUR") ||
+                    currentUser.getRole().name().equals("RESPONSABLE_PEDAGOGIQUE");
+
+            // Only admin or responsable can change validation status
+            if (isAdminOrResponsable) {
+                entity.setValidated(dto.isValidated());
+            } else if (entity.getId() == null) {
+                // on creation, default to false if not admin/responsable
+                entity.setValidated(false);
+            }
+        }
     }
 
     private ResourceSheetDto mapToDto(ResourceSheet entity) {
@@ -125,7 +140,48 @@ public class ResourceSheetController {
         dto.setSequencesRowsJson(entity.getSequencesRowsJson());
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
+        dto.setValidated(entity.isValidated());
 
         return dto;
+    }
+
+    @PostMapping("/{id}/duplicate")
+    public ResponseEntity<ResourceSheetDto> duplicateResourceSheet(@PathVariable UUID id) {
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser currentUser = appUserRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+
+        if (!currentUser.getRole().name().equals("ADMINISTRATEUR")
+                && !currentUser.getRole().name().equals("RESPONSABLE_PEDAGOGIQUE")) {
+            return ResponseEntity.status(403).build();
+        }
+
+        return resourceSheetRepository.findById(id).map(existingSheet -> {
+            ResourceSheet newSheet = new ResourceSheet();
+            newSheet.setTitre(existingSheet.getTitre() + " (Copie)");
+            newSheet.setDepartement(existingSheet.getDepartement());
+            newSheet.setCode(existingSheet.getCode());
+            newSheet.setUe(existingSheet.getUe());
+            newSheet.setSemestre(existingSheet.getSemestre());
+            newSheet.setDescription(existingSheet.getDescription());
+            newSheet.setHCM(existingSheet.getHCM());
+            newSheet.setHTD(existingSheet.getHTD());
+            newSheet.setHTP(existingSheet.getHTP());
+            newSheet.setTypeEvaluation(existingSheet.getTypeEvaluation());
+            newSheet.setCoefficientRessource(existingSheet.getCoefficientRessource());
+            newSheet.setEvaluationsPrevues(existingSheet.getEvaluationsPrevues());
+            newSheet.setNoteMinimale(existingSheet.getNoteMinimale());
+            newSheet.setCompensation(existingSheet.getCompensation());
+            newSheet.setRattrapage(existingSheet.getRattrapage());
+            newSheet.setModaliteRattrapage(existingSheet.getModaliteRattrapage());
+            newSheet.setTypeEnseignement(existingSheet.getTypeEnseignement());
+            newSheet.setResponsablePedagogique(existingSheet.getResponsablePedagogique());
+            newSheet.setIntervenants(existingSheet.getIntervenants());
+            newSheet.setSequencesRowsJson(existingSheet.getSequencesRowsJson());
+            newSheet.setValidated(false); // copies are not validated by default
+
+            ResourceSheet savedSheet = resourceSheetRepository.save(newSheet);
+            return ResponseEntity.ok(mapToDto(savedSheet));
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

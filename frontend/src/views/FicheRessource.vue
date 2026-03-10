@@ -346,12 +346,23 @@
         <button v-if="currentStep < 6" @click="nextStep" class="btn btn-primary">
           {{ $t('mccc.continue') }}
         </button>
-        <button v-if="currentStep === 6 && editingId" class="btn btn-danger" type="button" @click="confirmDelete" :disabled="isReadOnly">
-          Supprimer
-        </button>
-        <button v-if="currentStep === 6" class="btn btn-primary" type="button" @click="saveResource" :disabled="isReadOnly">
-          {{ $t('mccc.save') }}
-        </button>
+
+        <template v-if="currentStep === 6">
+            <button v-if="editingId" class="btn btn-danger" type="button" @click="confirmDelete" :disabled="isReadOnly">
+              Supprimer
+            </button>
+            
+            <button v-if="canValidateOrDuplicate && editingId" class="btn btn-secondary" type="button" @click="duplicateResource" :disabled="isReadOnly">
+              Dupliquer
+            </button>
+            <button v-if="canValidateOrDuplicate && !form.isValidated && editingId" class="btn btn-success" type="button" @click="validateResource" :disabled="isReadOnly">
+              Valider
+            </button>
+            
+            <button class="btn btn-primary" type="button" @click="saveResource" :disabled="isReadOnly">
+              {{ $t('mccc.save') }}
+            </button>
+        </template>
       </div>
     </div>
   </DashboardLayout>
@@ -390,7 +401,8 @@ export default {
         pedagogicalFeedback: '',
         typeEnseignement: '',
         modalitesEvaluation: '',
-        description: ''
+        description: '',
+        isValidated: false
       },
       editingId: null,
       isReadOnly: false,
@@ -548,7 +560,11 @@ export default {
   },
   computed: {
     showAllSteps() { return this.isReadOnly && this.$route.query.mode === 'view'; },
-    totalSequenceHours() { return this.sequencesRows.reduce((acc, row) => acc + (Number(row.duration) || 0), 0); }
+    totalSequenceHours() { return this.sequencesRows.reduce((acc, row) => acc + (Number(row.duration) || 0), 0); },
+    canValidateOrDuplicate() {
+      const role = localStorage.getItem('userRole');
+      return role === 'ADMINISTRATEUR' || role === 'RESPONSABLE_PEDAGOGIQUE';
+    }
   },
   methods: {
     formatEvaluationType(value) { return value ? String(value) : ''; },
@@ -853,7 +869,8 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         pedagogicalFeedback: '',
         typeEnseignement: '',
         modalitesEvaluation: '',
-        description: ''
+        description: '',
+        isValidated: false
       };
       this.sequencesRows = [{ id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }];
       this.nextRowId = 2;
@@ -882,6 +899,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         this.form.semestre = data.semestre || '';
         this.form.ue = data.ue || '';
         this.form.description = data.description || data.objectives || '';
+        this.form.isValidated = data.validated || data.isValidated || false;
         this.form.hCM = data.hCM !== undefined ? data.hCM : (data.hoursCm || 0);
         this.form.hTD = data.hTD !== undefined ? data.hTD : (data.hoursTd || 0);
         this.form.hTP = data.hTP !== undefined ? data.hTP : (data.hoursTp || 0);
@@ -1006,6 +1024,30 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
       } else if (this.modal.type === 'success') {
         this.$router.push({ name: 'liste-fiches-ressources' });
       }
+    },
+    async duplicateResource() {
+      const token = localStorage.getItem('user-token');
+      if (!token) return;
+      try {
+        const response = await axios.post(`/resource-sheets/${this.editingId}/duplicate`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        this.modal = {
+          show: true,
+          title: 'Succès',
+          message: 'Fiche dupliquée avec succès !',
+          type: 'success',
+          confirmLabel: 'Retour à la liste',
+          showCancel: false
+        };
+      } catch (e) {
+        console.error("Erreur duplication", e);
+        this.modal = { show: true, title: 'Erreur', message: "Impossible de dupliquer la fiche.", type: 'error', confirmLabel: 'Fermer', showCancel: false };
+      }
+    },
+    async validateResource() {
+        this.form.isValidated = true;
+        await this.saveResource();
     },
 
     addRow() { this.sequencesRows.push({ id: this.nextRowId++, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }); },

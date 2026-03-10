@@ -26,3 +26,8 @@ management:
 jwt:
   secret: votre_super_cle_secrete_a_changer_en_production_au_moins_512_bits
   expiration: 86400000
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.web: DEBUG

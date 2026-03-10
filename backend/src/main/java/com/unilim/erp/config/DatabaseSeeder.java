@@ -25,11 +25,11 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final PasswordEncoder passwordEncoder;
 
     public DatabaseSeeder(DepartmentRepository departmentRepository,
-                          UeRepository ueRepository,
-                          ResourceRepository resourceRepository,
-                          SaeRepository saeRepository,
-                          CourseRepository courseRepository,
-                          AppUserRepository appUserRepository,PasswordEncoder passwordEncoder) {
+            UeRepository ueRepository,
+            ResourceRepository resourceRepository,
+            SaeRepository saeRepository,
+            CourseRepository courseRepository,
+            AppUserRepository appUserRepository, PasswordEncoder passwordEncoder) {
         this.departmentRepository = departmentRepository;
         this.ueRepository = ueRepository;
         this.resourceRepository = resourceRepository;
@@ -41,7 +41,22 @@ public class DatabaseSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if (appUserRepository.count() > 0) {
+        log.info("Vérification de l'existence de l'administrateur...");
+        appUserRepository.findByEmail("admin@unilim.fr").ifPresentOrElse(
+                user -> {
+                    user.setPasswordHash(passwordEncoder.encode("1234"));
+                    user.setRole(UserRole.ADMINISTRATEUR);
+                    appUserRepository.save(user);
+                    log.info("Mot de passe et rôle de l'admin forcés.");
+                },
+                () -> {
+                    log.info("Création de l'admin car il n'existe pas.");
+                    AppUser admin = createUser("System", "Admin", "admin@unilim.fr", UserRole.ADMINISTRATEUR,
+                            UserStatus.ACTIVE);
+                    appUserRepository.save(admin);
+                });
+
+        if (appUserRepository.count() > 1) {
             return;
         }
 
@@ -56,14 +71,18 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         AppUser admin = createUser("System", "Admin", "admin@unilim.fr", UserRole.ADMINISTRATEUR, UserStatus.ACTIVE);
         AppUser rh = createUser("Durand", "Sophie", "sophie.durand@unilim.fr", UserRole.RH, UserStatus.ACTIVE);
-        AppUser respInfo = createUser("Turing", "Alan", "alan.turing@unilim.fr", UserRole.RESPONSABLE_PEDAGOGIQUE, UserStatus.ACTIVE);
+        AppUser respInfo = createUser("Turing", "Alan", "alan.turing@unilim.fr", UserRole.RESPONSABLE_PEDAGOGIQUE,
+                UserStatus.ACTIVE);
         AppUser profJava = createUser("Lovelace", "Ada", "ada.lovelace@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE);
-        AppUser profWeb = createUser("Berners-Lee", "Tim", "tim.berners@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE);
+        AppUser profWeb = createUser("Berners-Lee", "Tim", "tim.berners@unilim.fr", UserRole.TEACHER,
+                UserStatus.ACTIVE);
         AppUser referentBdd = createUser("Codd", "Edgar", "edgar.codd@unilim.fr", UserRole.REFERENT, UserStatus.ACTIVE);
         AppUser vacataire = createUser("Musk", "Elon", "elon.musk@tesla.com", UserRole.VACATAIRE, UserStatus.ACTIVE);
-        AppUser profSuspendu = createUser("Dalton", "Joe", "joe.dalton@unilim.fr", UserRole.TEACHER, UserStatus.SUSPENDED);
+        AppUser profSuspendu = createUser("Dalton", "Joe", "joe.dalton@unilim.fr", UserRole.TEACHER,
+                UserStatus.SUSPENDED);
 
-        appUserRepository.saveAll(Arrays.asList(admin, rh, respInfo, profJava, profWeb, referentBdd, vacataire, profSuspendu));
+        appUserRepository
+                .saveAll(Arrays.asList(admin, rh, respInfo, profJava, profWeb, referentBdd, vacataire, profSuspendu));
         Ue ueDev = createUE("UE 1.1 - Développement", 1, deptInfo);
         Ue ueDonnees = createUE("UE 1.2 - Données", 1, deptInfo);
         ueRepository.saveAll(Arrays.asList(ueDev, ueDonnees));
@@ -124,8 +143,10 @@ public class DatabaseSeeder implements CommandLineRunner {
     private void createCourse(int hours, Resource resource, Sae sae, AppUser prof) {
         Course c = new Course();
         c.setHours(hours);
-        if (resource != null) c.setResource(resource);
-        if (sae != null) c.setSae(sae);
+        if (resource != null)
+            c.setResource(resource);
+        if (sae != null)
+            c.setSae(sae);
 
         if (prof != null) {
             c.setTeachers(new HashSet<>());

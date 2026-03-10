@@ -29,12 +29,13 @@ public class ResourceSheetDto {
     private String modaliteRattrapage;
     private String responsablePedagogique;
     private String intervenants;
-    @JsonAlias({"pedagogicalFeedback"})
+    @JsonAlias({ "pedagogicalFeedback" })
     private String retourEquipePedagogique;
     private String typeEnseignement;
     private String sequencesRowsJson;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean isValidated;
 
     public ResourceSheetDto() {
     }
@@ -229,5 +230,13 @@ public class ResourceSheetDto {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isValidated() {
+        return isValidated;
+    }
+
+    public void setValidated(boolean validated) {
+        isValidated = validated;
     }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE resource_sheet ADD COLUMN is_validated BOOLEAN DEFAULT FALSE;

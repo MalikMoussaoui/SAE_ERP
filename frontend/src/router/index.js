@@ -27,55 +27,78 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView
+      component: DashboardView,
+      meta: { requiresAuth: true }
     },
     {
-        path: '/fiche-ressource/:id?',
-        name: 'fiche-ressource',
-        component: FicheRessourceView,
-        props: true
+      path: '/fiche-ressource/:id?',
+      name: 'fiche-ressource',
+      component: FicheRessourceView,
+      props: true,
+      meta: { requiresAuth: true }
     },
     {
       path: '/liste-fiches-ressources',
       name: 'liste-fiches-ressources',
-      component: ListeFichesRessources
+      component: ListeFichesRessources,
+      meta: { requiresAuth: true }
     },
     {
       path: '/user-management',
       name: 'user-management',
-      component: GestionUtilisateurs
+      component: GestionUtilisateurs,
+      meta: { requiresAuth: true, roles: ['ADMINISTRATEUR'] }
     },
     {
       path: '/mccc',
       name: 'mccc',
-      component: McccView
+      component: McccView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/liste-mccc',
       name: 'liste-mccc',
-      component: ListeMccc
+      component: ListeMccc,
+      meta: { requiresAuth: true }
     },
     {
       path: '/tac',
       name: 'tac',
-      component: TacView
+      component: TacView,
+      meta: { requiresAuth: true }
     },
     {
       path: '/enseignants',
       name: 'enseignants',
-      component: EnseignantsVacataires
+      component: EnseignantsVacataires,
+      meta: { requiresAuth: true }
     },
     {
       path: '/settings',
       name: 'settings',
-      component: Parametres
+      component: Parametres,
+      meta: { requiresAuth: true }
     },
     {
       path: '/aide',
       name: 'aide',
-      component: AideView
+      component: AideView,
+      meta: { requiresAuth: true }
     }
   ]
 })
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('user-token');
+  const userRole = localStorage.getItem('userRole');
+
+  if (to.meta.requiresAuth && !token) {
+    next('/connexion');
+  } else if (to.meta.roles && !to.meta.roles.includes(userRole)) {
+    next('/dashboard');
+  } else {
+    next();
+  }
+});
 
 export default router

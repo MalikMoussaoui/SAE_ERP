@@ -32,10 +32,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/dashboard/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                        .requestMatchers("/api/app-users/**").hasAuthority("ROLE_ADMINISTRATEUR")
+                        .anyRequest().authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -53,8 +54,7 @@ public class SecurityConfig {
                 "Content-Type",
                 "X-Requested-With",
                 "Accept",
-                "Origin"
-        ));
+                "Origin"));
 
         configuration.setExposedHeaders(Arrays.asList("Access-Control-Allow-Origin", "Authorization"));
         configuration.setAllowCredentials(false);
