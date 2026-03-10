@@ -52,14 +52,14 @@ public class DatabaseSeeder implements CommandLineRunner {
                 () -> {
                     log.info("Création de l'admin car il n'existe pas.");
                     AppUser admin = createUser("System", "Admin", "admin@unilim.fr", UserRole.ADMINISTRATEUR,
-                            UserStatus.ACTIVE);
+                            UserStatus.ACTIVE, null);
                     appUserRepository.save(admin);
                 });
 
         appUserRepository.findByEmail("direction@unilim.fr").ifPresentOrElse(
                 user -> log.info("Direction existe déjà."),
                 () -> {
-                    AppUser dir = createUser("Mourad", "Khalid", "direction@unilim.fr", UserRole.DIRECTION, UserStatus.ACTIVE);
+                    AppUser dir = createUser("Mourad", "Khalid", "direction@unilim.fr", UserRole.DIRECTION, UserStatus.ACTIVE, "INFO");
                     appUserRepository.save(dir);
                     log.info("Création du compte Direction: direction@unilim.fr");
                 });
@@ -67,10 +67,21 @@ public class DatabaseSeeder implements CommandLineRunner {
         appUserRepository.findByEmail("rh@unilim.fr").ifPresentOrElse(
                 user -> log.info("RH existe déjà."),
                 () -> {
-                    AppUser rh = createUser("Ressources", "Humaines", "rh@unilim.fr", UserRole.RH, UserStatus.ACTIVE);
+                    AppUser rh = createUser("Ressources", "Humaines", "rh@unilim.fr", UserRole.RH, UserStatus.ACTIVE, null);
                     appUserRepository.save(rh);
                     log.info("Création du compte RH: rh@unilim.fr");
                 });
+
+        // Migration: Update existing users that have no department
+        appUserRepository.findAll().forEach(u -> {
+            if (u.getDepartement() == null && 
+                u.getRole() != UserRole.ADMINISTRATEUR && 
+                u.getRole() != UserRole.RH) {
+                u.setDepartement("INFO");
+                appUserRepository.save(u);
+                log.info("Mis à jour du département pour l'utilisateur existant: " + u.getEmail());
+            }
+        });
 
         if (appUserRepository.count() > 3) {
             return;
@@ -85,17 +96,17 @@ public class DatabaseSeeder implements CommandLineRunner {
         deptGea.setLabel("GEA (Gestion)");
         departmentRepository.save(deptGea);
 
-        AppUser admin = createUser("System", "Admin", "admin@unilim.fr", UserRole.ADMINISTRATEUR, UserStatus.ACTIVE);
-        AppUser rh = createUser("Durand", "Sophie", "sophie.durand@unilim.fr", UserRole.RH, UserStatus.ACTIVE);
+        AppUser admin = createUser("System", "Admin", "admin@unilim.fr", UserRole.ADMINISTRATEUR, UserStatus.ACTIVE, null);
+        AppUser rh = createUser("Durand", "Sophie", "sophie.durand@unilim.fr", UserRole.RH, UserStatus.ACTIVE, null);
         AppUser respInfo = createUser("Turing", "Alan", "alan.turing@unilim.fr", UserRole.RESPONSABLE_PEDAGOGIQUE,
-                UserStatus.ACTIVE);
-        AppUser profJava = createUser("Lovelace", "Ada", "ada.lovelace@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE);
+                UserStatus.ACTIVE, "INFO");
+        AppUser profJava = createUser("Lovelace", "Ada", "ada.lovelace@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE, "INFO");
         AppUser profWeb = createUser("Berners-Lee", "Tim", "tim.berners@unilim.fr", UserRole.TEACHER,
-                UserStatus.ACTIVE);
-        AppUser referentBdd = createUser("Codd", "Edgar", "edgar.codd@unilim.fr", UserRole.REFERENT, UserStatus.ACTIVE);
-        AppUser vacataire = createUser("Musk", "Elon", "elon.musk@tesla.com", UserRole.VACATAIRE, UserStatus.ACTIVE);
+                UserStatus.ACTIVE, "INFO");
+        AppUser referentBdd = createUser("Codd", "Edgar", "edgar.codd@unilim.fr", UserRole.REFERENT, UserStatus.ACTIVE, "INFO");
+        AppUser vacataire = createUser("Musk", "Elon", "elon.musk@tesla.com", UserRole.VACATAIRE, UserStatus.ACTIVE, "INFO");
         AppUser profSuspendu = createUser("Dalton", "Joe", "joe.dalton@unilim.fr", UserRole.TEACHER,
-                UserStatus.SUSPENDED);
+                UserStatus.SUSPENDED, "INFO");
 
         appUserRepository
                 .saveAll(Arrays.asList(admin, rh, respInfo, profJava, profWeb, referentBdd, vacataire, profSuspendu));
@@ -127,7 +138,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         log.info("Seeding terminé : Base prête avec RH, Vacataires et Admin !");
     }
 
-    private AppUser createUser(String nom, String prenom, String email, UserRole role, UserStatus status) {
+    private AppUser createUser(String nom, String prenom, String email, UserRole role, UserStatus status, String departement) {
         AppUser user = new AppUser();
         user.setDisplayName(prenom + " " + nom);
         user.setEmail(email);
@@ -135,6 +146,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         user.setPhone("0601020304");
         user.setRole(role);
         user.setStatus(status);
+        user.setDepartement(departement);
         return user;
     }
 
