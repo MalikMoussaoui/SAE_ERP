@@ -38,7 +38,10 @@
             <h3 class="ue-title">
               {{ sheet.code || 'Sans code' }} - {{ sheet.ue || 'Sans UE' }}
             </h3>
-            <span class="chip">{{ sheet.departement || sheet.departmentName }}</span>
+            <div class="header-tags">
+              <span v-if="sheet.validated" class="badge-validated">Validée</span>
+              <span class="chip">{{ sheet.departement || sheet.departmentName }}</span>
+            </div>
           </div>
 
           <div class="card-meta">
@@ -47,6 +50,15 @@
           </div>
 
           <div class="card-actions">
+            <button
+                type="button"
+                class="action-button success"
+                v-if="canValidate(sheet)"
+                @click="validateSheet(sheet.id)"
+            >
+              Valider
+            </button>
+
             <router-link
                 class="action-button ghost"
                 :to="{ name: 'fiche-ressource', query: { id: sheet.id, mode: 'view' } }"
@@ -56,6 +68,7 @@
 
             <router-link
                 class="action-button primary"
+                v-if="canEditList(sheet)"
                 :to="{ name: 'fiche-ressource', query: { id: sheet.id, mode: 'edit' } }"
             >
               Modifier
@@ -64,6 +77,7 @@
             <button
                 type="button"
                 class="action-button danger"
+                v-if="canDeleteList(sheet)"
                 @click="deleteSheet(sheet.id)"
             >
               Supprimer
@@ -97,7 +111,9 @@ export default {
         cancelLabel: 'Annuler',
         action: null
       },
-      sheetToDelete: null
+      sheetToDelete: null,
+      sheetToValidate: null,
+      userRole: localStorage.getItem('userRole')
     };
   },
   created() {
@@ -134,8 +150,48 @@ export default {
     handleModalConfirm() {
       if (this.modal.action === 'delete') {
         this.confirmDelete();
+      } else if (this.modal.action === 'validate') {
+        this.confirmValidate();
       } else {
         this.closeModal();
+      }
+    },
+    validateSheet(id) {
+      this.sheetToValidate = id;
+      this.modal = {
+        show: true,
+        title: 'Valider cette fiche ?',
+        message: 'Une fois validée, la fiche ne pourra plus être modifiée ou supprimée que par un administrateur. Voulez-vous continuer ?',
+        type: 'info',
+        showCancel: true,
+        confirmLabel: 'Valider',
+        action: 'validate'
+      };
+    },
+    async confirmValidate() {
+      this.closeModal();
+      if (!this.sheetToValidate) return;
+
+      try {
+        const response = await axios.post(`/resource-sheets/${this.sheetToValidate}/validate`);
+        const index = this.sheets.findIndex(s => s.id === this.sheetToValidate);
+        if (index !== -1) {
+          this.sheets[index].validated = true;
+          this.sheets[index] = { ...this.sheets[index], validated: true }; // trigger reactivity
+        }
+      } catch (error) {
+        console.error("Erreur validation:", error);
+        this.modal = {
+          show: true,
+          title: 'Erreur',
+          message: "Impossible de valider cette fiche.",
+          type: 'error',
+          showCancel: false,
+          confirmLabel: 'Fermer',
+          action: null
+        };
+      } finally {
+        this.sheetToValidate = null;
       }
     },
     async confirmDelete() {
@@ -173,6 +229,19 @@ export default {
         hour: '2-digit',
         minute: '2-digit'
       });
+    },
+    canValidate(sheet) {
+      if (sheet.validated) return false;
+      return this.userRole === 'ADMINISTRATEUR' || this.userRole === 'RH';
+    },
+    canEditList(sheet) {
+      if (sheet.validated && this.userRole !== 'ADMINISTRATEUR') return false;
+      return true;
+    },
+    canDeleteList(sheet) {
+      if (sheet.validated && this.userRole !== 'ADMINISTRATEUR') return false;
+      const email = localStorage.getItem('userEmail') || '';
+      return this.userRole === 'ADMINISTRATEUR' || (sheet.createdBy && sheet.createdBy === email);
     }
   }
 };
@@ -250,6 +319,22 @@ export default {
   font-weight: 700;
 }
 
+.header-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-validated {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #e6f4ea;
+  color: #1e8e3e;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
 .chip {
   padding: 6px 10px;
   border-radius: 999px;
@@ -314,6 +399,17 @@ export default {
 
 .action-button.primary:hover {
   background: var(--color-primary-dark, #a00000);
+}
+
+.action-button.success {
+  background: #1e8e3e;
+  color: white;
+  border: 1px solid #1e8e3e;
+}
+
+.action-button.success:hover {
+  background: #146c2e;
+  transform: translateY(-1px);
 }
 
 .action-button.danger {

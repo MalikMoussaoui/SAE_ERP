@@ -33,6 +33,7 @@ public class ResourceSheetDto {
     private String retourEquipePedagogique;
     private String typeEnseignement;
     private String sequencesRowsJson;
+    private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean isValidated;
@@ -214,6 +215,14 @@ public class ResourceSheetDto {
 
     public void setSequencesRowsJson(String sequencesRowsJson) {
         this.sequencesRowsJson = sequencesRowsJson;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public LocalDateTime getCreatedAt() {

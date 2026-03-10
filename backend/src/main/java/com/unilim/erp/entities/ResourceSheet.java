@@ -56,6 +56,9 @@ public class ResourceSheet {
     @Column(columnDefinition = "TEXT")
     private String sequencesRowsJson;
 
+    @Column(name = "created_by")
+    private String createdBy;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 

@@ -56,7 +56,23 @@ public class DatabaseSeeder implements CommandLineRunner {
                     appUserRepository.save(admin);
                 });
 
-        if (appUserRepository.count() > 1) {
+        appUserRepository.findByEmail("direction@unilim.fr").ifPresentOrElse(
+                user -> log.info("Direction existe déjà."),
+                () -> {
+                    AppUser dir = createUser("Mourad", "Khalid", "direction@unilim.fr", UserRole.DIRECTION, UserStatus.ACTIVE);
+                    appUserRepository.save(dir);
+                    log.info("Création du compte Direction: direction@unilim.fr");
+                });
+
+        appUserRepository.findByEmail("rh@unilim.fr").ifPresentOrElse(
+                user -> log.info("RH existe déjà."),
+                () -> {
+                    AppUser rh = createUser("Ressources", "Humaines", "rh@unilim.fr", UserRole.RH, UserStatus.ACTIVE);
+                    appUserRepository.save(rh);
+                    log.info("Création du compte RH: rh@unilim.fr");
+                });
+
+        if (appUserRepository.count() > 3) {
             return;
         }
 

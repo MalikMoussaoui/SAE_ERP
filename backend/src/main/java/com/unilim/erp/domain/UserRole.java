@@ -7,4 +7,5 @@ public enum UserRole {
     RESPONSABLE_PEDAGOGIQUE,
     RH,
     ADMINISTRATEUR,
+    DIRECTION
 }

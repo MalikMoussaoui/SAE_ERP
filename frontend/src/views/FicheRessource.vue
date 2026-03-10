@@ -351,18 +351,18 @@
         </button>
 
         <template v-if="currentStep === 6">
-            <button v-if="editingId" class="btn btn-danger" type="button" @click="confirmDelete" :disabled="isReadOnly">
+            <button v-if="canDelete && editingId" class="btn btn-danger" type="button" @click="confirmDelete" :disabled="isReadOnly && canDelete !== true">
               Supprimer
             </button>
             
-            <button v-if="canValidateOrDuplicate && editingId" class="btn btn-secondary" type="button" @click="duplicateResource" :disabled="isReadOnly">
+            <button v-if="canDuplicate && editingId" class="btn btn-secondary" type="button" @click="duplicateResource">
               Dupliquer
             </button>
-            <button v-if="canValidateOrDuplicate && !form.isValidated && editingId" class="btn btn-success" type="button" @click="validateResource" :disabled="isReadOnly">
+            <button v-if="canValidate && !form.isValidated && editingId" class="btn btn-success" type="button" @click="validateResource">
               Valider
             </button>
             
-            <button class="btn btn-primary" type="button" @click="saveResource" :disabled="isReadOnly">
+            <button class="btn btn-primary" type="button" @click="saveResource" v-if="hasEditingRights">
               {{ $t('mccc.save') }}
             </button>
         </template>
@@ -564,12 +564,70 @@ export default {
   computed: {
     showAllSteps() { return this.isReadOnly && this.$route.query.mode === 'view'; },
     totalSequenceHours() { return this.sequencesRows.reduce((acc, row) => acc + (Number(row.duration) || 0), 0); },
-    canValidateOrDuplicate() {
+    canDuplicate() {
       const role = localStorage.getItem('userRole');
-      return role === 'ADMINISTRATEUR' || role === 'RESPONSABLE_PEDAGOGIQUE';
+      if (role === 'ADMINISTRATEUR' || role === 'RH') return true;
+
+      if (role === 'RESPONSABLE_PEDAGOGIQUE') {
+        const userName = (localStorage.getItem('userName') || '').toLowerCase();
+        const resp = (this.form.responsablePedagogique || '').toLowerCase();
+        
+        if (resp && userName && this.isNameMatched(userName, resp)) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    canValidate() {
+      const role = localStorage.getItem('userRole');
+      return role === 'ADMINISTRATEUR' || role === 'RH';
+    },
+    canDelete() {
+      const role = localStorage.getItem('userRole');
+      if (this.form.isValidated && role !== 'ADMINISTRATEUR') return false;
+
+      const email = localStorage.getItem('userEmail') || '';
+      const isCreator = this.editingId && this.form.createdBy && this.form.createdBy === email;
+      return role === 'ADMINISTRATEUR' || isCreator;
+    },
+    hasEditingRights() {
+      const role = localStorage.getItem('userRole');
+      if (this.form.isValidated && role !== 'ADMINISTRATEUR') return false;
+
+      if (role === 'ADMINISTRATEUR' || role === 'RH') return true;
+
+      // Un utilisateur a le droit de créer une nouvelle fiche par défaut
+      // (La gestion d'interdiction de création pour les Vacataires est gérée dans saveResource)
+      if (!this.editingId) return true;
+
+      const email = localStorage.getItem('userEmail') || '';
+      if (this.editingId && this.form.createdBy && this.form.createdBy === email) return true;
+
+      const userName = (localStorage.getItem('userName') || '').toLowerCase();
+      const resp = (this.form.responsablePedagogique || '').toLowerCase();
+      const intervenants = (this.form.intervenants || '').toLowerCase();
+
+      const isResp = this.isNameMatched(userName, resp);
+      const isInter = this.isNameMatched(userName, intervenants);
+
+      if (role === 'RESPONSABLE_PEDAGOGIQUE') {
+        return isResp || isInter;
+      }
+      if (role === 'TEACHER' || role === 'VACATAIRE') {
+        return isInter || isResp;
+      }
+
+      return false;
     }
   },
   methods: {
+    isNameMatched(userName, fieldText) {
+      if (!userName || !fieldText) return false;
+      if (fieldText.includes(userName)) return true;
+      const parts = userName.split(/\s+/);
+      return parts.some(p => p.length > 2 && fieldText.includes(p));
+    },
     formatEvaluationType(value) { return value ? String(value) : ''; },
     formatEvaluationsPrevues(values) {
       if (!Array.isArray(values) || !values.length) return '';
@@ -873,7 +931,8 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         typeEnseignement: '',
         modalitesEvaluation: '',
         description: '',
-        isValidated: false
+        isValidated: false,
+        createdBy: ''
       };
       this.sequencesRows = [{ id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }];
       this.nextRowId = 2;
@@ -906,6 +965,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         this.form.hCM = data.hCM !== undefined ? data.hCM : (data.hoursCm || 0);
         this.form.hTD = data.hTD !== undefined ? data.hTD : (data.hoursTd || 0);
         this.form.hTP = data.hTP !== undefined ? data.hTP : (data.hoursTp || 0);
+        this.form.createdBy = data.createdBy || '';
 
         this.form.typeEvaluation = data.typeEvaluation || '';
         this.form.coefficientRessource = data.coefficientRessource || 0;
@@ -936,6 +996,11 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         }
 
         this.availableUes = this.uesByDepartement[this.form.departement] || [];
+
+        if (mode !== 'view') {
+          this.isReadOnly = !this.hasEditingRights;
+        }
+
       } catch (e) {
         console.error("Erreur chargement BDD", e);
       }
@@ -946,6 +1011,12 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
       // on teste si la personne est bien connecté
       if (!token) {
         alert("Vous devez être connecté pour enregistrer.");
+        return;
+      }
+
+      const role = localStorage.getItem('userRole');
+      if (role === 'VACATAIRE' && !this.editingId) {
+        this.errorMessage = "Accès refusé. Les vacataires ne peuvent pas créer de nouvelle fiche.";
         return;
       }
       const authConfig = { headers: { Authorization: `Bearer ${token}` } };
@@ -1049,8 +1120,30 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
       }
     },
     async validateResource() {
+      if (!this.editingId) return;
+      try {
+        await axios.post(`/resource-sheets/${this.editingId}/validate`);
         this.form.isValidated = true;
-        await this.saveResource();
+        this.isReadOnly = !this.hasEditingRights; // This naturally locks out non-admins
+        this.modal = {
+          show: true,
+          title: 'Succès',
+          message: 'Fiche validée avec succès ! Elle est désormais verrouillée.',
+          type: 'success',
+          confirmLabel: 'OK',
+          showCancel: false
+        };
+      } catch (e) {
+        console.error("Erreur validation", e);
+        this.modal = {
+          show: true,
+          title: 'Erreur',
+          message: "Impossible de valider la fiche.",
+          type: 'error',
+          confirmLabel: 'Fermer',
+          showCancel: false
+        };
+      }
     },
 
     addRow() { this.sequencesRows.push({ id: this.nextRowId++, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }); },

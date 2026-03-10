@@ -66,9 +66,8 @@ export default {
         if (response.data.name) {
           localStorage.setItem('userName', response.data.name);
         }
+        localStorage.setItem('userEmail', this.username);
         axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-        localStorage.setItem('userRole', response.data.role);
-         localStorage.setItem('userName', response.data.name);
 
         // Redirection vers le dashboard
         this.$router.push('/dashboard');
