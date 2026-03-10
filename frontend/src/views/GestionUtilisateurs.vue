@@ -12,15 +12,17 @@
           <button @click="showCreateForm = !showCreateForm" class="btn btn-primary">+ Nouvel Utilisateur</button>
         </div>
         <div class="search-wrapper">
-        <span class="search-icon">🔍</span>
         <input type="text" :placeholder="$t('roleManagement.searchPlaceholder')" class="search-input" v-model="searchQuery" />
       </div>
 
       <div class="filters-wrapper">
         <select class="filter-select" v-model="selectedPoste">
-          <option value="">{{ $t('roleManagement.filterByPosition') }}</option>
-          <option value="Professeur">{{ $t('roleManagement.professor') }}</option>
-          <option value="Vacataire">{{ $t('roleManagement.contractor') }}</option>
+          <option value="">Tous les postes</option>
+          <option value="TEACHER">Professeur</option>
+          <option value="VACATAIRE">Vacataire</option>
+          <option value="RESPONSABLE_PEDAGOGIQUE">Responsable Pédagogique</option>
+          <option value="ADMINISTRATEUR">Administrateur</option>
+          <option value="RH">Ressources Humaines</option>
         </select>
         <select class="filter-select" v-model="selectedDept">
           <option value="">{{ $t('roleManagement.filterByDept') }}</option>
@@ -76,9 +78,9 @@
           </thead>
           <tbody>
             <tr v-for="(user, index) in filteredUsers" :key="index">
-              <td>{{ user.name || user.username || 'N/A' }}</td>
+              <td>{{ user.displayName || 'N/A' }}</td>
               <td>{{ user.email || 'N/A' }}</td>
-              <td>{{ user.dept || user.departmentName || 'N/A' }}</td>
+              <td>{{ user.departement || 'N/A' }}</td>
               <td>{{ getPosteDisplay(user) }}</td>
               <td class="actions">
                 <a href="#" class="action-link" @click.prevent="deleteUser(user.id)">{{ $t('roleManagement.table.delete') }}</a>
@@ -131,16 +133,16 @@ export default {
         const searchLower = this.searchQuery.toLowerCase();
         
         // Handle potentially null/undefined values safely
-        const name = (user.name || user.username || '').toLowerCase();
-        const dept = (user.dept || user.departmentName || '').toLowerCase();
-        const poste = (user.poste || user.roles || '').toLowerCase();
+        const name = (user.displayName || '').toLowerCase();
+        const dept = (user.departement || '').toLowerCase();
+        const poste = (user.role || '').toLowerCase();
 
         const matchesSearch = 
           name.includes(searchLower) ||
           dept.includes(searchLower) ||
           poste.includes(searchLower);
           
-        const matchesPoste = this.selectedPoste === '' || poste.includes(this.selectedPoste.toLowerCase());
+        const matchesPoste = this.selectedPoste === '' || (user.role && user.role === this.selectedPoste);
         const matchesDept = this.selectedDept === '' || dept === this.selectedDept.toLowerCase();
         return matchesSearch && matchesPoste && matchesDept;
       });
@@ -151,11 +153,13 @@ export default {
   },
   methods: {
     getPosteDisplay(user) {
-      const p = user.poste || user.roles || '';
+      const p = user.role || '';
       if (p.includes('Professeur') || p.includes('TEACHER')) return this.$t('roleManagement.professor') || 'Professeur';
       if (p.includes('Vacataire') || p.includes('VACATAIRE')) return this.$t('roleManagement.contractor') || 'Vacataire';
       if (p.includes('RESPONSABLE_PEDAGOGIQUE')) return 'Responsable Peda.';
       if (p.includes('ADMINISTRATEUR')) return 'Admin';
+      if (p.includes('RH')) return 'RH';
+      if (p.includes('REFERENT')) return 'Référent';
       return p;
     },
     async fetchUsers() {

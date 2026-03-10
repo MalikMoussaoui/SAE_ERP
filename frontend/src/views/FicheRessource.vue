@@ -17,6 +17,9 @@
 
     <div class="page-surface resource-surface">
       <div v-if="isReadOnly" class="pdf-actions">
+        <button v-if="canValidateOrDuplicate && editingId" type="button" class="btn btn-secondary" @click="duplicateResource">
+          Dupliquer
+        </button>
         <button type="button" class="btn btn-secondary" @click="openPdfPreview">
           Consulter PDF
         </button>

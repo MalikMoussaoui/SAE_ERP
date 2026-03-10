@@ -51,6 +51,11 @@ public class ResourceSheetController {
     @PostMapping
     public ResourceSheetDto createResourceSheet(@RequestBody ResourceSheetDto resourceSheetDto) {
         ResourceSheet resourceSheet = new ResourceSheet();
+        if (resourceSheetDto.getId() != null) {
+            resourceSheet.setId(resourceSheetDto.getId());
+        } else {
+            resourceSheet.setId(UUID.randomUUID());
+        }
         mapToEntity(resourceSheetDto, resourceSheet);
         ResourceSheet savedSheet = resourceSheetRepository.save(resourceSheet);
         return mapToDto(savedSheet);
@@ -97,6 +102,7 @@ public class ResourceSheetController {
         entity.setTypeEnseignement(dto.getTypeEnseignement());
         entity.setResponsablePedagogique(dto.getResponsablePedagogique());
         entity.setIntervenants(dto.getIntervenants());
+        entity.setRetourEquipePedagogique(dto.getRetourEquipePedagogique());
         entity.setSequencesRowsJson(dto.getSequencesRowsJson());
 
         String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -137,6 +143,7 @@ public class ResourceSheetController {
         dto.setTypeEnseignement(entity.getTypeEnseignement());
         dto.setResponsablePedagogique(entity.getResponsablePedagogique());
         dto.setIntervenants(entity.getIntervenants());
+        dto.setRetourEquipePedagogique(entity.getRetourEquipePedagogique());
         dto.setSequencesRowsJson(entity.getSequencesRowsJson());
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
@@ -146,42 +153,56 @@ public class ResourceSheetController {
     }
 
     @PostMapping("/{id}/duplicate")
-    public ResponseEntity<ResourceSheetDto> duplicateResourceSheet(@PathVariable UUID id) {
-        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        AppUser currentUser = appUserRepository.findByEmail(currentEmail)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
+    public ResponseEntity<?> duplicateResourceSheet(@PathVariable UUID id) {
+        try {
+            String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+            AppUser currentUser = appUserRepository.findByEmail(currentEmail)
+                    .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
-        if (!currentUser.getRole().name().equals("ADMINISTRATEUR")
-                && !currentUser.getRole().name().equals("RESPONSABLE_PEDAGOGIQUE")) {
-            return ResponseEntity.status(403).build();
+            if (!currentUser.getRole().name().equals("ADMINISTRATEUR")
+                    && !currentUser.getRole().name().equals("RESPONSABLE_PEDAGOGIQUE")) {
+                return ResponseEntity.status(403).body("Accès refusé : rôle insuffisant");
+            }
+
+            return resourceSheetRepository.findById(id).map(existingSheet -> {
+                try {
+                    ResourceSheet newSheet = new ResourceSheet();
+                    newSheet.setId(UUID.randomUUID());
+                    newSheet.setTitre(existingSheet.getTitre() + " (Copie)");
+                    newSheet.setDepartement(existingSheet.getDepartement());
+                    newSheet.setCode(existingSheet.getCode());
+                    newSheet.setUe(existingSheet.getUe());
+                    newSheet.setSemestre(existingSheet.getSemestre());
+                    newSheet.setDescription(existingSheet.getDescription());
+                    newSheet.setHCM(existingSheet.getHCM());
+                    newSheet.setHTD(existingSheet.getHTD());
+                    newSheet.setHTP(existingSheet.getHTP());
+                    newSheet.setTypeEvaluation(existingSheet.getTypeEvaluation());
+                    newSheet.setCoefficientRessource(existingSheet.getCoefficientRessource());
+                    newSheet.setEvaluationsPrevues(existingSheet.getEvaluationsPrevues());
+                    newSheet.setNoteMinimale(existingSheet.getNoteMinimale());
+                    newSheet.setCompensation(existingSheet.getCompensation());
+                    newSheet.setRattrapage(existingSheet.getRattrapage());
+                    newSheet.setModaliteRattrapage(existingSheet.getModaliteRattrapage());
+                    newSheet.setTypeEnseignement(existingSheet.getTypeEnseignement());
+                    newSheet.setResponsablePedagogique(existingSheet.getResponsablePedagogique());
+                    newSheet.setIntervenants(existingSheet.getIntervenants());
+                    newSheet.setRetourEquipePedagogique(existingSheet.getRetourEquipePedagogique());
+                    newSheet.setSequencesRowsJson(existingSheet.getSequencesRowsJson());
+                    newSheet.setValidated(false);
+
+                    ResourceSheet savedSheet = resourceSheetRepository.save(newSheet);
+                    return ResponseEntity.ok((Object) mapToDto(savedSheet));
+                } catch (Exception e) {
+                    System.err.println("[DUPLICATE ERROR] " + e.getMessage());
+                    e.printStackTrace();
+                    return ResponseEntity.status(500).body((Object) ("Erreur duplication: " + e.getMessage()));
+                }
+            }).orElse(ResponseEntity.status(404).body("Fiche non trouvée"));
+        } catch (Exception e) {
+            System.err.println("[DUPLICATE OUTER ERROR] " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Erreur interne: " + e.getMessage());
         }
-
-        return resourceSheetRepository.findById(id).map(existingSheet -> {
-            ResourceSheet newSheet = new ResourceSheet();
-            newSheet.setTitre(existingSheet.getTitre() + " (Copie)");
-            newSheet.setDepartement(existingSheet.getDepartement());
-            newSheet.setCode(existingSheet.getCode());
-            newSheet.setUe(existingSheet.getUe());
-            newSheet.setSemestre(existingSheet.getSemestre());
-            newSheet.setDescription(existingSheet.getDescription());
-            newSheet.setHCM(existingSheet.getHCM());
-            newSheet.setHTD(existingSheet.getHTD());
-            newSheet.setHTP(existingSheet.getHTP());
-            newSheet.setTypeEvaluation(existingSheet.getTypeEvaluation());
-            newSheet.setCoefficientRessource(existingSheet.getCoefficientRessource());
-            newSheet.setEvaluationsPrevues(existingSheet.getEvaluationsPrevues());
-            newSheet.setNoteMinimale(existingSheet.getNoteMinimale());
-            newSheet.setCompensation(existingSheet.getCompensation());
-            newSheet.setRattrapage(existingSheet.getRattrapage());
-            newSheet.setModaliteRattrapage(existingSheet.getModaliteRattrapage());
-            newSheet.setTypeEnseignement(existingSheet.getTypeEnseignement());
-            newSheet.setResponsablePedagogique(existingSheet.getResponsablePedagogique());
-            newSheet.setIntervenants(existingSheet.getIntervenants());
-            newSheet.setSequencesRowsJson(existingSheet.getSequencesRowsJson());
-            newSheet.setValidated(false); // copies are not validated by default
-
-            ResourceSheet savedSheet = resourceSheetRepository.save(newSheet);
-            return ResponseEntity.ok(mapToDto(savedSheet));
-        }).orElse(ResponseEntity.notFound().build());
     }
 }
