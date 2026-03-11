@@ -59,7 +59,8 @@ public class DatabaseSeeder implements CommandLineRunner {
         appUserRepository.findByEmail("direction@unilim.fr").ifPresentOrElse(
                 user -> log.info("Direction existe déjà."),
                 () -> {
-                    AppUser dir = createUser("Mourad", "Khalid", "direction@unilim.fr", UserRole.DIRECTION, UserStatus.ACTIVE, "INFO");
+                    AppUser dir = createUser("Mourad", "Khalid", "direction@unilim.fr", UserRole.DIRECTION,
+                            UserStatus.ACTIVE, "INFO");
                     appUserRepository.save(dir);
                     log.info("Création du compte Direction: direction@unilim.fr");
                 });
@@ -67,78 +68,100 @@ public class DatabaseSeeder implements CommandLineRunner {
         appUserRepository.findByEmail("rh@unilim.fr").ifPresentOrElse(
                 user -> log.info("RH existe déjà."),
                 () -> {
-                    AppUser rh = createUser("Ressources", "Humaines", "rh@unilim.fr", UserRole.RH, UserStatus.ACTIVE, null);
+                    AppUser rh = createUser("Ressources", "Humaines", "rh@unilim.fr", UserRole.RH, UserStatus.ACTIVE,
+                            null);
                     appUserRepository.save(rh);
                     log.info("Création du compte RH: rh@unilim.fr");
                 });
 
         // Migration: Update existing users that have no department
         appUserRepository.findAll().forEach(u -> {
-            if (u.getDepartement() == null && 
-                u.getRole() != UserRole.ADMINISTRATEUR && 
-                u.getRole() != UserRole.RH) {
+            if (u.getDepartement() == null &&
+                    u.getRole() != UserRole.ADMINISTRATEUR &&
+                    u.getRole() != UserRole.RH) {
                 u.setDepartement("INFO");
                 appUserRepository.save(u);
                 log.info("Mis à jour du département pour l'utilisateur existant: " + u.getEmail());
             }
         });
-
-        if (appUserRepository.count() > 3) {
+        if (appUserRepository.count() > 10) {
             return;
         }
 
-        log.info("Seeding : Création du personnel IUT (Admin, RH, Profs, Vacataires)...");
-        Department deptInfo = new Department();
-        deptInfo.setLabel("Informatique");
-        departmentRepository.save(deptInfo);
+        log.info("Seeding : Création du personnel IUT (Profs, Vacataires)...");
 
-        Department deptGea = new Department();
-        deptGea.setLabel("GEA (Gestion)");
-        departmentRepository.save(deptGea);
+        Department deptInfo = departmentRepository.findAll().stream()
+                .filter(d -> "Informatique".equals(d.getLabel()))
+                .findFirst()
+                .orElseGet(() -> {
+                    Department d = new Department();
+                    d.setLabel("Informatique");
+                    return departmentRepository.save(d);
+                });
 
-        AppUser admin = createUser("System", "Admin", "admin@unilim.fr", UserRole.ADMINISTRATEUR, UserStatus.ACTIVE, null);
-        AppUser rh = createUser("Durand", "Sophie", "sophie.durand@unilim.fr", UserRole.RH, UserStatus.ACTIVE, null);
+        Department deptGea = departmentRepository.findAll().stream()
+                .filter(d -> "GEA (Gestion)".equals(d.getLabel()))
+                .findFirst()
+                .orElseGet(() -> {
+                    Department d = new Department();
+                    d.setLabel("GEA (Gestion)");
+                    return departmentRepository.save(d);
+                });
+
         AppUser respInfo = createUser("Turing", "Alan", "alan.turing@unilim.fr", UserRole.RESPONSABLE_PEDAGOGIQUE,
                 UserStatus.ACTIVE, "INFO");
-        AppUser profJava = createUser("Lovelace", "Ada", "ada.lovelace@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE, "INFO");
-        AppUser profWeb = createUser("Berners-Lee", "Tim", "tim.berners@unilim.fr", UserRole.TEACHER,
-                UserStatus.ACTIVE, "INFO");
-        AppUser referentBdd = createUser("Codd", "Edgar", "edgar.codd@unilim.fr", UserRole.REFERENT, UserStatus.ACTIVE, "INFO");
-        AppUser vacataire = createUser("Musk", "Elon", "elon.musk@tesla.com", UserRole.VACATAIRE, UserStatus.ACTIVE, "INFO");
+        AppUser profJava = createUser("Lovelace", "Ada", "ada.lovelace@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE,
+                "INFO");
+        AppUser profWeb = createUser("Berners-Lee", "Tim", "tim.berners@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE,
+                "INFO");
+        AppUser referentBdd = createUser("Codd", "Edgar", "edgar.codd@unilim.fr", UserRole.REFERENT, UserStatus.ACTIVE,
+                "INFO");
+        AppUser vacataire = createUser("Musk", "Elon", "elon.musk@tesla.com", UserRole.VACATAIRE, UserStatus.ACTIVE,
+                "INFO");
         AppUser profSuspendu = createUser("Dalton", "Joe", "joe.dalton@unilim.fr", UserRole.TEACHER,
                 UserStatus.SUSPENDED, "INFO");
+        AppUser rhSophie = createUser("Durand", "Sophie", "sophie.durand@unilim.fr", UserRole.RH, UserStatus.ACTIVE,
+                null);
 
-        appUserRepository
-                .saveAll(Arrays.asList(admin, rh, respInfo, profJava, profWeb, referentBdd, vacataire, profSuspendu));
-        Ue ueDev = createUE("UE 1.1 - Développement", 1, deptInfo);
-        Ue ueDonnees = createUE("UE 1.2 - Données", 1, deptInfo);
-        ueRepository.saveAll(Arrays.asList(ueDev, ueDonnees));
+        for (AppUser u : Arrays.asList(respInfo, profJava, profWeb, referentBdd, vacataire, profSuspendu, rhSophie)) {
+            if (appUserRepository.findByEmail(u.getEmail()).isEmpty()) {
+                appUserRepository.save(u);
+            }
+        }
 
-        Resource rJava = createResource("R1.01 - Java", 10, 20, 30, ueDev);
-        Resource rWeb = createResource("R1.02 - Web", 10, 15, 15, ueDev);
-        Resource rBdd = createResource("R1.05 - SQL & Base de données", 12, 14, 20, ueDonnees);
+        if (ueRepository.count() == 0) {
+            Ue ueDev = createUE("UE 1.1 - Développement", 1, deptInfo);
+            Ue ueDonnees = createUE("UE 1.2 - Données", 1, deptInfo);
+            ueRepository.saveAll(Arrays.asList(ueDev, ueDonnees));
 
-        resourceRepository.saveAll(Arrays.asList(rJava, rWeb, rBdd));
+            Resource rJava = createResource("R1.01 - Java", 10, 20, 30, ueDev);
+            Resource rWeb = createResource("R1.02 - Web", 10, 15, 15, ueDev);
+            Resource rBdd = createResource("R1.05 - SQL & Base de données", 12, 14, 20, ueDonnees);
+            resourceRepository.saveAll(Arrays.asList(rJava, rWeb, rBdd));
 
-        Sae saeSite = new Sae();
-        saeSite.setTitle("SAE 1.01 - Site Web E-Commerce");
-        saeSite.setHours(40);
-        saeRepository.save(saeSite);
-        createCourse(2, rJava, null, respInfo);
-        createCourse(4, rJava, null, profJava);
-        createCourse(4, rWeb, null, profWeb);
-        createCourse(2, rBdd, null, referentBdd);
-        Course coursProjet = new Course();
-        coursProjet.setHours(12);
-        coursProjet.setSae(saeSite);
-        coursProjet.setTeachers(new HashSet<>());
-        coursProjet.getTeachers().add(vacataire);
-        courseRepository.save(coursProjet);
+            Sae saeSite = new Sae();
+            saeSite.setTitle("SAE 1.01 - Site Web E-Commerce");
+            saeSite.setHours(40);
+            saeRepository.save(saeSite);
 
-        log.info("Seeding terminé : Base prête avec RH, Vacataires et Admin !");
+            createCourse(2, rJava, null, respInfo);
+            createCourse(4, rJava, null, profJava);
+            createCourse(4, rWeb, null, profWeb);
+            createCourse(2, rBdd, null, referentBdd);
+
+            Course coursProjet = new Course();
+            coursProjet.setHours(12);
+            coursProjet.setSae(saeSite);
+            coursProjet.setTeachers(new HashSet<>());
+            coursProjet.getTeachers().add(vacataire);
+            courseRepository.save(coursProjet);
+        }
+
+        log.info("Seeding terminé : Base prête et sécurisée !");
     }
 
-    private AppUser createUser(String nom, String prenom, String email, UserRole role, UserStatus status, String departement) {
+    private AppUser createUser(String nom, String prenom, String email, UserRole role, UserStatus status,
+            String departement) {
         AppUser user = new AppUser();
         user.setDisplayName(prenom + " " + nom);
         user.setEmail(email);
