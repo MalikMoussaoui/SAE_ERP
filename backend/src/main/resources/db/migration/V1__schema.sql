@@ -48,6 +48,7 @@ CREATE TABLE sae (
 
 CREATE TABLE resource_sheet (
      id UUID PRIMARY KEY,
+     status VARCHAR(255),
      titre VARCHAR(255),
      code VARCHAR(50),
      semestre VARCHAR(10),
