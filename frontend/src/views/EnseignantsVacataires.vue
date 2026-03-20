@@ -2,7 +2,7 @@
   <DashboardLayout>
     <template #header>
       <div class="header-welcome">
-        <h1 class="page-title">Liste</h1>
+        <h1 class="page-title">{{ $t('teachers.title') }}</h1>
       </div>
     </template>
 
@@ -15,7 +15,7 @@
           </svg>
           <input
             type="text"
-            placeholder="Recherchez: par prénom, nom, etc"
+            :placeholder="$t('teachers.searchPlaceholder')"
             class="search-input"
             v-model="searchQuery"
           />
@@ -23,12 +23,12 @@
 
         <div class="filters-wrapper">
           <select class="filter-select" v-model="selectedPoste">
-            <option value="">Filtrer par poste</option>
-            <option value="Professeur">Professeur</option>
-            <option value="Vacataire">Vacataire</option>
+            <option value="">{{ $t('teachers.filterByPosition') }}</option>
+            <option value="Professeur">{{ $t('teachers.professor') }}</option>
+            <option value="Vacataire">{{ $t('teachers.contractor') }}</option>
           </select>
           <select class="filter-select" v-model="selectedDept">
-            <option value="">Filtrer par departement</option>
+            <option value="">{{ $t('teachers.filterByDept') }}</option>
             <option value="INFO">INFO</option>
             <option value="MP">MP</option>
             <option value="GEA">GEA</option>
@@ -44,9 +44,9 @@
           <table>
             <thead>
               <tr>
-                <th>Prénom/Nom</th>
-                <th>Départements</th>
-                <th>Poste</th>
+                <th>{{ $t('teachers.table.name') }}</th>
+                <th>{{ $t('teachers.table.departments') }}</th>
+                <th>{{ $t('teachers.table.position') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -56,7 +56,7 @@
                 <td>{{ person.poste }}</td>
               </tr>
               <tr v-if="filteredEnseignants.length === 0">
-                <td colspan="3" class="empty-state">Aucun résultat trouvé</td>
+                <td colspan="3" class="empty-state">{{ $t('teachers.noResult') }}</td>
               </tr>
             </tbody>
           </table>

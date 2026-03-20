@@ -19,16 +19,16 @@
 
       <div class="surface-header-actions">
         <router-link to="/fiche-ressource" class="btn-add">
-          + Nouvelle Fiche
+          {{ $t('common.newSheet') }}
         </router-link>
       </div>
 
       <div v-if="loading" class="loading-state">
-        Chargement...
+        {{ $t('common.loading') }}
       </div>
 
       <div v-else-if="!sheets.length" class="empty-state">
-        Aucune fiche ressource trouvée.
+        {{ $t('common.noSheetFound') }}
       </div>
 
       <div v-else class="mccc-cards">
@@ -36,16 +36,16 @@
 
           <div class="card-header">
             <h3 class="ue-title">
-              {{ sheet.code || 'Sans code' }} - {{ sheet.ue || 'Sans UE' }}
+              {{ sheet.code || $t('common.noCode') }} - {{ sheet.ue || $t('common.noUE') }}
             </h3>
             <div class="header-tags">
-              <span v-if="sheet.validated" class="badge-validated">Validée</span>
+              <span v-if="sheet.validated" class="badge-validated">{{ $t('common.validated') }}</span>
               <span class="chip">{{ sheet.departement || sheet.departmentName }}</span>
             </div>
           </div>
 
           <div class="card-meta">
-            <span class="meta-label">Dernière modification :</span>
+            <span class="meta-label">{{ $t('common.lastModified') }}</span>
             <span class="meta-value">{{ formatDate(sheet.updatedAt || sheet.updated_at || sheet.createdAt || sheet.created_at) }}</span>
           </div>
 
@@ -56,14 +56,14 @@
                 v-if="canValidate(sheet)"
                 @click="validateSheet(sheet.id)"
             >
-              Valider
+              {{ $t('common.validate') }}
             </button>
 
             <router-link
                 class="action-button ghost"
                 :to="{ name: 'fiche-ressource', query: { id: sheet.id, mode: 'view' } }"
             >
-              Consulter
+              {{ $t('common.view') }}
             </router-link>
 
             <router-link
@@ -71,7 +71,7 @@
                 v-if="canEditList(sheet)"
                 :to="{ name: 'fiche-ressource', query: { id: sheet.id, mode: 'edit' } }"
             >
-              Modifier
+              {{ $t('common.modify') }}
             </router-link>
 
             <button
@@ -80,7 +80,7 @@
                 v-if="canDeleteList(sheet)"
                 @click="deleteSheet(sheet.id)"
             >
-              Supprimer
+              {{ $t('common.delete') }}
             </button>
           </div>
         </div>
@@ -136,11 +136,11 @@ export default {
       this.sheetToDelete = id;
       this.modal = {
         show: true,
-        title: 'Supprimer la fiche ?',
-        message: 'Cette action est irréversible. Voulez-vous vraiment supprimer cette fiche ressource ?',
+        title: this.$t('common.confirmDeleteTitle'),
+        message: this.$t('common.confirmDeleteMsg'),
         type: 'warning',
         showCancel: true,
-        confirmLabel: 'Supprimer',
+        confirmLabel: this.$t('common.delete'),
         action: 'delete'
       };
     },
@@ -160,11 +160,11 @@ export default {
       this.sheetToValidate = id;
       this.modal = {
         show: true,
-        title: 'Valider cette fiche ?',
-        message: 'Une fois validée, la fiche ne pourra plus être modifiée ou supprimée que par un administrateur. Voulez-vous continuer ?',
+        title: this.$t('common.confirmValidation'),
+        message: this.$t('common.confirmValidationMsg'),
         type: 'info',
         showCancel: true,
-        confirmLabel: 'Valider',
+        confirmLabel: this.$t('common.validate'),
         action: 'validate'
       };
     },
@@ -183,11 +183,11 @@ export default {
         console.error("Erreur validation:", error);
         this.modal = {
           show: true,
-          title: 'Erreur',
-          message: "Impossible de valider cette fiche.",
+          title: this.$t('common.error.generic'),
+          message: this.$t('common.error.validationFailed'),
           type: 'error',
           showCancel: false,
-          confirmLabel: 'Fermer',
+          confirmLabel: 'OK',
           action: null
         };
       } finally {
@@ -205,11 +205,11 @@ export default {
         console.error("Erreur suppression:", error);
         this.modal = {
           show: true,
-          title: 'Erreur',
-          message: "Impossible de supprimer cette fiche.",
+          title: this.$t('common.error.generic'),
+          message: this.$t('common.error.deleteFailed'),
           type: 'error',
           showCancel: false,
-          confirmLabel: 'Fermer'
+          confirmLabel: 'OK'
         };
       } finally {
         this.sheetToDelete = null;

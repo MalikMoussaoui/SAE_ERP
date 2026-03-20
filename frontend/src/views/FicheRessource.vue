@@ -18,13 +18,13 @@
     <div class="page-surface resource-surface">
       <div v-if="isReadOnly" class="pdf-actions">
         <button v-if="canValidateOrDuplicate && editingId" type="button" class="btn btn-secondary" @click="duplicateResource">
-          Dupliquer
+          {{ $t('common.duplicate') }}
         </button>
         <button type="button" class="btn btn-secondary" @click="openPdfPreview">
-          Consulter PDF
+          {{ $t('common.viewPdf') }}
         </button>
         <button type="button" class="btn btn-primary" @click="downloadPdf">
-          Telecharger PDF
+          {{ $t('common.downloadPdf') }}
         </button>
       </div>
 
@@ -352,14 +352,14 @@
 
         <template v-if="currentStep === 6">
             <button v-if="canDelete && editingId" class="btn btn-danger" type="button" @click="confirmDelete" :disabled="isReadOnly && canDelete !== true">
-              Supprimer
+              {{ $t('common.delete') }}
             </button>
             
             <button v-if="canDuplicate && editingId" class="btn btn-secondary" type="button" @click="duplicateResource">
-              Dupliquer
+              {{ $t('common.duplicate') }}
             </button>
             <button v-if="canValidate && !form.isValidated && editingId" class="btn btn-success" type="button" @click="validateResource">
-              Valider
+              {{ $t('common.validate') }}
             </button>
             
             <button class="btn btn-primary" type="button" @click="saveResource" v-if="hasEditingRights">

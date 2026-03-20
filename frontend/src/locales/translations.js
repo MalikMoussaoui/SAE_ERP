@@ -47,9 +47,14 @@ export const messages = {
             filterByPosition: "Filtrer par poste",
             professor: "Professeur",
             contractor: "Vacataire",
+            responsablePedagogique: "Responsable Pédagogique",
+            administrator: "Administrateur",
+            rh: "Ressources Humaines",
             filterByDept: "Filtrer par département",
+            allPositions: "Tous les postes",
             table: {
                 name: "Prénom/Nom",
+                email: "Email",
                 departments: "Départements",
                 position: "Poste",
                 action: "Action",
@@ -57,7 +62,16 @@ export const messages = {
                 delete: "Supprimer",
                 noUserFound: "Aucun utilisateur trouvé."
             },
-            addUser: "Ajouter un utilisateur"
+            addUser: "Ajouter un utilisateur",
+            newUser: "+ Nouvel Utilisateur",
+            createUser: "Créer l'utilisateur",
+            cancel: "Annuler",
+            addUserTitle: "Ajouter un utilisateur",
+            usernamePlaceholder: "Nom d'utilisateur",
+            emailPlaceholder: "Email",
+            passwordPlaceholder: "Mot de passe",
+            selectDepartment: "Sélectionner le département",
+            selectRole: "Sélectionner le rôle"
         },
         login: {
             title: "Veuillez vous authentifier",
@@ -190,11 +204,45 @@ export const messages = {
             no: "Non",
             loading: "Chargement...",
             connecting: "Connexion...",
+            validate: "Valider",
+            delete: "Supprimer",
+            duplicate: "Dupliquer",
+            view: "Consulter",
+            modify: "Modifier",
+            validated: "Validée",
+            lastModified: "Dernière modification :",
+            noCode: "Sans code",
+            noUE: "Sans UE",
+            newSheet: "+ Nouvelle Fiche",
+            noSheetFound: "Aucune fiche ressource trouvée.",
+            noResult: "Aucun résultat trouvé",
+            viewPdf: "Consulter PDF",
+            downloadPdf: "Télécharger PDF",
+            confirmValidation: "Valider cette fiche ?",
+            confirmValidationMsg: "Une fois validée, la fiche ne pourra plus être modifiée ou supprimée que par un administrateur. Voulez-vous continuer ?",
+            confirmDeleteTitle: "Confirmer la suppression",
+            confirmDeleteMsg: "Voulez-vous vraiment supprimer cette fiche ?",
             error: {
                 negativeValue: "Impossible de saisir une valeur négative.",
                 serverUnreachable: "Impossible de contacter le serveur.",
-                generic: "Une erreur est survenue."
+                generic: "Une erreur est survenue.",
+                validationFailed: "Impossible de valider cette fiche.",
+                deleteFailed: "Impossible de supprimer cette fiche."
             }
+        },
+        teachers: {
+            title: "Liste",
+            searchPlaceholder: "Recherchez: par prénom, nom, etc",
+            filterByPosition: "Filtrer par poste",
+            filterByDept: "Filtrer par département",
+            professor: "Professeur",
+            contractor: "Vacataire",
+            table: {
+                name: "Prénom/Nom",
+                departments: "Départements",
+                position: "Poste"
+            },
+            noResult: "Aucun résultat trouvé"
         },
         help: {
             title: "Centre d'Aide",
@@ -260,9 +308,14 @@ export const messages = {
             filterByPosition: "Filter by position",
             professor: "Professor",
             contractor: "Contractor",
+            responsablePedagogique: "Pedagogical Manager",
+            administrator: "Administrator",
+            rh: "Human Resources",
             filterByDept: "Filter by department",
+            allPositions: "All positions",
             table: {
                 name: "First/Last Name",
+                email: "Email",
                 departments: "Departments",
                 position: "Position",
                 action: "Action",
@@ -270,7 +323,16 @@ export const messages = {
                 delete: "Delete",
                 noUserFound: "No user found."
             },
-            addUser: "Add a user"
+            addUser: "Add a user",
+            newUser: "+ New User",
+            createUser: "Create user",
+            cancel: "Cancel",
+            addUserTitle: "Add a user",
+            usernamePlaceholder: "Username",
+            emailPlaceholder: "Email",
+            passwordPlaceholder: "Password",
+            selectDepartment: "Select department",
+            selectRole: "Select role"
         },
         login: {
             title: "Please authenticate",
@@ -403,11 +465,45 @@ export const messages = {
             no: "No",
             loading: "Loading...",
             connecting: "Connecting...",
+            validate: "Validate",
+            delete: "Delete",
+            duplicate: "Duplicate",
+            view: "View",
+            modify: "Edit",
+            validated: "Validated",
+            lastModified: "Last modified:",
+            noCode: "No code",
+            noUE: "No UE",
+            newSheet: "+ New Sheet",
+            noSheetFound: "No resource sheet found.",
+            noResult: "No result found",
+            viewPdf: "View PDF",
+            downloadPdf: "Download PDF",
+            confirmValidation: "Validate this sheet?",
+            confirmValidationMsg: "Once validated, the sheet can only be edited or deleted by an administrator. Do you want to continue?",
+            confirmDeleteTitle: "Confirm deletion",
+            confirmDeleteMsg: "Are you sure you want to delete this sheet?",
             error: {
                 negativeValue: "Cannot enter a negative value.",
                 serverUnreachable: "Unable to contact the server.",
-                generic: "An error occurred."
+                generic: "An error occurred.",
+                validationFailed: "Unable to validate this sheet.",
+                deleteFailed: "Unable to delete this sheet."
             }
+        },
+        teachers: {
+            title: "List",
+            searchPlaceholder: "Search: by first name, last name, etc",
+            filterByPosition: "Filter by position",
+            filterByDept: "Filter by department",
+            professor: "Professor",
+            contractor: "Contractor",
+            table: {
+                name: "First/Last Name",
+                departments: "Departments",
+                position: "Position"
+            },
+            noResult: "No result found"
         },
         help: {
             title: "Help Center",
