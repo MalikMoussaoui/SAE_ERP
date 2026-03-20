@@ -49,8 +49,8 @@ public class AppUserController {
     }
 
     @GetMapping("/teachers")
-    public ResponseEntity<List<AppUserDto>> getTeachers() {
-        return ResponseEntity.ok(service.getTeachersAndVacataires());
+    public ResponseEntity<List<AppUserDto>> getTeachers(@RequestParam(required = false) String dept) {
+        return ResponseEntity.ok(service.getTeachersAndVacataires(dept));
     }
 
     @DeleteMapping("/{id}")

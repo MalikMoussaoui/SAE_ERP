@@ -89,14 +89,22 @@ export default {
   methods: {
     async fetchEnseignants() {
       try {
-        const response = await axios.get('/app-users/teachers');
+        const role = localStorage.getItem('userRole') || '';
+        const userDept = localStorage.getItem('userDepartement') || '';
+
+        let url = '/app-users/teachers';
+        if (role !== 'ADMINISTRATEUR' && role !== 'RH' && userDept) {
+          url += `?dept=${encodeURIComponent(userDept)}`;
+        }
+
+        const response = await axios.get(url);
 
         this.enseignants = response.data.map(user => {
 
           let posteAffiche = 'Autre';
           if (user.role === 'TEACHER' || user.role === 'ENSEIGNANT') posteAffiche = 'Professeur';
           else if (user.role === 'VACATAIRE') posteAffiche = 'Vacataire';
-          else if (user.poste) posteAffiche = user.poste; // Si le DTO renvoie déjà le poste
+          else if (user.poste) posteAffiche = user.poste;
 
           const deptAffiche = user.dept || user.department || 'Non défini';
 

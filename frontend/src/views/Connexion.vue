@@ -67,6 +67,9 @@ export default {
           localStorage.setItem('userName', response.data.name);
         }
         localStorage.setItem('userEmail', this.username);
+        if (response.data.departement) {
+          localStorage.setItem('userDepartement', response.data.departement);
+        }
         axios.defaults.headers.common.Authorization = `Bearer ${token}`;
 
         // Redirection vers le dashboard

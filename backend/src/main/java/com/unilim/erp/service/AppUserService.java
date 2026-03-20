@@ -54,9 +54,14 @@ public class AppUserService {
         repository.deleteById(id);
     }
 
-    public List<AppUserDto> getTeachersAndVacataires() {
-
-        List<AppUser> users = repository.findByRoleIn(Arrays.asList(UserRole.TEACHER, UserRole.VACATAIRE));
+    public List<AppUserDto> getTeachersAndVacataires(String departement) {
+        List<AppUser> users;
+        if (departement != null && !departement.isEmpty()) {
+            users = repository.findByRoleInAndDepartement(
+                    Arrays.asList(UserRole.TEACHER, UserRole.VACATAIRE), departement);
+        } else {
+            users = repository.findByRoleIn(Arrays.asList(UserRole.TEACHER, UserRole.VACATAIRE));
+        }
 
         return users.stream()
                 .map(this::convertToDto)
