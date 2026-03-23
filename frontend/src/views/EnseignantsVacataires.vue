@@ -29,12 +29,7 @@
           </select>
           <select class="filter-select" v-model="selectedDept">
             <option value="">{{ $t('teachers.filterByDept') }}</option>
-            <option value="INFO">INFO</option>
-            <option value="MP">MP</option>
-            <option value="GEA">GEA</option>
-            <option value="TC">TC</option>
-            <option value="GMP">GMP</option>
-            <option value="MMI">MMI</option>
+            <option v-for="dept in departements" :key="dept.id" :value="dept.label">{{ dept.label }}</option>
           </select>
         </div>
       </div>
@@ -80,13 +75,23 @@ export default {
       searchQuery: '',
       selectedPoste: '',
       selectedDept: '',
-      enseignants: []
+      enseignants: [],
+      departements: []
     };
   },
-  mounted() {
+  async mounted() {
+    await this.fetchDepartments();
     this.fetchEnseignants();
   },
   methods: {
+    async fetchDepartments() {
+      try {
+        const response = await axios.get('/departments');
+        this.departements = response.data;
+      } catch (error) {
+        console.error("Erreur chargement départements:", error);
+      }
+    },
     async fetchEnseignants() {
       try {
         const role = localStorage.getItem('userRole') || '';

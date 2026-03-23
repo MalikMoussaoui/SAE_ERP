@@ -56,11 +56,20 @@ public class DatabaseSeeder implements CommandLineRunner {
                     appUserRepository.save(admin);
                 });
 
+        Department deptInfo = departmentRepository.findAll().stream()
+                .filter(d -> "INFO".equals(d.getLabel()))
+                .findFirst()
+                .orElseGet(() -> {
+                    Department d = new Department();
+                    d.setLabel("INFO");
+                    return departmentRepository.save(d);
+                });
+
         appUserRepository.findByEmail("direction@unilim.fr").ifPresentOrElse(
                 user -> log.info("Direction existe déjà."),
                 () -> {
                     AppUser dir = createUser("Mourad", "Khalid", "direction@unilim.fr", UserRole.DIRECTION,
-                            UserStatus.ACTIVE, "INFO");
+                            UserStatus.ACTIVE, deptInfo);
                     appUserRepository.save(dir);
                     log.info("Création du compte Direction: direction@unilim.fr");
                 });
@@ -76,10 +85,10 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         // Migration: Update existing users that have no department
         appUserRepository.findAll().forEach(u -> {
-            if (u.getDepartement() == null &&
+            if (u.getDepartment() == null &&
                     u.getRole() != UserRole.ADMINISTRATEUR &&
                     u.getRole() != UserRole.RH) {
-                u.setDepartement("INFO");
+                u.setDepartment(deptInfo);
                 appUserRepository.save(u);
                 log.info("Mis à jour du département pour l'utilisateur existant: " + u.getEmail());
             }
@@ -90,36 +99,27 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         log.info("Seeding : Création du personnel IUT (Profs, Vacataires)...");
 
-        Department deptInfo = departmentRepository.findAll().stream()
-                .filter(d -> "Informatique".equals(d.getLabel()))
-                .findFirst()
-                .orElseGet(() -> {
-                    Department d = new Department();
-                    d.setLabel("Informatique");
-                    return departmentRepository.save(d);
-                });
-
         Department deptGea = departmentRepository.findAll().stream()
-                .filter(d -> "GEA (Gestion)".equals(d.getLabel()))
+                .filter(d -> "GEA".equals(d.getLabel()))
                 .findFirst()
                 .orElseGet(() -> {
                     Department d = new Department();
-                    d.setLabel("GEA (Gestion)");
+                    d.setLabel("GEA");
                     return departmentRepository.save(d);
                 });
 
         AppUser respInfo = createUser("Turing", "Alan", "alan.turing@unilim.fr", UserRole.RESPONSABLE_PEDAGOGIQUE,
-                UserStatus.ACTIVE, "INFO");
+                UserStatus.ACTIVE, deptInfo);
         AppUser profJava = createUser("Lovelace", "Ada", "ada.lovelace@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE,
-                "INFO");
+                deptInfo);
         AppUser profWeb = createUser("Berners-Lee", "Tim", "tim.berners@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE,
-                "INFO");
+                deptInfo);
         AppUser referentBdd = createUser("Codd", "Edgar", "edgar.codd@unilim.fr", UserRole.REFERENT, UserStatus.ACTIVE,
-                "INFO");
+                deptInfo);
         AppUser vacataire = createUser("Musk", "Elon", "elon.musk@tesla.com", UserRole.VACATAIRE, UserStatus.ACTIVE,
-                "INFO");
+                deptInfo);
         AppUser profSuspendu = createUser("Dalton", "Joe", "joe.dalton@unilim.fr", UserRole.TEACHER,
-                UserStatus.SUSPENDED, "INFO");
+                UserStatus.SUSPENDED, deptInfo);
         AppUser rhSophie = createUser("Durand", "Sophie", "sophie.durand@unilim.fr", UserRole.RH, UserStatus.ACTIVE,
                 null);
 
@@ -161,7 +161,7 @@ public class DatabaseSeeder implements CommandLineRunner {
     }
 
     private AppUser createUser(String nom, String prenom, String email, UserRole role, UserStatus status,
-            String departement) {
+            Department department) {
         AppUser user = new AppUser();
         user.setDisplayName(prenom + " " + nom);
         user.setEmail(email);
@@ -169,7 +169,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         user.setPhone("0601020304");
         user.setRole(role);
         user.setStatus(status);
-        user.setDepartement(departement);
+        user.setDepartment(department);
         return user;
     }
 

@@ -57,7 +57,7 @@ public class AppUserService {
     public List<AppUserDto> getTeachersAndVacataires(String departement) {
         List<AppUser> users;
         if (departement != null && !departement.isEmpty()) {
-            users = repository.findByRoleInAndDepartement(
+            users = repository.findByRoleInAndDepartment_Label(
                     Arrays.asList(UserRole.TEACHER, UserRole.VACATAIRE), departement);
         } else {
             users = repository.findByRoleIn(Arrays.asList(UserRole.TEACHER, UserRole.VACATAIRE));
@@ -77,7 +77,7 @@ public class AppUserService {
                 .role(user.getRole())
                 .status(user.getStatus())
                 .poste(mapRoleToPoste(user.getRole()))
-                .department(user.getDepartement() != null ? user.getDepartement() : "N/A")
+                .department(user.getDepartment() != null ? user.getDepartment().getLabel() : "N/A")
                 .build();
     }
 

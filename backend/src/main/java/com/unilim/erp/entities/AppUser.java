@@ -36,8 +36,9 @@ public class AppUser {
     @Column
     private String phone;
 
-    @Column
-    private String departement;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)

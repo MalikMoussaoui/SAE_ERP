@@ -26,9 +26,7 @@
         </select>
         <select class="filter-select" v-model="selectedDept">
           <option value="">{{ $t('roleManagement.filterByDept') }}</option>
-          <option value="INFO">INFO</option>
-          <option value="GEA">GEA</option>
-          <option value="TC">TC</option>
+          <option v-for="dept in departements" :key="dept.id" :value="dept.label">{{ dept.label }}</option>
         </select>
       </div>
     </div>
@@ -44,11 +42,7 @@
         <input type="password" v-model="newUser.password" :placeholder="$t('roleManagement.passwordPlaceholder')" class="form-input" />
         <select v-model="newUser.departmentName" class="filter-select">
           <option value="">{{ $t('roleManagement.selectDepartment') }}</option>
-          <option value="INFO">INFO</option>
-          <option value="GEA">GEA</option>
-          <option value="TC">TC</option>
-          <option value="MMI">MMI</option>
-          <option value="GMP">GMP</option>
+          <option v-for="dept in departements" :key="dept.id" :value="dept.label">{{ dept.label }}</option>
         </select>
         <select v-model="newUser.roles" class="filter-select">
           <option value="">{{ $t('roleManagement.selectRole') }}</option>
@@ -114,6 +108,7 @@ export default {
       selectedPoste: '',
       selectedDept: '',
       users: [],
+      departements: [],
       showCreateForm: false,
       newUser: {
         username: '',
@@ -125,6 +120,7 @@ export default {
     };
   },
   async mounted() {
+    await this.fetchDepartments();
     await this.fetchUsers();
   },
   computed: {
@@ -152,6 +148,14 @@ export default {
     }
   },
   methods: {
+    async fetchDepartments() {
+      try {
+        const response = await axios.get('/departments');
+        this.departements = response.data;
+      } catch (error) {
+        console.error("Erreur chargement départements:", error);
+      }
+    },
     getPosteDisplay(user) {
       const p = user.role || '';
       if (p.includes('Professeur') || p.includes('TEACHER')) return this.$t('roleManagement.professor') || 'Professeur';

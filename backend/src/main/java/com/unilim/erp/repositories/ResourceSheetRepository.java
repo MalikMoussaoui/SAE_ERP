@@ -10,6 +10,6 @@ import java.util.UUID;
 @Repository
 public interface ResourceSheetRepository extends JpaRepository<ResourceSheet, UUID> {
 
-    List<ResourceSheet> findByDepartementIgnoreCase(String departement);
+    List<ResourceSheet> findByDepartment_LabelIgnoreCase(String departmentLabel);
 
 }
