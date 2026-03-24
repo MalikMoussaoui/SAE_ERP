@@ -413,7 +413,6 @@ export default {
       allUes: [],
       semestres: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
       typesEvaluation: ['Soutenance', 'QCM', 'SAé', 'Devoir sur table', 'Rapport de stage'],
-      availableUes: [],
       sequencesRows: [
         { id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }
       ],
@@ -438,16 +437,18 @@ export default {
   },
   async created() {
     await this.fetchDepartmentsAndUes();
-    if (this.form.departement) {
-      this.availableUes = this.allUes.filter(u => u.department && u.department.label === this.form.departement).map(u => u.title);
-    }
     this.loadFromRoute();
   },
   watch: {
     '$route.params.id'() { this.loadFromRoute(); },
     'form.departement'(newDepartement,oldDepartement) {
-      this.availableUes = this.allUes.filter(u => u.department && u.department.label === newDepartement).map(u => u.title);
       if (oldDepartement && !this.isReadOnly) {
+        this.form.ue = '';
+      }
+      this.maybeAutoFillFromMccc();
+    },
+    'form.semestre'(newSem, oldSem) {
+      if (oldSem && !this.isReadOnly) {
         this.form.ue = '';
       }
       this.maybeAutoFillFromMccc();
@@ -459,6 +460,17 @@ export default {
     'form.ue'() { this.maybeAutoFillFromMccc(); }
   },
   computed: {
+    availableUes() {
+      if (!this.form.departement) return [];
+      let ues = this.allUes.filter(u => u.department && u.department.label === this.form.departement);
+      if (this.form.semestre) {
+        const semNum = parseInt(this.form.semestre.replace('S', ''));
+        if (!isNaN(semNum)) {
+          ues = ues.filter(u => u.semester === semNum);
+        }
+      }
+      return ues.map(u => u.title);
+    },
     showAllSteps() { return this.isReadOnly && this.$route.query.mode === 'view'; },
     totalSequenceHours() { return this.sequencesRows.reduce((acc, row) => acc + (Number(row.duration) || 0), 0); },
     canDuplicate() {
@@ -525,7 +537,7 @@ export default {
           axios.get('/departments'),
           axios.get('/ues')
         ]);
-        this.departements = deptRes.data;
+        this.departements = deptRes.data.filter(d => ueRes.data.some(u => u.department && (u.department.id === d.id || u.department.label === d.label)));
         this.allUes = ueRes.data;
       } catch (error) {
         console.error("Erreur chargement départements/UEs", error);
@@ -903,8 +915,6 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
           this.sequencesRows = [{ id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }];
           this.nextRowId = 2;
         }
-
-        this.availableUes = this.allUes.filter(u => u.department && u.department.label === this.form.departement).map(u => u.title);
 
         if (mode !== 'view') {
           this.isReadOnly = !this.hasEditingRights;
