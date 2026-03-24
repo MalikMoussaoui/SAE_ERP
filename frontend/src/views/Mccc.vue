@@ -1,4 +1,4 @@
-﻿﻿<template>
+﻿<template>
   <DashboardLayout>
     <CustomModal
       v-if="modal.show"
@@ -273,122 +273,11 @@ export default {
       },
       editingId: null,
       isReadOnly: false,
-      departements: [
-        'BUT Informatique',
-        'BUT GEA - Gestion des Entreprises et des Administrations',
-        'BUT TC - Techniques de Commercialisation',
-        'BUT Mesures Physiques (MP)',
-        'BUT Genie Mecanique et Productique (GMP)',
-        'BUT GEII - Genie Electrique et Informatique Industrielle',
-        'BUT Genie Civil - Construction Durable',
-        'BUT Genie Biologique (GB)',
-        "BUT MMI - Metiers du Multimedia et de l'Internet",
-        'BUT GIM - Genie Industriel et Maintenance',
-        'BUT HSE - Hygiene, Securite, Environnement',
-        'BUT Carrieres Sociales'
-      ],
+      departements: [],
+      allUes: [],
       semestres: ['S1', 'S2', 'S3', 'S4', 'S5', 'S6'],
       annees: ['1ere annee (BUT1)', '2eme annee (BUT2)', '3eme annee (BUT3)'],
       typesEvaluation: ['Soutenance', 'QCM', 'SAé', 'Devoir sur table', 'Rapport de stage'],
-      uesByDepartement: {
-        'BUT Informatique': [
-          'UE Realiser des applications',
-          'UE Optimiser des applications',
-          'UE Administrer des systemes informatiques communicants',
-          "UE Gerer des donnees de l'information",
-          'UE Conduire un projet',
-          'UE Collaborer dans un environnement professionnel'
-        ],
-        'BUT GEA - Gestion des Entreprises et des Administrations': [
-          'UE Gerer les organisations',
-          'UE Piloter la performance',
-          "UE Produire l information comptable financiere et de gestion",
-          'UE Developper une activite economique',
-          'UE Conduire un projet',
-          'UE Communiquer et travailler en equipe'
-        ],
-        'BUT TC - Techniques de Commercialisation': [
-          'UE Developper la relation client',
-          'UE Mettre en oeuvre une strategie marketing',
-          'UE Vendre une offre commerciale',
-          "UE Analyser le marche et l environnement",
-          'UE Conduire un projet commercial',
-          'UE Communiquer dans un contexte professionnel'
-        ],
-        'BUT Mesures Physiques (MP)': [
-          'UE Realiser des mesures physiques',
-          'UE Exploiter des donnees experimentales',
-          'UE Mettre en oeuvre des protocoles experimentaux',
-          'UE Caracteriser des systemes physiques',
-          'UE Conduire un projet scientifique',
-          'UE Communiquer en milieu scientifique'
-        ],
-        'BUT Genie Mecanique et Productique (GMP)': [
-          'UE Concevoir des systemes mecaniques',
-          'UE Industrialiser un produit',
-          'UE Organiser et gerer la production',
-          'UE Ameliorer les performances industrielles',
-          'UE Conduire un projet industriel',
-          'UE Communiquer dans l industrie'
-        ],
-        'BUT GEII - Genie Electrique et Informatique Industrielle': [
-          'UE Concevoir des systemes electroniques et automatises',
-          'UE Programmer et exploiter des systemes industriels',
-          'UE Mettre en oeuvre des reseaux industriels',
-          'UE Maintenir et ameliorer des installations',
-          'UE Conduire un projet industriel',
-          'UE Communiquer dans un contexte technique'
-        ],
-        'BUT Genie Civil - Construction Durable': [
-          'UE Concevoir des ouvrages de construction',
-          'UE Dimensionner des structures',
-          'UE Organiser un chantier',
-          'UE Integrer le developpement durable',
-          'UE Conduire un projet de construction',
-          'UE Communiquer dans le secteur du BTP'
-        ],
-        'BUT Genie Biologique (GB)': [
-          'UE Realiser des analyses biologiques',
-          'UE Exploiter des resultats experimentaux',
-          'UE Mettre en oeuvre des procedes biologiques',
-          'UE Assurer la qualite et la securite',
-          'UE Conduire un projet scientifique',
-          'UE Communiquer dans un contexte biologique'
-        ],
-        'BUT MMI - Metiers du Multimedia et de l Internet': [
-          'UE Concevoir des produits multimedia',
-          'UE Developper des dispositifs interactifs',
-          'UE Creer des contenus graphiques et audiovisuels',
-          'UE Mettre en oeuvre une strategie de communication',
-          'UE Conduire un projet multimedia',
-          'UE Travailler en equipe et communiquer'
-        ],
-        'BUT GIM - Genie Industriel et Maintenance': [
-          'UE Maintenir des systemes industriels',
-          'UE Ameliorer la fiabilite des equipements',
-          'UE Diagnostiquer des pannes',
-          'UE Optimiser la maintenance',
-          'UE Conduire un projet industriel',
-          'UE Communiquer en milieu professionnel'
-        ],
-        'BUT HSE - Hygiene, Securite, Environnement': [
-          'UE Prevenir les risques professionnels',
-          'UE Gerer la securite et la sante au travail',
-          "UE Proteger l environnement",
-          'UE Mettre en conformite reglementaire',
-          'UE Conduire un projet HSE',
-          'UE Communiquer et sensibiliser'
-        ],
-        'BUT Carrieres Sociales': [
-          'UE Analyser les situations sociales',
-          'UE Accompagner des publics',
-          'UE Concevoir des actions sociales',
-          'UE Travailler en reseau partenarial',
-          'UE Conduire un projet social',
-          'UE Communiquer dans le champ social'
-        ]
-      },
-      availableUes: [],
       niveauxCompetence: ['Niveau 1 - Decouverte', 'Niveau 2 - Application', 'Niveau 3 - Maitrise', 'Niveau 4 - Approfondissement'],
       coeffsSae: ['0,5', '1', '1,5', '2', '3'],
       coeffsRessource: ['0,25', '0,5', '1', '1,5', '2'],
@@ -421,16 +310,18 @@ export default {
       }
     };
   },
-  created() {
-    if (this.form.departement) {
-      this.availableUes = this.uesByDepartement[this.form.departement] || [];
-    }
+  async created() {
+    await this.fetchDepartmentsAndUes();
     this.loadFromRoute();
   },
   watch: {
     'form.departement'(newDepartement, oldDepartement) {
-      this.availableUes = this.uesByDepartement[newDepartement] || [];
       if (!this.isHydratingForm && newDepartement !== oldDepartement) {
+        this.form.ue = '';
+      }
+    },
+    'form.semestre'(newSemestre, oldSemestre) {
+      if (!this.isHydratingForm && newSemestre !== oldSemestre) {
         this.form.ue = '';
       }
     },
@@ -442,6 +333,17 @@ export default {
     }
   },
   computed: {
+    availableUes() {
+      if (!this.form.departement) return [];
+      let ues = this.allUes.filter(u => u.department && (u.department.label === this.form.departement || u.department.id === this.form.departement));
+      if (this.form.semestre) {
+        const semNum = parseInt(this.form.semestre.replace('S', ''));
+        if (!isNaN(semNum)) {
+          ues = ues.filter(u => u.semester === semNum);
+        }
+      }
+      return ues.map(u => u.title);
+    },
     showAllSteps() {
       return this.isReadOnly && this.$route.query.mode === 'view';
     },
@@ -460,6 +362,20 @@ export default {
     }
   },
   methods: {
+    async fetchDepartmentsAndUes() {
+      try {
+        const [deptRes, ueRes] = await Promise.all([
+          axios.get('/departments'),
+          axios.get('/ues')
+        ]);
+        this.departements = deptRes.data
+          .filter(d => ueRes.data.some(u => u.department && (u.department.id === d.id || u.department.label === d.label)))
+          .map(d => d.label);
+        this.allUes = ueRes.data;
+      } catch (error) {
+        console.error("Erreur chargement départements/UEs", error);
+      }
+    },
     async loadFromRoute() {
       const { id, mode } = this.$route.query;
       this.isReadOnly = mode === 'view';
@@ -485,10 +401,6 @@ export default {
             semestre: mccc.semestre || mccc.semester || mccc.form?.semestre || '',
             code: mccc.form?.code || mccc.form?.ressource || ''
         };
-
-        if(this.form.departement) {
-             this.availableUes = this.uesByDepartement[this.form.departement] || [];
-        }
 
         this.ressourcesRows = mccc.ressourcesRows || [];
         if (this.ressourcesRows.length === 0) {
