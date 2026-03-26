@@ -6,7 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.unilim.erp.dto.McccDto;
 import com.unilim.erp.entities.Mccc;
 import com.unilim.erp.exceptions.JsonSerializationException;
+import com.unilim.erp.entities.Department;
+import com.unilim.erp.entities.Ue;
+import com.unilim.erp.repositories.DepartmentRepository;
 import com.unilim.erp.repositories.McccRepository;
+import com.unilim.erp.repositories.UeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,10 +22,14 @@ import java.util.stream.Collectors;
 public class McccService {
 
     private final McccRepository mcccRepository;
+    private final DepartmentRepository departmentRepository;
+    private final UeRepository ueRepository;
     private final ObjectMapper objectMapper;
 
-    public McccService(McccRepository mcccRepository, ObjectMapper objectMapper) {
+    public McccService(McccRepository mcccRepository, DepartmentRepository departmentRepository, UeRepository ueRepository, ObjectMapper objectMapper) {
         this.mcccRepository = mcccRepository;
+        this.departmentRepository = departmentRepository;
+        this.ueRepository = ueRepository;
         this.objectMapper = objectMapper;
     }
 
@@ -58,8 +66,8 @@ public class McccService {
     private McccDto convertToDto(Mccc entity) {
         McccDto dto = new McccDto();
         dto.setId(entity.getId());
-        dto.setDepartment(entity.getDepartment());
-        dto.setUe(entity.getUe());
+        dto.setDepartment(entity.getDepartment() != null ? entity.getDepartment().getLabel() : null);
+        dto.setUe(entity.getUe() != null ? entity.getUe().getTitle() : null);
         dto.setYears(entity.getYears());
         dto.setSemester(entity.getSemester());
         dto.setSavedAt(entity.getSavedAt());
@@ -87,8 +95,19 @@ public class McccService {
     }
 
     private void updateEntityFromDto(Mccc entity, McccDto dto) {
-        entity.setDepartment(dto.getDepartment());
-        entity.setUe(dto.getUe());
+        if (dto.getDepartment() != null) {
+            Department dept = departmentRepository.findAll().stream()
+                    .filter(d -> d.getLabel().equals(dto.getDepartment()))
+                    .findFirst().orElse(null);
+            entity.setDepartment(dept);
+        }
+
+        if (dto.getUe() != null) {
+            Ue ue = ueRepository.findAll().stream()
+                    .filter(u -> u.getTitle().equals(dto.getUe()))
+                    .findFirst().orElse(null);
+            entity.setUe(ue);
+        }
         entity.setYears(dto.getYears());
         entity.setSemester(dto.getSemester());
 

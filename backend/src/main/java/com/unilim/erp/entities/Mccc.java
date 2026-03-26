@@ -15,8 +15,13 @@ public class Mccc {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    private String department;
-    private String ue;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ue_id")
+    private Ue ue;
     private String years;
     private String semester;
 

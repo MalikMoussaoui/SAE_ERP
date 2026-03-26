@@ -1,4 +1,4 @@
-﻿﻿<template>
+<template>
   <DashboardLayout>
     <CustomModal
       v-if="modal.show"
@@ -39,21 +39,21 @@
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.department') }}</span>
-              <select v-model="form.departement" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.departement" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.departement }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
                 <option v-for="option in departements" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.year') }}</span>
-              <select v-model="form.annee" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.annee" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.annee }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in annees" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.semester') }}</span>
-              <select v-model="form.semestre" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.semestre" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.semestre }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in semestres" :key="option" :value="option">{{ option }}</option>
               </select>
@@ -66,18 +66,18 @@
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.ue') }}</span>
-              <select v-model="form.ue" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.ue" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.ue }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
                 <option v-for="option in availableUes" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.resourceToWrite') }}</span>
-              <input v-model="form.code" class="pill-select pill-input" :placeholder="$t('resourceSheet.resourceCode')" :disabled="isReadOnly" />
+              <input v-model="form.code" class="pill-select pill-input" :class="{ 'pill-invalid': showValidationErrors && !form.code }" :placeholder="$t('resourceSheet.resourceCode')" :disabled="isReadOnly" />
             </label>
             <label class="field">
               <span>{{ $t('mccc.competenceLevel') }}</span>
-              <select v-model="form.niveauCompetence" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.niveauCompetence" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.niveauCompetence }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.choose') }}</option>
                 <option v-for="option in niveauxCompetence" :key="option" :value="option">{{ option }}</option>
               </select>
@@ -90,15 +90,18 @@
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.saeCoefficient') }}</span>
-              <input v-model="form.coeffSae" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.choose')" :disabled="isReadOnly" />
+              <input v-model="form.coeffSae" type="number" min="0" step="0.1" @keydown="onlyNumbers($event, 'coeffSae')" @input="validatePositive(form, 'coeffSae')" :class="{ 'pill-invalid': fieldErrors['coeffSae'] }" class="pill-select" :placeholder="$t('mccc.choose')" :disabled="isReadOnly" />
+              <span v-if="fieldErrors['coeffSae']" class="error-hint">{{ fieldErrors['coeffSae'] }}</span>
             </label>
             <label class="field">
               <span>{{ $t('mccc.resourceCoefficient') }}</span>
-              <input v-model="form.coeffRessource" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.choose')" :disabled="isReadOnly" />
+              <input v-model="form.coeffRessource" type="number" min="0" step="0.1" @keydown="onlyNumbers($event, 'coeffRessource')" @input="validatePositive(form, 'coeffRessource')" :class="{ 'pill-invalid': fieldErrors['coeffRessource'] }" class="pill-select" :placeholder="$t('mccc.choose')" :disabled="isReadOnly" />
+              <span v-if="fieldErrors['coeffRessource']" class="error-hint">{{ fieldErrors['coeffRessource'] }}</span>
             </label>
             <label class="field">
               <span>{{ $t('mccc.totalCoefficient') }}</span>
-              <input v-model="form.coeffTotal" type="number" min="0" step="0.1" class="pill-select" :placeholder="$t('mccc.total')" :disabled="isReadOnly" />
+              <input v-model="form.coeffTotal" type="number" min="0" step="0.1" @keydown="onlyNumbers($event, 'coeffTotal')" @input="validatePositive(form, 'coeffTotal')" :class="{ 'pill-invalid': fieldErrors['coeffTotal'] }" class="pill-select" :placeholder="$t('mccc.total')" :disabled="isReadOnly" />
+              <span v-if="fieldErrors['coeffTotal']" class="error-hint">{{ fieldErrors['coeffTotal'] }}</span>
             </label>
           </div>
         </div>
@@ -110,21 +113,21 @@
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('mccc.evaluationType') }}</span>
-              <select v-model="form.typeEvaluation" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.typeEvaluation" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.typeEvaluation }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in typesEvaluation" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.validationRule') }}</span>
-              <select v-model="form.regleValidation" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.regleValidation" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.regleValidation }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in reglesValidation" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.retake') }}</span>
-              <select v-model="form.rattrapage" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.rattrapage" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.rattrapage }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option value="OUI">{{ $t('common.yes') }}</option>
                 <option value="NON">{{ $t('common.no') }}</option>
@@ -132,7 +135,7 @@
             </label>
             <label class="field">
               <span>{{ $t('mccc.compensation') }}</span>
-              <select v-model="form.compensation" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.compensation" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.compensation }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option value="OUI">{{ $t('common.yes') }}</option>
                 <option value="NON">{{ $t('common.no') }}</option>
@@ -140,14 +143,14 @@
             </label>
             <label class="field">
               <span>{{ $t('mccc.pedagogicalManager') }}</span>
-              <select v-model="form.responsable" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.responsable" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.responsable }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in responsables" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field">
               <span>{{ $t('mccc.ueObjective') }}</span>
-              <select v-model="form.objectif" class="pill-select" :disabled="isReadOnly">
+              <select v-model="form.objectif" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.objectif }" :disabled="isReadOnly">
                 <option value="" disabled>{{ $t('mccc.select') }}</option>
                 <option v-for="option in objectifs" :key="option" :value="option">{{ option }}</option>
               </select>
@@ -176,11 +179,26 @@
                   <td>
                     <input class="table-input" v-model="row.label" :placeholder="$t('mccc.resourcePlaceholder', { id: row.id })" :disabled="isReadOnly" />
                   </td>
-                  <td><input class="table-input" v-model="row.hCM" type="number" min="0" step="0.5" @input="validatePositive(row, 'hCM')" :disabled="isReadOnly" /></td>
-                  <td><input class="table-input" v-model="row.hTD" type="number" min="0" step="0.5" @input="validatePositive(row, 'hTD')" :disabled="isReadOnly" /></td>
-                  <td><input class="table-input" v-model="row.hTP" type="number" min="0" step="0.5" @input="validatePositive(row, 'hTP')" :disabled="isReadOnly" /></td>
-                  <td><input class="table-input" v-model="row.hDSCM" type="number" min="0" step="0.5" @input="validatePositive(row, 'hDSCM')" :disabled="isReadOnly" /></td>
-                  <td><input class="table-input" v-model="row.hDSTP" type="number" min="0" step="0.5" @input="validatePositive(row, 'hDSTP')" :disabled="isReadOnly" /></td>
+                  <td>
+                    <input class="table-input" v-model="row.hCM" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'hCM', row.id)" @input="validatePositive(row, 'hCM', true)" :class="{ 'pill-invalid': fieldErrors['hCM_' + row.id] }" :disabled="isReadOnly" />
+                    <span v-if="fieldErrors['hCM_' + row.id]" class="error-hint-table">{{ fieldErrors['hCM_' + row.id] }}</span>
+                  </td>
+                  <td>
+                    <input class="table-input" v-model="row.hTD" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'hTD', row.id)" @input="validatePositive(row, 'hTD', true)" :class="{ 'pill-invalid': fieldErrors['hTD_' + row.id] }" :disabled="isReadOnly" />
+                    <span v-if="fieldErrors['hTD_' + row.id]" class="error-hint-table">{{ fieldErrors['hTD_' + row.id] }}</span>
+                  </td>
+                  <td>
+                    <input class="table-input" v-model="row.hTP" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'hTP', row.id)" @input="validatePositive(row, 'hTP', true)" :class="{ 'pill-invalid': fieldErrors['hTP_' + row.id] }" :disabled="isReadOnly" />
+                    <span v-if="fieldErrors['hTP_' + row.id]" class="error-hint-table">{{ fieldErrors['hTP_' + row.id] }}</span>
+                  </td>
+                  <td>
+                    <input class="table-input" v-model="row.hDSCM" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'hDSCM', row.id)" @input="validatePositive(row, 'hDSCM', true)" :class="{ 'pill-invalid': fieldErrors['hDSCM_' + row.id] }" :disabled="isReadOnly" />
+                    <span v-if="fieldErrors['hDSCM_' + row.id]" class="error-hint-table">{{ fieldErrors['hDSCM_' + row.id] }}</span>
+                  </td>
+                  <td>
+                    <input class="table-input" v-model="row.hDSTP" type="number" min="0" step="0.5" @keydown="onlyNumbers($event, 'hDSTP', row.id)" @input="validatePositive(row, 'hDSTP', true)" :class="{ 'pill-invalid': fieldErrors['hDSTP_' + row.id] }" :disabled="isReadOnly" />
+                    <span v-if="fieldErrors['hDSTP_' + row.id]" class="error-hint-table">{{ fieldErrors['hDSTP_' + row.id] }}</span>
+                  </td>
                   <td class="info-cell">
                     <div v-if="row.showDetails" class="info-editor">
                       <textarea
@@ -224,6 +242,7 @@
       </section>
 
       <div v-if="!showAllSteps" class="step-navigation">
+        <span v-if="stepErrorMessage" class="step-error">{{ stepErrorMessage }}</span>
         <button v-if="currentStep > 1" @click="prevStep" class="btn btn-secondary">
           {{ $t('mccc.back') }}
         </button>
@@ -409,7 +428,10 @@ export default {
       nextRowId: 2,
       errorMessage: '',
       errorTimeout: null,
+      fieldErrors: {},
       isHydratingForm: false,
+      stepErrorMessage: '',
+      showValidationErrors: false,
       modal: {
         show: false,
         title: '',
@@ -503,15 +525,25 @@ export default {
         this.isHydratingForm = false;
       }
     },
+    validateStep(step) {
+      if (step === 1) return !!(this.form.departement && this.form.annee && this.form.semestre && this.form.ue && this.form.code && this.form.niveauCompetence);
+      if (step === 2) return !!(this.form.typeEvaluation && this.form.regleValidation && this.form.rattrapage && this.form.compensation && this.form.responsable && this.form.objectif);
+      return true;
+    },
     nextStep() {
-      if (this.currentStep < 3) {
-        this.currentStep++;
+      if (this.validateStep(this.currentStep)) {
+        this.stepErrorMessage = '';
+        this.showValidationErrors = false;
+        if (this.currentStep < 3) this.currentStep++;
+      } else {
+        this.stepErrorMessage = "Veuillez remplir les champs obligatoires en rouge pour continuer.";
+        this.showValidationErrors = true;
       }
     },
     prevStep() {
-      if (this.currentStep > 1) {
-        this.currentStep--;
-      }
+      this.stepErrorMessage = '';
+      this.showValidationErrors = false;
+      if (this.currentStep > 1) this.currentStep--;
     },
     addRow() {
       this.ressourcesRows.push({
@@ -530,14 +562,35 @@ export default {
       if (this.ressourcesRows.length <= 1) return;
       this.ressourcesRows = this.ressourcesRows.filter(row => row.id !== rowId);
     },
-    validatePositive(row, field) {
-      if (row[field] < 0) {
-        row[field] = 0;
-        this.errorMessage = this.$t('common.error.negativeValue');
-        if (this.errorTimeout) clearTimeout(this.errorTimeout);
-        this.errorTimeout = setTimeout(() => {
-          this.errorMessage = '';
-        }, 3000);
+    validatePositive(target, field, isTable = false) {
+      const key = isTable ? `${field}_${target.id}` : field;
+      if (target[field] < 0) {
+        target[field] = 0;
+        this.fieldErrors[key] = "Les nombres négatifs ne sont pas autorisés.";
+        setTimeout(() => {
+          this.fieldErrors[key] = "";
+        }, 4000);
+      } else {
+        this.fieldErrors[key] = "";
+      }
+    },
+    onlyNumbers(event, field, targetId = null) {
+      const key = targetId ? `${field}_${targetId}` : field;
+      
+      if (event.key.length > 1 || event.ctrlKey || event.metaKey) return;
+      if (['.', ','].includes(event.key)) return;
+
+      if (['-', '+'].includes(event.key)) {
+        event.preventDefault();
+        this.fieldErrors[key] = "Les nombres négatifs ne sont pas autorisés.";
+        setTimeout(() => { this.fieldErrors[key] = ""; }, 4000);
+        return;
+      }
+
+      if (!/^[0-9]$/.test(event.key)) {
+        event.preventDefault();
+        this.fieldErrors[key] = "Seuls les chiffres sont acceptés.";
+        setTimeout(() => { this.fieldErrors[key] = ""; }, 4000);
       }
     },
     async saveMccc() {
@@ -1042,10 +1095,19 @@ tr:nth-child(even) td {
 .step-navigation {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 1rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--color-border);
+}
+
+.step-error {
+  color: #dc2626;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-right: auto;
+  animation: fadeIn 0.3s ease;
 }
 
 .step-navigation .btn {
@@ -1125,5 +1187,40 @@ tr:nth-child(even) td {
 }
 .btn-danger:hover {
   background-color: #fee2e2;
+}
+
+.pill-invalid {
+  border: 2px solid #ff4d4d !important;
+  background-color: #fff5f5 !important;
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.error-hint {
+  color: #ff4d4d;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-top: 4px;
+  animation: fadeIn 0.3s ease;
+}
+
+.error-hint-table {
+  color: #ff4d4d;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: block;
+  margin-top: 4px;
+  white-space: normal;
+  line-height: 1.2;
+  animation: fadeIn 0.3s ease;
+}
+
+.table-section td {
+  vertical-align: top;
 }
 </style>

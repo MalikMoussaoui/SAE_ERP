@@ -22,6 +22,8 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final SaeRepository saeRepository;
     private final CourseRepository courseRepository;
     private final AppUserRepository appUserRepository;
+    private final ResourceSheetRepository resourceSheetRepository;
+    private final McccRepository mcccRepository;
     private final PasswordEncoder passwordEncoder;
 
     public DatabaseSeeder(DepartmentRepository departmentRepository,
@@ -29,13 +31,18 @@ public class DatabaseSeeder implements CommandLineRunner {
             ResourceRepository resourceRepository,
             SaeRepository saeRepository,
             CourseRepository courseRepository,
-            AppUserRepository appUserRepository, PasswordEncoder passwordEncoder) {
+            AppUserRepository appUserRepository,
+            ResourceSheetRepository resourceSheetRepository,
+            McccRepository mcccRepository,
+            PasswordEncoder passwordEncoder) {
         this.departmentRepository = departmentRepository;
         this.ueRepository = ueRepository;
         this.resourceRepository = resourceRepository;
         this.saeRepository = saeRepository;
         this.courseRepository = courseRepository;
         this.appUserRepository = appUserRepository;
+        this.resourceSheetRepository = resourceSheetRepository;
+        this.mcccRepository = mcccRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -56,11 +63,20 @@ public class DatabaseSeeder implements CommandLineRunner {
                     appUserRepository.save(admin);
                 });
 
+        Department deptInfo = departmentRepository.findAll().stream()
+                .filter(d -> "INFO".equals(d.getLabel()))
+                .findFirst()
+                .orElseGet(() -> {
+                    Department d = new Department();
+                    d.setLabel("INFO");
+                    return departmentRepository.save(d);
+                });
+
         appUserRepository.findByEmail("direction@unilim.fr").ifPresentOrElse(
                 user -> log.info("Direction existe déjà."),
                 () -> {
                     AppUser dir = createUser("Mourad", "Khalid", "direction@unilim.fr", UserRole.DIRECTION,
-                            UserStatus.ACTIVE, "INFO");
+                            UserStatus.ACTIVE, deptInfo);
                     appUserRepository.save(dir);
                     log.info("Création du compte Direction: direction@unilim.fr");
                 });
@@ -76,50 +92,44 @@ public class DatabaseSeeder implements CommandLineRunner {
 
         // Migration: Update existing users that have no department
         appUserRepository.findAll().forEach(u -> {
-            if (u.getDepartement() == null &&
+            if (u.getDepartment() == null &&
                     u.getRole() != UserRole.ADMINISTRATEUR &&
                     u.getRole() != UserRole.RH) {
-                u.setDepartement("INFO");
+                u.setDepartment(deptInfo);
                 appUserRepository.save(u);
                 log.info("Mis à jour du département pour l'utilisateur existant: " + u.getEmail());
             }
         });
+        cleanupLegacyDepartments();
+        seedAllDepartmentsAndUes();
+
         if (appUserRepository.count() > 10) {
             return;
         }
 
         log.info("Seeding : Création du personnel IUT (Profs, Vacataires)...");
 
-        Department deptInfo = departmentRepository.findAll().stream()
-                .filter(d -> "Informatique".equals(d.getLabel()))
-                .findFirst()
-                .orElseGet(() -> {
-                    Department d = new Department();
-                    d.setLabel("Informatique");
-                    return departmentRepository.save(d);
-                });
-
         Department deptGea = departmentRepository.findAll().stream()
-                .filter(d -> "GEA (Gestion)".equals(d.getLabel()))
+                .filter(d -> "GEA".equals(d.getLabel()))
                 .findFirst()
                 .orElseGet(() -> {
                     Department d = new Department();
-                    d.setLabel("GEA (Gestion)");
+                    d.setLabel("GEA");
                     return departmentRepository.save(d);
                 });
 
         AppUser respInfo = createUser("Turing", "Alan", "alan.turing@unilim.fr", UserRole.RESPONSABLE_PEDAGOGIQUE,
-                UserStatus.ACTIVE, "INFO");
+                UserStatus.ACTIVE, deptInfo);
         AppUser profJava = createUser("Lovelace", "Ada", "ada.lovelace@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE,
-                "INFO");
+                deptInfo);
         AppUser profWeb = createUser("Berners-Lee", "Tim", "tim.berners@unilim.fr", UserRole.TEACHER, UserStatus.ACTIVE,
-                "INFO");
+                deptInfo);
         AppUser referentBdd = createUser("Codd", "Edgar", "edgar.codd@unilim.fr", UserRole.REFERENT, UserStatus.ACTIVE,
-                "INFO");
+                deptInfo);
         AppUser vacataire = createUser("Musk", "Elon", "elon.musk@tesla.com", UserRole.VACATAIRE, UserStatus.ACTIVE,
-                "INFO");
+                deptInfo);
         AppUser profSuspendu = createUser("Dalton", "Joe", "joe.dalton@unilim.fr", UserRole.TEACHER,
-                UserStatus.SUSPENDED, "INFO");
+                UserStatus.SUSPENDED, deptInfo);
         AppUser rhSophie = createUser("Durand", "Sophie", "sophie.durand@unilim.fr", UserRole.RH, UserStatus.ACTIVE,
                 null);
 
@@ -156,12 +166,11 @@ public class DatabaseSeeder implements CommandLineRunner {
             coursProjet.getTeachers().add(vacataire);
             courseRepository.save(coursProjet);
         }
-
         log.info("Seeding terminé : Base prête et sécurisée !");
     }
 
     private AppUser createUser(String nom, String prenom, String email, UserRole role, UserStatus status,
-            String departement) {
+            Department department) {
         AppUser user = new AppUser();
         user.setDisplayName(prenom + " " + nom);
         user.setEmail(email);
@@ -169,7 +178,7 @@ public class DatabaseSeeder implements CommandLineRunner {
         user.setPhone("0601020304");
         user.setRole(role);
         user.setStatus(status);
-        user.setDepartement(departement);
+        user.setDepartment(department);
         return user;
     }
 
@@ -204,5 +213,148 @@ public class DatabaseSeeder implements CommandLineRunner {
             c.getTeachers().add(prof);
         }
         courseRepository.save(c);
+    }
+
+    private void seedAllDepartmentsAndUes() {
+        // Pour informatique
+        Department info = fetchOrCreateDept("INFO");
+        String[] infoS1toS4 = { "Réaliser", "Optimiser", "Administrer", "Gérer", "Conduire", "Collaborer" };
+        for (int sem = 1; sem <= 4; sem++) {
+            for (int i = 0; i < infoS1toS4.length; i++) {
+                createUeIfMissing("UE " + sem + "." + (i + 1) + " " + infoS1toS4[i], sem, info);
+            }
+        }
+        String[] infoS5 = { "Réaliser un dev d'application", "Optimiser des applications",
+                "Administrer des SI complexes", "Gérer des données", "Conduire un projet", "Travailler en équipe" };
+        for (int i = 0; i < infoS5.length; i++) {
+            createUeIfMissing("UE 5." + (i + 1) + " " + infoS5[i], 5, info);
+        }
+        for (int i = 0; i < infoS1toS4.length; i++) {
+            createUeIfMissing("UE 6." + (i + 1) + " " + infoS1toS4[i], 6, info);
+        }
+
+        // pour MMI
+        Department mmi = fetchOrCreateDept("MMI");
+        String[] mmiUes = { "Comprendre", "Concevoir", "Exprimer", "Développer", "Entreprendre" };
+        seedGenericUes(mmi, mmiUes, 6);
+
+        // pour GEA
+        Department gea = fetchOrCreateDept("GEA");
+        String[] geaUes = { "Analyser les processus", "Produire l'info comptable", "Gérer les ressources humaines",
+                "Piloter les organisations", "Communiquer en contexte pro" };
+        seedGenericUes(gea, geaUes, 6);
+
+        // pour GB
+        Department gb = fetchOrCreateDept("GB");
+        String[] gbUes = { "Analyser et caractériser", "Concevoir et produire", "Contrôler et assurer la qualité",
+                "Organiser et gérer", "Communiquer et se former" };
+        seedGenericUes(gb, gbUes, 6);
+
+        // pour GMP
+        Department gmp = fetchOrCreateDept("GMP");
+        String[] gmpUes = { "Analyser un système", "Concevoir un produit/process", "Industrialiser un produit",
+                "Gérer une unité de production", "S'intégrer dans une organisation" };
+        seedGenericUes(gmp, gmpUes, 6);
+
+        // pour MP
+        Department mp = fetchOrCreateDept("MP");
+        String[] mpUes = { "Mesurer et caractériser", "Analyser et modéliser", "Concevoir des systèmes de mesure",
+                "Traiter et exploiter les données", "Intégrer et évoluer en milieu pro" };
+        seedGenericUes(mp, mpUes, 6);
+
+        // pour RT
+        Department rt = fetchOrCreateDept("RT");
+        String[] rtUes = { "Administrer les réseaux", "Connecter les entreprises", "Créer des outils & services",
+                "Sécuriser les infrastructures", "Gérer les données", "Travailler en mode projet" };
+        seedGenericUes(rt, rtUes, 6);
+
+        // pour Tech de Co
+        Department tc = fetchOrCreateDept("TC");
+        String[] tcUes = { "Développer la relation client", "Mettre en oeuvre une stratégie marketing",
+                "Vendre une offre commerciale", "Analyser le marché", "Conduire un projet commercial", "Communiquer" };
+        seedGenericUes(tc, tcUes, 6);
+    }
+
+    private Department fetchOrCreateDept(String label) {
+        return departmentRepository.findAll().stream()
+                .filter(d -> label.equals(d.getLabel()))
+                .findFirst()
+                .orElseGet(() -> {
+                    Department d = new Department();
+                    d.setLabel(label);
+                    return departmentRepository.save(d);
+                });
+    }
+
+    private void seedGenericUes(Department dept, String[] suffixes, int semesters) {
+        for (int sem = 1; sem <= semesters; sem++) {
+            for (int i = 0; i < suffixes.length; i++) {
+                createUeIfMissing("UE " + sem + "." + (i + 1) + " " + suffixes[i], sem, dept);
+            }
+        }
+    }
+
+    private void createUeIfMissing(String title, int semester, Department dept) {
+        boolean exists = ueRepository.findAll().stream()
+                .anyMatch(u -> u.getTitle().equals(title) && u.getSemester() == semester
+                        && u.getDepartment().getId().equals(dept.getId()));
+        if (!exists) {
+            ueRepository.save(createUE(title, semester, dept));
+        }
+    }
+
+    private void cleanupLegacyDepartments() {
+        Department info = fetchOrCreateDept("INFO");
+        departmentRepository.findAll().forEach(d -> {
+            if (!d.getId().equals(info.getId())
+                    && (d.getLabel().toLowerCase().contains("informatique") || d.getLabel().equalsIgnoreCase("INFO"))) {
+                mergeDepartment(d, info);
+            }
+        });
+
+        Department gea = fetchOrCreateDept("GEA");
+        departmentRepository.findAll().forEach(d -> {
+            if (!d.getId().equals(gea.getId())
+                    && (d.getLabel().toLowerCase().contains("gestion") || d.getLabel().equalsIgnoreCase("GEA"))) {
+                mergeDepartment(d, gea);
+            }
+        });
+
+        Department mmi = fetchOrCreateDept("MMI");
+        departmentRepository.findAll().forEach(d -> {
+            if (!d.getId().equals(mmi.getId())
+                    && (d.getLabel().toLowerCase().contains("multimedia") || d.getLabel().equalsIgnoreCase("MMI"))) {
+                mergeDepartment(d, mmi);
+            }
+        });
+    }
+
+    private void mergeDepartment(Department oldDept, Department newDept) {
+        appUserRepository.findAll().forEach(u -> {
+            if (u.getDepartment() != null && u.getDepartment().getId().equals(oldDept.getId())) {
+                u.setDepartment(newDept);
+                appUserRepository.save(u);
+            }
+        });
+        resourceSheetRepository.findAll().forEach(rs -> {
+            if (rs.getDepartment() != null && rs.getDepartment().getId().equals(oldDept.getId())) {
+                rs.setDepartment(newDept);
+                resourceSheetRepository.save(rs);
+            }
+        });
+        mcccRepository.findAll().forEach(m -> {
+            if (m.getDepartment() != null && m.getDepartment().getId().equals(oldDept.getId())) {
+                m.setDepartment(newDept);
+                mcccRepository.save(m);
+            }
+        });
+        ueRepository.findAll().forEach(ue -> {
+            if (ue.getDepartment() != null && ue.getDepartment().getId().equals(oldDept.getId())) {
+                ue.setDepartment(newDept);
+                ueRepository.save(ue);
+            }
+        });
+        departmentRepository.delete(oldDept);
+        log.info("Merged duplicate department '{}' into '{}'", oldDept.getLabel(), newDept.getLabel());
     }
 }

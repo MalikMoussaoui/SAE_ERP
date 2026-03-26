@@ -3,7 +3,12 @@ package com.unilim.erp.controller;
 import com.unilim.erp.dto.ResourceSheetDto;
 import com.unilim.erp.entities.AppUser;
 import com.unilim.erp.entities.ResourceSheet;
+import com.unilim.erp.entities.Department;
+import com.unilim.erp.entities.Ue;
 import com.unilim.erp.repositories.AppUserRepository;
+import com.unilim.erp.repositories.DepartmentRepository;
+import com.unilim.erp.repositories.ResourceSheetRepository;
+import com.unilim.erp.repositories.UeRepository;
 import com.unilim.erp.repositories.ResourceSheetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +26,8 @@ public class ResourceSheetController {
 
     private final ResourceSheetRepository resourceSheetRepository;
     private final AppUserRepository appUserRepository;
+    private final DepartmentRepository departmentRepository;
+    private final UeRepository ueRepository;
 
     @GetMapping
     public List<ResourceSheetDto> getAllResourceSheets() {
@@ -44,9 +51,9 @@ public class ResourceSheetController {
                         boolean isIntervenant = isUserMatchedInField(currentUser, sheet.getIntervenants());
                         boolean isCreator = sheet.getCreatedBy() != null && sheet.getCreatedBy().equalsIgnoreCase(currentEmail);
                         
-                        boolean isInSameDept = currentUser.getDepartement() != null &&
-                                sheet.getDepartement() != null &&
-                                currentUser.getDepartement().equalsIgnoreCase(sheet.getDepartement());
+                        boolean isInSameDept = currentUser.getDepartment() != null &&
+                                sheet.getDepartment() != null &&
+                                currentUser.getDepartment().getLabel().equalsIgnoreCase(sheet.getDepartment().getLabel());
                                 
                         return isManager || isIntervenant || isCreator || isInSameDept;
                     })
@@ -161,9 +168,22 @@ public class ResourceSheetController {
 
     private void mapToEntity(ResourceSheetDto dto, ResourceSheet entity) {
         entity.setTitre(dto.getTitre());
-        entity.setDepartement(dto.getDepartement());
+        
+        if (dto.getDepartement() != null) {
+            Department dept = departmentRepository.findAll().stream()
+                    .filter(d -> d.getLabel().equals(dto.getDepartement()))
+                    .findFirst().orElse(null);
+            entity.setDepartment(dept);
+        }
+
+        if (dto.getUe() != null) {
+            Ue ue = ueRepository.findAll().stream()
+                    .filter(u -> u.getTitle().equals(dto.getUe()))
+                    .findFirst().orElse(null);
+            entity.setUe(ue);
+        }
+
         entity.setCode(dto.getCode());
-        entity.setUe(dto.getUe());
         entity.setSemestre(dto.getSemestre());
         entity.setDescription(dto.getDescription());
         entity.setHCM(dto.getHCM());
@@ -208,9 +228,9 @@ public class ResourceSheetController {
         ResourceSheetDto dto = new ResourceSheetDto();
         dto.setId(entity.getId());
         dto.setTitre(entity.getTitre());
-        dto.setDepartement(entity.getDepartement());
+        dto.setDepartement(entity.getDepartment() != null ? entity.getDepartment().getLabel() : null);
         dto.setCode(entity.getCode());
-        dto.setUe(entity.getUe());
+        dto.setUe(entity.getUe() != null ? entity.getUe().getTitle() : null);
         dto.setSemestre(entity.getSemestre());
         dto.setDescription(entity.getDescription());
         dto.setHCM(entity.getHCM());
@@ -260,7 +280,7 @@ public class ResourceSheetController {
                     ResourceSheet newSheet = new ResourceSheet();
                     newSheet.setId(UUID.randomUUID());
                     newSheet.setTitre(existingSheet.getTitre() + " (Copie)");
-                    newSheet.setDepartement(existingSheet.getDepartement());
+                    newSheet.setDepartment(existingSheet.getDepartment());
                     newSheet.setCode(existingSheet.getCode());
                     newSheet.setUe(existingSheet.getUe());
                     newSheet.setSemestre(existingSheet.getSemestre());

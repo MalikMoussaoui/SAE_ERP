@@ -2,7 +2,11 @@ package com.unilim.erp.service;
 
 import com.unilim.erp.dto.ResourceSheetDto;
 import com.unilim.erp.entities.ResourceSheet;
+import com.unilim.erp.entities.Department;
+import com.unilim.erp.entities.Ue;
+import com.unilim.erp.repositories.DepartmentRepository;
 import com.unilim.erp.repositories.ResourceSheetRepository;
+import com.unilim.erp.repositories.UeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -14,6 +18,8 @@ import java.util.stream.Collectors;
 public class ResourceSheetService {
 
     private final ResourceSheetRepository repository;
+    private final DepartmentRepository departmentRepository;
+    private final UeRepository ueRepository;
 
     public List<ResourceSheetDto> getAll() {
         return repository.findAll().stream().map(this::mapToDto).toList();
@@ -41,13 +47,26 @@ public class ResourceSheetService {
 
     private void mapToEntity(ResourceSheetDto dto, ResourceSheet entity) {
         entity.setTitre(dto.getTitre());
-        entity.setDepartement(dto.getDepartement());
+        
+        if (dto.getDepartement() != null) {
+            Department dept = departmentRepository.findAll().stream()
+                    .filter(d -> d.getLabel().equals(dto.getDepartement()))
+                    .findFirst().orElse(null);
+            entity.setDepartment(dept);
+        }
+
+        if (dto.getUe() != null) {
+            Ue ue = ueRepository.findAll().stream()
+                    .filter(u -> u.getTitle().equals(dto.getUe()))
+                    .findFirst().orElse(null);
+            entity.setUe(ue);
+        }
+
         entity.setDescription(dto.getDescription());
         entity.setHCM(dto.getHCM());
         entity.setHTD(dto.getHTD());
         entity.setHTP(dto.getHTP());
         entity.setCode(dto.getCode());
-        entity.setUe(dto.getUe());
         entity.setSemestre(dto.getSemestre());
         entity.setTypeEvaluation(dto.getTypeEvaluation());
         entity.setCoefficientRessource(dto.getCoefficientRessource());
@@ -67,13 +86,13 @@ public class ResourceSheetService {
         ResourceSheetDto dto = new ResourceSheetDto();
         dto.setId(entity.getId());
         dto.setTitre(entity.getTitre());
-        dto.setDepartement(entity.getDepartement());
+        dto.setDepartement(entity.getDepartment() != null ? entity.getDepartment().getLabel() : null);
         dto.setDescription(entity.getDescription());
         dto.setHCM(entity.getHCM());
         dto.setHTD(entity.getHTD());
         dto.setHTP(entity.getHTP());
         dto.setCode(entity.getCode());
-        dto.setUe(entity.getUe());
+        dto.setUe(entity.getUe() != null ? entity.getUe().getTitle() : null);
         dto.setSemestre(entity.getSemestre());
         dto.setTypeEvaluation(entity.getTypeEvaluation());
         dto.setCoefficientRessource(entity.getCoefficientRessource());

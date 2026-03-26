@@ -108,9 +108,9 @@ export default {
 
     this.userRole = localStorage.getItem('userRole') || '';
 
-    if (this.userRole === 'ADMIN') this.roleDisplay = 'Administrateur';
-    else if (this.userRole === 'TEACHER' || this.userRole === 'ENSEIGNANT') this.roleDisplay = 'Enseignant';
-    else if (this.userRole === 'VACATAIRE') this.roleDisplay = 'Vacataire';
+    if (this.userRole === 'ADMIN') this.roleDisplay = this.$t('header.admin');
+    else if (this.userRole === 'TEACHER' || this.userRole === 'ENSEIGNANT') this.roleDisplay = this.$t('roleManagement.professor');
+    else if (this.userRole === 'VACATAIRE') this.roleDisplay = this.$t('roleManagement.contractor');
     else this.roleDisplay = this.userRole || 'Invité';
   },
   computed: {

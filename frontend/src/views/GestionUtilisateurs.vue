@@ -9,7 +9,7 @@
     <div class="page-surface">
       <div class="toolbar">
         <div class="toolbar-left">
-          <button @click="showCreateForm = !showCreateForm" class="btn btn-primary">+ Nouvel Utilisateur</button>
+          <button @click="showCreateForm = !showCreateForm" class="btn btn-primary">{{ $t('roleManagement.newUser') }}</button>
         </div>
         <div class="search-wrapper">
         <input type="text" :placeholder="$t('roleManagement.searchPlaceholder')" class="search-input" v-model="searchQuery" />
@@ -17,50 +17,44 @@
 
       <div class="filters-wrapper">
         <select class="filter-select" v-model="selectedPoste">
-          <option value="">Tous les postes</option>
-          <option value="TEACHER">Professeur</option>
-          <option value="VACATAIRE">Vacataire</option>
-          <option value="RESPONSABLE_PEDAGOGIQUE">Responsable Pédagogique</option>
-          <option value="ADMINISTRATEUR">Administrateur</option>
-          <option value="RH">Ressources Humaines</option>
+          <option value="">{{ $t('roleManagement.allPositions') }}</option>
+          <option value="TEACHER">{{ $t('roleManagement.professor') }}</option>
+          <option value="VACATAIRE">{{ $t('roleManagement.contractor') }}</option>
+          <option value="RESPONSABLE_PEDAGOGIQUE">{{ $t('roleManagement.responsablePedagogique') }}</option>
+          <option value="ADMINISTRATEUR">{{ $t('roleManagement.administrator') }}</option>
+          <option value="RH">{{ $t('roleManagement.rh') }}</option>
         </select>
         <select class="filter-select" v-model="selectedDept">
           <option value="">{{ $t('roleManagement.filterByDept') }}</option>
-          <option value="INFO">INFO</option>
-          <option value="GEA">GEA</option>
-          <option value="TC">TC</option>
+          <option v-for="dept in departements" :key="dept.id" :value="dept.label">{{ dept.label }}</option>
         </select>
       </div>
     </div>
 
     <!-- Create User Form (Admin only, visible when toggled) -->
     <div v-if="showCreateForm" class="create-user-form">
-      <h3>Ajouter un utilisateur</h3>
+      <h3>{{ $t('roleManagement.addUserTitle') }}</h3>
       <div class="form-row">
-        <input type="text" v-model="newUser.username" placeholder="Nom d'utilisateur" class="form-input" />
-        <input type="email" v-model="newUser.email" placeholder="Email" class="form-input" />
+        <input type="text" v-model="newUser.username" :placeholder="$t('roleManagement.usernamePlaceholder')" class="form-input" />
+        <input type="email" v-model="newUser.email" :placeholder="$t('roleManagement.emailPlaceholder')" class="form-input" />
       </div>
       <div class="form-row">
-        <input type="password" v-model="newUser.password" placeholder="Mot de passe" class="form-input" />
+        <input type="password" v-model="newUser.password" :placeholder="$t('roleManagement.passwordPlaceholder')" class="form-input" />
         <select v-model="newUser.departmentName" class="filter-select">
-          <option value="">Sélectionner le département</option>
-          <option value="INFO">INFO</option>
-          <option value="GEA">GEA</option>
-          <option value="TC">TC</option>
-          <option value="MMI">MMI</option>
-          <option value="GMP">GMP</option>
+          <option value="">{{ $t('roleManagement.selectDepartment') }}</option>
+          <option v-for="dept in departements" :key="dept.id" :value="dept.label">{{ dept.label }}</option>
         </select>
         <select v-model="newUser.roles" class="filter-select">
-          <option value="">Sélectionner le rôle</option>
-          <option value="TEACHER">Professeur (TEACHER)</option>
-          <option value="VACATAIRE">Vacataire</option>
-          <option value="RESPONSABLE_PEDAGOGIQUE">Responsable Pédagogique</option>
-          <option value="ADMINISTRATEUR">Administrateur</option>
+          <option value="">{{ $t('roleManagement.selectRole') }}</option>
+          <option value="TEACHER">{{ $t('roleManagement.professor') }}</option>
+          <option value="VACATAIRE">{{ $t('roleManagement.contractor') }}</option>
+          <option value="RESPONSABLE_PEDAGOGIQUE">{{ $t('roleManagement.responsablePedagogique') }}</option>
+          <option value="ADMINISTRATEUR">{{ $t('roleManagement.administrator') }}</option>
         </select>
       </div>
       <div class="form-actions">
-        <button @click="createUser" class="btn btn-primary" :disabled="!isFormValid">Créer l'utilisateur</button>
-        <button @click="showCreateForm = false" class="btn btn-secondary">Annuler</button>
+        <button @click="createUser" class="btn btn-primary" :disabled="!isFormValid">{{ $t('roleManagement.createUser') }}</button>
+        <button @click="showCreateForm = false" class="btn btn-secondary">{{ $t('roleManagement.cancel') }}</button>
       </div>
     </div>
 
@@ -114,6 +108,7 @@ export default {
       selectedPoste: '',
       selectedDept: '',
       users: [],
+      departements: [],
       showCreateForm: false,
       newUser: {
         username: '',
@@ -125,6 +120,7 @@ export default {
     };
   },
   async mounted() {
+    await this.fetchDepartments();
     await this.fetchUsers();
   },
   computed: {
@@ -152,6 +148,14 @@ export default {
     }
   },
   methods: {
+    async fetchDepartments() {
+      try {
+        const response = await axios.get('/departments');
+        this.departements = response.data;
+      } catch (error) {
+        console.error("Erreur chargement départements:", error);
+      }
+    },
     getPosteDisplay(user) {
       const p = user.role || '';
       if (p.includes('Professeur') || p.includes('TEACHER')) return this.$t('roleManagement.professor') || 'Professeur';

@@ -46,7 +46,7 @@ public class AuthenticationController {
                 .token(jwt)
                 .role(user.getRole().name())
                 .name(user.getDisplayName())
-                .departement(user.getDepartement())
+                .departement(user.getDepartment() != null ? user.getDepartment().getLabel() : null)
                 .build());
     }
 }

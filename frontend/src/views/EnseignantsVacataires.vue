@@ -2,7 +2,7 @@
   <DashboardLayout>
     <template #header>
       <div class="header-welcome">
-        <h1 class="page-title">Liste</h1>
+        <h1 class="page-title">{{ $t('teachers.title') }}</h1>
       </div>
     </template>
 
@@ -15,7 +15,7 @@
           </svg>
           <input
             type="text"
-            placeholder="Recherchez: par prénom, nom, etc"
+            :placeholder="$t('teachers.searchPlaceholder')"
             class="search-input"
             v-model="searchQuery"
           />
@@ -23,18 +23,13 @@
 
         <div class="filters-wrapper">
           <select class="filter-select" v-model="selectedPoste">
-            <option value="">Filtrer par poste</option>
-            <option value="Professeur">Professeur</option>
-            <option value="Vacataire">Vacataire</option>
+            <option value="">{{ $t('teachers.filterByPosition') }}</option>
+            <option value="Professeur">{{ $t('teachers.professor') }}</option>
+            <option value="Vacataire">{{ $t('teachers.contractor') }}</option>
           </select>
           <select class="filter-select" v-model="selectedDept">
-            <option value="">Filtrer par departement</option>
-            <option value="INFO">INFO</option>
-            <option value="MP">MP</option>
-            <option value="GEA">GEA</option>
-            <option value="TC">TC</option>
-            <option value="GMP">GMP</option>
-            <option value="MMI">MMI</option>
+            <option value="">{{ $t('teachers.filterByDept') }}</option>
+            <option v-for="dept in departements" :key="dept.id" :value="dept.label">{{ dept.label }}</option>
           </select>
         </div>
       </div>
@@ -44,9 +39,9 @@
           <table>
             <thead>
               <tr>
-                <th>Prénom/Nom</th>
-                <th>Départements</th>
-                <th>Poste</th>
+                <th>{{ $t('teachers.table.name') }}</th>
+                <th>{{ $t('teachers.table.departments') }}</th>
+                <th>{{ $t('teachers.table.position') }}</th>
               </tr>
             </thead>
             <tbody>
@@ -56,7 +51,7 @@
                 <td>{{ person.poste }}</td>
               </tr>
               <tr v-if="filteredEnseignants.length === 0">
-                <td colspan="3" class="empty-state">Aucun résultat trouvé</td>
+                <td colspan="3" class="empty-state">{{ $t('teachers.noResult') }}</td>
               </tr>
             </tbody>
           </table>
@@ -80,13 +75,23 @@ export default {
       searchQuery: '',
       selectedPoste: '',
       selectedDept: '',
-      enseignants: []
+      enseignants: [],
+      departements: []
     };
   },
-  mounted() {
+  async mounted() {
+    await this.fetchDepartments();
     this.fetchEnseignants();
   },
   methods: {
+    async fetchDepartments() {
+      try {
+        const response = await axios.get('/departments');
+        this.departements = response.data;
+      } catch (error) {
+        console.error("Erreur chargement départements:", error);
+      }
+    },
     async fetchEnseignants() {
       try {
         const role = localStorage.getItem('userRole') || '';

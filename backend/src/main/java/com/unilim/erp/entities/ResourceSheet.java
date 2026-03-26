@@ -24,8 +24,13 @@ public class ResourceSheet {
     private String titre;
     private String code;
     private String semestre;
-    private String ue;
-    private String departement;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ue_id")
+    private Ue ue;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @Column(columnDefinition = "TEXT")
     private String description;

@@ -19,5 +19,18 @@
             "path": "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.9.10-hotspot",
             "default": true
         }
+    ],
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "username": "erp",
+            "database": "erp",
+            "name": "Database_ERP"
+        }
     ]
 }

@@ -14,6 +14,6 @@ public interface AppUserRepository extends JpaRepository<AppUser, UUID> {
 
     Optional<AppUser> findByEmail(String displayName);
     List<AppUser> findByRoleIn(List<UserRole> roles);
-    List<AppUser> findByRoleInAndDepartement(List<UserRole> roles, String departement);
+    List<AppUser> findByRoleInAndDepartment_Label(List<UserRole> roles, String departmentLabel);
 
 }
