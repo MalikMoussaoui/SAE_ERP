@@ -64,7 +64,7 @@
       <!-- ÉTAPE 1 : Identification -->
       <section v-if="showAllSteps || currentStep === 1" class="cards-grid top-grid">
         <div class="info-card full-width">
-          <h3>{{ $t('mccc.resourcesAndSAE') }}</h3>
+          <h3>{{ $t('resourceSheet.identificationCard') }}</h3>
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('resourceSheet.resourceCode') }}</span>
@@ -73,21 +73,21 @@
             <label class="field">
               <span>{{ $t('resourceSheet.semester') }}</span>
               <select v-model="form.semestre" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.select') }}</option>
+                <option value="" disabled>{{ $t('resourceSheet.selectOption') }}</option>
                 <option v-for="option in semestres" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field full">
-              <span>{{ $t('mccc.department') }}</span>
+              <span>{{ $t('resourceSheet.department') }}</span>
               <select v-model="form.departement" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
+                <option value="" disabled>{{ $t('resourceSheet.chooseDepartment') }}</option>
                 <option v-for="option in departements" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field full">
               <span>{{ $t('resourceSheet.ue') }}</span>
               <select v-model="form.ue" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
+                <option value="" disabled>{{ $t('resourceSheet.selectUE') }}</option>
                 <option v-for="option in availableUes" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
@@ -140,7 +140,7 @@
             <label class="field full">
               <span>{{ $t('resourceSheet.evaluationType') }}</span>
               <select v-model="form.typeEvaluation" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.select') }}</option>
+                <option value="" disabled>{{ $t('resourceSheet.selectOption') }}</option>
                 <option v-for="option in typesEvaluation" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
@@ -283,7 +283,7 @@
               <tbody>
               <tr v-for="row in sequencesRows" :key="row.id">
                 <td>
-                  <input class="table-input" v-model="row.label" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
+                  <input class="table-input" v-model="row.label" :placeholder="$t('resourceSheet.sequencePlaceholder')" :disabled="isReadOnly" />
                 </td>
                 <td>
                   <select v-model="row.type" class="table-input" :disabled="isReadOnly">
@@ -305,22 +305,22 @@
                           v-model="row.notes"
                           rows="2"
                           class="info-textarea"
-                          :placeholder="$t('mccc.infoPlaceholder')"
+                          :placeholder="$t('resourceSheet.sequenceDetailsPlaceholder')"
                           :disabled="isReadOnly"
                       ></textarea>
                     <div class="info-actions">
-                      <button type="button" class="btn-finish" @click="row.showDetails = false" :disabled="isReadOnly">{{ $t('mccc.finish') }}</button>
+                      <button type="button" class="btn-finish" @click="row.showDetails = false" :disabled="isReadOnly">{{ $t('resourceSheet.finish') }}</button>
                     </div>
                   </div>
                   <div v-else class="info-collapsed">
-                    <div class="info-preview" :class="{ 'has-content': row.notes }">{{ row.notes || $t('mccc.noInfo') }}</div>
+                    <div class="info-preview" :class="{ 'has-content': row.notes }">{{ row.notes || $t('resourceSheet.noDetails') }}</div>
                     <button type="button" class="btn-add" @click="row.showDetails = true" :disabled="isReadOnly">
-                      {{ row.notes ? $t('mccc.edit') : $t('mccc.addInfo') }}
+                      {{ row.notes ? $t('resourceSheet.editDetails') : $t('resourceSheet.addDetails') }}
                     </button>
                   </div>
                 </td>
                 <td class="action-cell">
-                  <button v-if="sequencesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('mccc.deleteRow')" :disabled="isReadOnly">
+                  <button v-if="sequencesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('resourceSheet.deleteSequence')" :disabled="isReadOnly">
                     &times;
                   </button>
                 </td>
@@ -334,7 +334,7 @@
             </button>
             <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
             <div class="final-totals single">
-              <span class="final-label">{{ $t('mccc.totalHours') }}</span>
+              <span class="final-label">{{ $t('resourceSheet.totalHours') }}</span>
               <span class="single-total">{{ totalSequenceHours }}</span>
             </div>
           </div>
@@ -344,10 +344,10 @@
       <!-- Navigation -->
       <div v-if="!showAllSteps" class="step-navigation">
         <button v-if="currentStep > 1" @click="prevStep" class="btn btn-secondary">
-          {{ $t('mccc.back') }}
+          {{ $t('resourceSheet.back') }}
         </button>
         <button v-if="currentStep < 6" @click="nextStep" class="btn btn-primary">
-          {{ $t('mccc.continue') }}
+          {{ $t('resourceSheet.continue') }}
         </button>
 
         <template v-if="currentStep === 6">
@@ -363,7 +363,7 @@
             </button>
             
             <button class="btn btn-primary" type="button" @click="saveResource" v-if="hasEditingRights">
-              {{ $t('mccc.save') }}
+              {{ $t('resourceSheet.save') }}
             </button>
         </template>
       </div>
