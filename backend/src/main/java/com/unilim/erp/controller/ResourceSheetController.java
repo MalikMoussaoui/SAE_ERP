@@ -272,14 +272,15 @@ public class ResourceSheetController {
             boolean isGlobalAdmin = roleName.equals("ADMINISTRATEUR") || roleName.equals("RH");
 
             return resourceSheetRepository.findById(id).map(existingSheet -> {
-                boolean isResponsable = false;
-                if (roleName.equals("RESPONSABLE_PEDAGOGIQUE")) {
-                    isResponsable = isUserMatchedInField(currentUser, existingSheet.getResponsablePedagogique());
-                }
+                boolean isResponsable = roleName.equals("RESPONSABLE_PEDAGOGIQUE") &&
+                        isUserMatchedInField(currentUser, existingSheet.getResponsablePedagogique());
+                boolean isCreator = existingSheet.getCreatedBy() != null &&
+                        existingSheet.getCreatedBy().equalsIgnoreCase(currentUser.getEmail());
+                boolean isResponsablePedago = roleName.equals("RESPONSABLE_PEDAGOGIQUE");
 
-                if (!isGlobalAdmin && !isResponsable) {
+                if (!isGlobalAdmin && !(isResponsablePedago && (isResponsable || isCreator))) {
                     return ResponseEntity.status(403).body(
-                            (Object) "Accès refusé : vous n'êtes pas administrateur, RH, ou responsable de cette ressource.");
+                            (Object) "Accès refusé : vous n'êtes pas administrateur, RH, ou responsable/créateur de cette fiche.");
                 }
 
                 try {

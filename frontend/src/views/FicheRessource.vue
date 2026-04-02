@@ -482,12 +482,12 @@ export default {
       if (role === 'ADMINISTRATEUR' || role === 'RH') return true;
 
       if (role === 'RESPONSABLE_PEDAGOGIQUE') {
+        const email = localStorage.getItem('userEmail') || '';
         const userName = (localStorage.getItem('userName') || '').toLowerCase();
         const resp = (this.form.responsablePedagogique || '').toLowerCase();
-        
-        if (resp && userName && this.isNameMatched(userName, resp)) {
-          return true;
-        }
+        const isCreator = this.form.createdBy && this.form.createdBy === email;
+        const isResponsable = resp && userName && this.isNameMatched(userName, resp);
+        return isCreator || isResponsable;
       }
 
       return false;

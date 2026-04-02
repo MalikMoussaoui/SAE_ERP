@@ -76,6 +76,15 @@
 
             <button
                 type="button"
+                class="action-button secondary"
+                v-if="canDuplicateList(sheet)"
+                @click="duplicateSheet(sheet.id)"
+            >
+              {{ $t('common.duplicate') }}
+            </button>
+
+            <button
+                type="button"
                 class="action-button danger"
                 v-if="canDeleteList(sheet)"
                 @click="deleteSheet(sheet.id)"
@@ -250,6 +259,47 @@ export default {
       if (sheet.validated && this.userRole !== 'ADMINISTRATEUR') return false;
       const email = localStorage.getItem('userEmail') || '';
       return this.userRole === 'ADMINISTRATEUR' || (sheet.createdBy && sheet.createdBy === email);
+    },
+    canDuplicateList(sheet) {
+      if (this.userRole === 'ADMINISTRATEUR' || this.userRole === 'RH') return true;
+      if (this.userRole === 'RESPONSABLE_PEDAGOGIQUE') {
+        const email = localStorage.getItem('userEmail') || '';
+        const userName = (localStorage.getItem('userName') || '').toLowerCase();
+        const resp = (sheet.responsablePedagogique || '').toLowerCase();
+        const isCreator = sheet.createdBy && sheet.createdBy === email;
+        const isResponsable = resp && userName && (
+          resp.includes(userName) ||
+          userName.split(/\s+/).some(p => p.length > 2 && resp.includes(p))
+        );
+        return isCreator || isResponsable;
+      }
+      return false;
+    },
+    async duplicateSheet(id) {
+      try {
+        const response = await axios.post(`/resource-sheets/${id}/duplicate`);
+        this.sheets.unshift(response.data);
+        this.modal = {
+          show: true,
+          title: 'Fiche dupliquée',
+          message: 'La fiche a été dupliquée avec succès. Vous pouvez maintenant la modifier.',
+          type: 'info',
+          showCancel: false,
+          confirmLabel: 'OK',
+          action: null
+        };
+      } catch (error) {
+        console.error('Erreur duplication:', error);
+        this.modal = {
+          show: true,
+          title: this.$t('common.error.generic'),
+          message: error.response?.data || 'Erreur lors de la duplication.',
+          type: 'error',
+          showCancel: false,
+          confirmLabel: 'OK',
+          action: null
+        };
+      }
     }
   }
 };
@@ -432,6 +482,16 @@ export default {
 
 .action-button.ghost:hover {
   background: var(--color-sidebar-bg, #f5f5f5);
+}
+
+.action-button.secondary {
+  background: var(--color-sidebar-bg, #f0f0f0);
+  color: var(--color-text-body, #444);
+  border: 1px solid var(--color-border, #ccc);
+}
+
+.action-button.secondary:hover {
+  background: #e0e0e0;
 }
 
 .empty-state, .loading-state {
