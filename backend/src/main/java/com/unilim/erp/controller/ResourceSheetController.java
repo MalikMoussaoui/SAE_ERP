@@ -9,7 +9,6 @@ import com.unilim.erp.repositories.AppUserRepository;
 import com.unilim.erp.repositories.DepartmentRepository;
 import com.unilim.erp.repositories.ResourceSheetRepository;
 import com.unilim.erp.repositories.UeRepository;
-import com.unilim.erp.repositories.ResourceSheetRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/resource-sheets")
@@ -37,7 +35,7 @@ public class ResourceSheetController {
                 .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé"));
 
         String role = currentUser.getRole().name();
-        
+
         if (role.equals("ADMINISTRATEUR") || role.equals("RH") || role.equals("DIRECTION")) {
             return resourceSheetRepository.findAll().stream()
                     .map(this::mapToDto)
@@ -49,24 +47,26 @@ public class ResourceSheetController {
                     .filter(sheet -> {
                         boolean isManager = isUserMatchedInField(currentUser, sheet.getResponsablePedagogique());
                         boolean isIntervenant = isUserMatchedInField(currentUser, sheet.getIntervenants());
-                        boolean isCreator = sheet.getCreatedBy() != null && sheet.getCreatedBy().equalsIgnoreCase(currentEmail);
-                        
+                        boolean isCreator = sheet.getCreatedBy() != null
+                                && sheet.getCreatedBy().equalsIgnoreCase(currentEmail);
+
                         boolean isInSameDept = currentUser.getDepartment() != null &&
                                 sheet.getDepartment() != null &&
-                                currentUser.getDepartment().getLabel().equalsIgnoreCase(sheet.getDepartment().getLabel());
-                                
+                                currentUser.getDepartment().getLabel()
+                                        .equalsIgnoreCase(sheet.getDepartment().getLabel());
+
                         return isManager || isIntervenant || isCreator || isInSameDept;
                     })
                     .map(this::mapToDto)
                     .toList();
         }
 
-        // For ordinary teachers / vacataires: only see what they created, manage, or are intervenant for
         return resourceSheetRepository.findAll().stream()
                 .filter(sheet -> {
                     boolean isManager = isUserMatchedInField(currentUser, sheet.getResponsablePedagogique());
                     boolean isIntervenant = isUserMatchedInField(currentUser, sheet.getIntervenants());
-                    boolean isCreator = sheet.getCreatedBy() != null && sheet.getCreatedBy().equalsIgnoreCase(currentEmail);
+                    boolean isCreator = sheet.getCreatedBy() != null
+                            && sheet.getCreatedBy().equalsIgnoreCase(currentEmail);
                     return isManager || isIntervenant || isCreator;
                 })
                 .map(this::mapToDto)
@@ -105,7 +105,7 @@ public class ResourceSheetController {
     @PutMapping("/{id}")
     public ResponseEntity<?> updateResourceSheet(@PathVariable UUID id,
             @RequestBody ResourceSheetDto resourceSheetDto) {
-        
+
         String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         AppUser currentUser = appUserRepository.findByEmail(currentEmail).orElse(null);
 
@@ -118,16 +118,20 @@ public class ResourceSheetController {
 
         return resourceSheetRepository.findById(id)
                 .map(existingSheet -> {
-                    boolean isResponsable = isUserMatchedInField(currentUser, existingSheet.getResponsablePedagogique());
+                    boolean isResponsable = isUserMatchedInField(currentUser,
+                            existingSheet.getResponsablePedagogique());
                     boolean isIntervenant = isUserMatchedInField(currentUser, existingSheet.getIntervenants());
-                    boolean isCreator = existingSheet.getCreatedBy() != null && existingSheet.getCreatedBy().equalsIgnoreCase(currentEmail);
+                    boolean isCreator = existingSheet.getCreatedBy() != null
+                            && existingSheet.getCreatedBy().equalsIgnoreCase(currentEmail);
 
                     if (existingSheet.isValidated() && !roleName.equals("ADMINISTRATEUR")) {
-                        return ResponseEntity.status(403).body((Object) "Accès refusé : la fiche est validée et ne peut être modifiée que par un administrateur.");
+                        return ResponseEntity.status(403).body(
+                                (Object) "Accès refusé : la fiche est validée et ne peut être modifiée que par un administrateur.");
                     }
 
                     if (!isGlobalAdmin && !isResponsable && !isIntervenant && !isCreator) {
-                        return ResponseEntity.status(403).body((Object) "Accès refusé : vous devez être responsable, intervenant ou créateur pour modifier cette fiche.");
+                        return ResponseEntity.status(403).body(
+                                (Object) "Accès refusé : vous devez être responsable, intervenant ou créateur pour modifier cette fiche.");
                     }
 
                     mapToEntity(resourceSheetDto, existingSheet);
@@ -152,7 +156,8 @@ public class ResourceSheetController {
         }
 
         boolean isGlobalAdmin = currentUser.getRole().name().equals("ADMINISTRATEUR");
-        boolean isCreator = existingSheet.getCreatedBy() != null && existingSheet.getCreatedBy().equalsIgnoreCase(currentEmail);
+        boolean isCreator = existingSheet.getCreatedBy() != null
+                && existingSheet.getCreatedBy().equalsIgnoreCase(currentEmail);
 
         if (existingSheet.isValidated() && !isGlobalAdmin) {
             return ResponseEntity.status(403).build();
@@ -168,7 +173,7 @@ public class ResourceSheetController {
 
     private void mapToEntity(ResourceSheetDto dto, ResourceSheet entity) {
         entity.setTitre(dto.getTitre());
-        
+
         if (dto.getDepartement() != null) {
             Department dept = departmentRepository.findAll().stream()
                     .filter(d -> d.getLabel().equals(dto.getDepartement()))
@@ -211,14 +216,14 @@ public class ResourceSheetController {
 
             if (roleName.equals("RESPONSABLE_PEDAGOGIQUE")) {
                 isResponsable = isUserMatchedInField(currentUser, dto.getResponsablePedagogique()) ||
-                                isUserMatchedInField(currentUser, entity.getResponsablePedagogique());
+                        isUserMatchedInField(currentUser, entity.getResponsablePedagogique());
             }
 
-            // Only admin, RH, or the specific responsable can change validation status
+
             if (isGlobalAdmin || isResponsable) {
                 entity.setValidated(dto.isValidated());
             } else if (entity.getId() == null) {
-                // on creation, default to false if not admin/responsable
+
                 entity.setValidated(false);
             }
         }
@@ -273,7 +278,8 @@ public class ResourceSheetController {
                 }
 
                 if (!isGlobalAdmin && !isResponsable) {
-                    return ResponseEntity.status(403).body((Object) "Accès refusé : vous n'êtes pas administrateur, RH, ou responsable de cette ressource.");
+                    return ResponseEntity.status(403).body(
+                            (Object) "Accès refusé : vous n'êtes pas administrateur, RH, ou responsable de cette ressource.");
                 }
 
                 try {
@@ -331,7 +337,8 @@ public class ResourceSheetController {
         boolean isAdminOrRH = roleName.equals("ADMINISTRATEUR") || roleName.equals("RH");
 
         if (!isAdminOrRH) {
-            return ResponseEntity.status(403).body((Object) "Accès refusé : seuls les administrateurs et RH peuvent valider une fiche.");
+            return ResponseEntity.status(403)
+                    .body((Object) "Accès refusé : seuls les administrateurs et RH peuvent valider une fiche.");
         }
 
         return resourceSheetRepository.findById(id)
@@ -343,7 +350,6 @@ public class ResourceSheetController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-
     private boolean isUserMatchedInField(AppUser currentUser, String fieldText) {
         if (fieldText == null || currentUser == null) {
             return false;
@@ -352,10 +358,11 @@ public class ResourceSheetController {
         String email = currentUser.getEmail() != null ? currentUser.getEmail().toLowerCase() : "";
         String name = currentUser.getDisplayName() != null ? currentUser.getDisplayName().toLowerCase() : "";
 
-        // Try exact contains first
-        boolean isMatched = (!email.isEmpty() && fieldLower.contains(email)) || (!name.isEmpty() && fieldLower.contains(name));
 
-        // Fallback to split matching if name has multiple words
+        boolean isMatched = (!email.isEmpty() && fieldLower.contains(email))
+                || (!name.isEmpty() && fieldLower.contains(name));
+
+
         if (!isMatched && !name.isEmpty()) {
             String[] parts = name.split("\\s+");
             for (String part : parts) {

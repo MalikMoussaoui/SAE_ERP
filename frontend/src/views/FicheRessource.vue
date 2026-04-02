@@ -64,30 +64,30 @@
       <!-- ÉTAPE 1 : Identification -->
       <section v-if="showAllSteps || currentStep === 1" class="cards-grid top-grid">
         <div class="info-card full-width">
-          <h3>{{ $t('mccc.resourcesAndSAE') }}</h3>
+          <h3>{{ $t('resourceSheet.identificationCard') }}</h3>
           <div class="card-fields">
             <label class="field">
               <span>{{ $t('resourceSheet.resourceCode') }}</span>
-              <input v-model="form.code" class="pill-select pill-input" placeholder="R1.XX" :disabled="isReadOnly" />
+              <input v-model="form.code" class="pill-select pill-input" :class="{ 'pill-invalid': showValidationErrors && !form.code }" placeholder="R1.XX" :disabled="isReadOnly" />
             </label>
             <label class="field">
               <span>{{ $t('resourceSheet.semester') }}</span>
-              <select v-model="form.semestre" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.select') }}</option>
+              <select v-model="form.semestre" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.semestre }" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('resourceSheet.selectOption') }}</option>
                 <option v-for="option in semestres" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field full">
-              <span>{{ $t('mccc.department') }}</span>
-              <select v-model="form.departement" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.chooseDepartment') }}</option>
+              <span>{{ $t('resourceSheet.department') }}</span>
+              <select v-model="form.departement" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.departement }" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('resourceSheet.chooseDepartment') }}</option>
                 <option v-for="option in departements" :key="option.id || option" :value="option.label || option">{{ option.label || option }}</option>
               </select>
             </label>
             <label class="field full">
               <span>{{ $t('resourceSheet.ue') }}</span>
-              <select v-model="form.ue" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.selectUE') }}</option>
+              <select v-model="form.ue" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.ue }" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('resourceSheet.selectUE') }}</option>
                 <option v-for="option in availableUes" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
@@ -124,6 +124,7 @@
             <textarea
                 v-model="form.description"
                 class="info-textarea main-desc"
+                :class="{ 'pill-invalid': showValidationErrors && !form.description }"
                 rows="5"
                 :placeholder="$t('resourceSheet.descriptionPlaceholder')"
                 :disabled="isReadOnly"
@@ -139,14 +140,14 @@
           <div class="card-fields single-col">
             <label class="field full">
               <span>{{ $t('resourceSheet.evaluationType') }}</span>
-              <select v-model="form.typeEvaluation" class="pill-select" :disabled="isReadOnly">
-                <option value="" disabled>{{ $t('mccc.select') }}</option>
+              <select v-model="form.typeEvaluation" class="pill-select" :class="{ 'pill-invalid': showValidationErrors && !form.typeEvaluation }" :disabled="isReadOnly">
+                <option value="" disabled>{{ $t('resourceSheet.selectOption') }}</option>
                 <option v-for="option in typesEvaluation" :key="option" :value="option">{{ option }}</option>
               </select>
             </label>
             <label class="field full">
               <span>{{ $t('resourceSheet.evaluationsPlanned') }}</span>
-              <div class="choice-group">
+              <div class="choice-group" :class="{ 'pill-invalid': showValidationErrors && form.evaluationsPrevues.length === 0 }">
                 <label class="choice">
                   <input v-model="form.evaluationsPrevues" type="checkbox" value="DS" :disabled="isReadOnly" />
                   <span>{{ $t('resourceSheet.evaluationDs') }}</span>
@@ -190,7 +191,7 @@
             </label>
             <label class="field full">
               <span>{{ $t('resourceSheet.validationCompensation') }}</span>
-              <div class="choice-group">
+              <div class="choice-group" :class="{ 'pill-invalid': showValidationErrors && !form.compensation }">
                 <label class="choice">
                   <input v-model="form.compensation" type="radio" value="OUI" :disabled="isReadOnly" />
                   <span>{{ $t('common.yes') }}</span>
@@ -203,7 +204,7 @@
             </label>
             <label class="field full">
               <span>{{ $t('resourceSheet.validationRetake') }}</span>
-              <div class="choice-group">
+              <div class="choice-group" :class="{ 'pill-invalid': showValidationErrors && !form.rattrapage }">
                 <label class="choice">
                   <input v-model="form.rattrapage" type="radio" value="OUI" :disabled="isReadOnly" />
                   <span>{{ $t('common.yes') }}</span>
@@ -247,7 +248,7 @@
             </label>
             <label class="field full">
               <span>{{ $t('resourceSheet.teachingType') }}</span>
-              <div class="choice-group">
+              <div class="choice-group" :class="{ 'pill-invalid': showValidationErrors && !form.typeEnseignement }">
                 <label class="choice">
                   <input v-model="form.typeEnseignement" type="radio" value="PRESENTIEL" :disabled="isReadOnly" />
                   <span>{{ $t('resourceSheet.teachingTypeInPerson') }}</span>
@@ -283,7 +284,7 @@
               <tbody>
               <tr v-for="row in sequencesRows" :key="row.id">
                 <td>
-                  <input class="table-input" v-model="row.label" :placeholder="$t('mccc.select')" :disabled="isReadOnly" />
+                  <input class="table-input" v-model="row.label" :placeholder="$t('resourceSheet.sequencePlaceholder')" :disabled="isReadOnly" />
                 </td>
                 <td>
                   <select v-model="row.type" class="table-input" :disabled="isReadOnly">
@@ -305,22 +306,22 @@
                           v-model="row.notes"
                           rows="2"
                           class="info-textarea"
-                          :placeholder="$t('mccc.infoPlaceholder')"
+                          :placeholder="$t('resourceSheet.sequenceDetailsPlaceholder')"
                           :disabled="isReadOnly"
                       ></textarea>
                     <div class="info-actions">
-                      <button type="button" class="btn-finish" @click="row.showDetails = false" :disabled="isReadOnly">{{ $t('mccc.finish') }}</button>
+                      <button type="button" class="btn-finish" @click="row.showDetails = false" :disabled="isReadOnly">{{ $t('resourceSheet.finish') }}</button>
                     </div>
                   </div>
                   <div v-else class="info-collapsed">
-                    <div class="info-preview" :class="{ 'has-content': row.notes }">{{ row.notes || $t('mccc.noInfo') }}</div>
+                    <div class="info-preview" :class="{ 'has-content': row.notes }">{{ row.notes || $t('resourceSheet.noDetails') }}</div>
                     <button type="button" class="btn-add" @click="row.showDetails = true" :disabled="isReadOnly">
-                      {{ row.notes ? $t('mccc.edit') : $t('mccc.addInfo') }}
+                      {{ row.notes ? $t('resourceSheet.editDetails') : $t('resourceSheet.addDetails') }}
                     </button>
                   </div>
                 </td>
                 <td class="action-cell">
-                  <button v-if="sequencesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('mccc.deleteRow')" :disabled="isReadOnly">
+                  <button v-if="sequencesRows.length > 1" @click="deleteRow(row.id)" class="btn-delete" :title="$t('resourceSheet.deleteSequence')" :disabled="isReadOnly">
                     &times;
                   </button>
                 </td>
@@ -334,7 +335,7 @@
             </button>
             <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
             <div class="final-totals single">
-              <span class="final-label">{{ $t('mccc.totalHours') }}</span>
+              <span class="final-label">{{ $t('resourceSheet.totalHours') }}</span>
               <span class="single-total">{{ totalSequenceHours }}</span>
             </div>
           </div>
@@ -343,11 +344,12 @@
 
       <!-- Navigation -->
       <div v-if="!showAllSteps" class="step-navigation">
+        <span v-if="stepErrorMessage" class="step-error">{{ stepErrorMessage }}</span>
         <button v-if="currentStep > 1" @click="prevStep" class="btn btn-secondary">
-          {{ $t('mccc.back') }}
+          {{ $t('resourceSheet.back') }}
         </button>
         <button v-if="currentStep < 6" @click="nextStep" class="btn btn-primary">
-          {{ $t('mccc.continue') }}
+          {{ $t('resourceSheet.continue') }}
         </button>
 
         <template v-if="currentStep === 6">
@@ -363,7 +365,7 @@
             </button>
             
             <button class="btn btn-primary" type="button" @click="saveResource" v-if="hasEditingRights">
-              {{ $t('mccc.save') }}
+              {{ $t('resourceSheet.save') }}
             </button>
         </template>
       </div>
@@ -407,6 +409,8 @@ export default {
         description: '',
         isValidated: false
       },
+      stepErrorMessage: '',
+      showValidationErrors: false,
       editingId: null,
       isReadOnly: false,
       departements: [],
@@ -1082,16 +1086,55 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
 
     onlyNumbers(event, field, targetId = null) {
       const key = targetId ? `${field}_${targetId}` : field;
-      if (['-', '+', 'e', 'E'].includes(event.key)) {
+      
+      if (event.key.length > 1 || event.ctrlKey || event.metaKey) {
+        return;
+      }
+
+      if (['.', ','].includes(event.key)) {
+        return;
+      }
+
+      if (['-', '+'].includes(event.key)) {
         event.preventDefault();
-        this.fieldErrors[key] = "Seuls les chiffres positifs sont acceptés.";
+        this.fieldErrors[key] = "Les nombres négatifs ne sont pas autorisés.";
+        setTimeout(() => {
+          this.fieldErrors[key] = "";
+        }, 4000);
+        return;
+      }
+
+      if (!/^[0-9]$/.test(event.key)) {
+        event.preventDefault();
+        this.fieldErrors[key] = "Seuls les chiffres sont acceptés.";
         setTimeout(() => {
           this.fieldErrors[key] = "";
         }, 4000);
       }
     },
-    nextStep() { if (this.currentStep < 6) this.currentStep++; },
-    prevStep() { if (this.currentStep > 1) this.currentStep--; }
+    validateStep(step) {
+      if (step === 1) return !!(this.form.code && this.form.semestre && this.form.departement && this.form.ue);
+      if (step === 2) return !!this.form.description;
+      if (step === 3) return !!(this.form.typeEvaluation && this.form.evaluationsPrevues.length > 0);
+      if (step === 4) return !!(this.form.compensation && this.form.rattrapage);
+      if (step === 5) return !!this.form.typeEnseignement;
+      return true;
+    },
+    nextStep() {
+      if (this.validateStep(this.currentStep)) {
+        this.stepErrorMessage = '';
+        this.showValidationErrors = false;
+        if (this.currentStep < 6) this.currentStep++;
+      } else {
+        this.stepErrorMessage = "Veuillez remplir les champs obligatoires en rouge pour continuer.";
+        this.showValidationErrors = true;
+      }
+    },
+    prevStep() {
+      this.stepErrorMessage = '';
+      this.showValidationErrors = false;
+      if (this.currentStep > 1) this.currentStep--;
+    }
   }
 };
 </script>
@@ -1221,7 +1264,8 @@ thead th { position: sticky; top: 0; background: var(--color-sidebar-bg); paddin
 tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
 .table-input { width: 100%; padding: 8px 10px; box-sizing: border-box; border: 1px solid var(--color-border); border-radius: 10px; }
 .btn-add-row { background: none; border: none; color: var(--color-primary); font-weight: 600; cursor: pointer; padding: 12px 16px; }
-.step-navigation { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+.step-navigation { display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); }
+.step-error { color: #dc2626; font-weight: 600; font-size: 0.9rem; margin-right: auto; animation: fadeIn 0.3s ease; }
 .btn { padding: 12px 24px; border-radius: 10px; font-weight: 600; cursor: pointer; border: none; }
 .btn-primary { background-color: var(--color-primary); color: white; }
 .btn-secondary { background-color: var(--color-card-bg); border: 1px solid var(--color-border); }
@@ -1235,6 +1279,7 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
 .final-label { color: var(--color-primary); text-transform: uppercase; }
 .choice-group { display: flex; flex-wrap: wrap; gap: 10px; }
 .choice { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--color-border); border-radius: 10px; background: var(--color-card-bg); }
+.choice-group.pill-invalid { padding: 6px; border-radius: 12px; }
 .choice input { margin: 0; }
 
         .pill-invalid {
@@ -1265,17 +1310,15 @@ tbody td { padding: 10px 18px; border-bottom: 1px solid var(--color-border); }
   color: #ff4d4d;
   font-size: 0.7rem;
   font-weight: 700;
-  position: absolute;
-  bottom: 2px;
-  left: 18px;
-  white-space: nowrap;
+  display: block;
+  margin-top: 4px;
+  white-space: normal;
+  line-height: 1.2;
   animation: fadeIn 0.3s ease;
 }
 
 .table-section td {
-  position: relative;
   vertical-align: top;
-  padding-bottom: 20px;
 }
 
 .btn-danger {
