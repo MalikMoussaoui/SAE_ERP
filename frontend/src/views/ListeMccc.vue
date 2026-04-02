@@ -13,7 +13,7 @@
           class="hidden-file-input"
           @change="onImportFileChange"
         />
-        <button type="button" class="action-button ghost" :disabled="isImporting" @click="triggerImport">
+        <button v-if="isAdmin" type="button" class="action-button ghost" :disabled="isImporting" @click="triggerImport">
           {{ isImporting ? 'Import en cours...' : 'Importer des MCCC (Excel/CSV)' }}
         </button>
       </div>
@@ -45,12 +45,14 @@
               Consulter
             </router-link>
             <router-link
+              v-if="isAdmin"
               class="action-button primary"
               :to="{ name: 'mccc', query: { id: entry.id, mode: 'edit' } }"
             >
               Modifier
             </router-link>
             <button
+              v-if="isAdmin"
               type="button"
               class="action-button danger"
               @click="deleteEntry(entry.id)"
@@ -77,7 +79,8 @@ export default {
       mcccEntries: [],
       isLoading: false,
       errorMessage: '',
-      isImporting: false
+      isImporting: false,
+      isAdmin: localStorage.getItem('userRole') === 'ADMINISTRATEUR'
     };
   },
   created() {

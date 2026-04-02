@@ -1,8 +1,6 @@
 package com.unilim.erp.controller;
 
 import com.unilim.erp.dto.NotificationDTO;
-import com.unilim.erp.entities.AppUser;
-import com.unilim.erp.service.AppUserService;
 import com.unilim.erp.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +17,10 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    private final AppUserService appUserService;
 
     @GetMapping("/pending")
     public ResponseEntity<List<NotificationDTO>> getPending(Authentication authentication) {
-        AppUser currentUser = appUserService.findByUsername(authentication.getName());
-        List<NotificationDTO> notifications = notificationService.getPendingNotificationsForUser(currentUser);
+        List<NotificationDTO> notifications = notificationService.getPendingNotificationsForUser();
         return ResponseEntity.ok(notifications);
     }
 }

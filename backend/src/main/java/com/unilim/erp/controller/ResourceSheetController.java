@@ -335,14 +335,19 @@ public class ResourceSheetController {
 
         String roleName = currentUser.getRole().name();
         boolean isAdminOrRH = roleName.equals("ADMINISTRATEUR") || roleName.equals("RH");
+        boolean isResponsable = roleName.equals("RESPONSABLE_PEDAGOGIQUE");
 
-        if (!isAdminOrRH) {
+        if (!isAdminOrRH && !isResponsable) {
             return ResponseEntity.status(403)
-                    .body((Object) "Accès refusé : seuls les administrateurs et RH peuvent valider une fiche.");
+                    .body((Object) "Accès refusé : seuls les administrateurs, RH et responsables pédagogiques peuvent valider une fiche.");
         }
 
         return resourceSheetRepository.findById(id)
                 .map(existingSheet -> {
+                    if (isResponsable && !isUserMatchedInField(currentUser, existingSheet.getResponsablePedagogique())) {
+                        return ResponseEntity.status(403)
+                                .body((Object) "Accès refusé : vous n'êtes pas le responsable pédagogique de cette fiche.");
+                    }
                     existingSheet.setValidated(true);
                     ResourceSheet updatedSheet = resourceSheetRepository.save(existingSheet);
                     return ResponseEntity.ok((Object) mapToDto(updatedSheet));

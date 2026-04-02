@@ -17,7 +17,7 @@
 
     <div class="page-surface resource-surface">
       <div v-if="isReadOnly" class="pdf-actions">
-        <button v-if="canValidateOrDuplicate && editingId" type="button" class="btn btn-secondary" @click="duplicateResource">
+        <button v-if="canDuplicate && editingId" type="button" class="btn btn-secondary" @click="duplicateResource">
           {{ $t('common.duplicate') }}
         </button>
         <button type="button" class="btn btn-secondary" @click="openPdfPreview">
@@ -494,7 +494,13 @@ export default {
     },
     canValidate() {
       const role = localStorage.getItem('userRole');
-      return role === 'ADMINISTRATEUR' || role === 'RH';
+      if (role === 'ADMINISTRATEUR' || role === 'RH') return true;
+      if (role === 'RESPONSABLE_PEDAGOGIQUE') {
+        const userName = (localStorage.getItem('userName') || '').toLowerCase();
+        const resp = (this.form.responsablePedagogique || '').toLowerCase();
+        return this.isNameMatched(userName, resp);
+      }
+      return false;
     },
     canDelete() {
       const role = localStorage.getItem('userRole');

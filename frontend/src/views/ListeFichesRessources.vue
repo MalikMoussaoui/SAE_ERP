@@ -232,7 +232,15 @@ export default {
     },
     canValidate(sheet) {
       if (sheet.validated) return false;
-      return this.userRole === 'ADMINISTRATEUR' || this.userRole === 'RH';
+      if (this.userRole === 'ADMINISTRATEUR' || this.userRole === 'RH') return true;
+      if (this.userRole === 'RESPONSABLE_PEDAGOGIQUE') {
+        const userName = (localStorage.getItem('userName') || '').toLowerCase();
+        const resp = (sheet.responsablePedagogique || '').toLowerCase();
+        if (!userName || !resp) return false;
+        if (resp.includes(userName)) return true;
+        return userName.split(/\s+/).some(p => p.length > 2 && resp.includes(p));
+      }
+      return false;
     },
     canEditList(sheet) {
       if (sheet.validated && this.userRole !== 'ADMINISTRATEUR') return false;
