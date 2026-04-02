@@ -148,6 +148,12 @@ export default {
           text: this.$t('nav.roleManagement'),
           icon: iconRole
         });
+        items.push({
+          type: 'link',
+          path: '/parametrage-formation',
+          text: this.$t('nav.parametrageFormation'),
+          icon: iconParametre
+        });
       }
 
       items.push({ type: 'link', path: '/settings', text: this.$t('nav.settings'), icon: iconParametre });

@@ -10,6 +10,7 @@ import ListeMccc from '../views/ListeMccc.vue'
 import AideView from '../views/Aide.vue'
 import EnseignantsVacataires from '../views/EnseignantsVacataires.vue'
 import TacView from '../views/Tac.vue'
+import ParametrageFormation from '../views/ParametrageFormation.vue'
 
 
 const router = createRouter({
@@ -47,6 +48,12 @@ const router = createRouter({
       path: '/user-management',
       name: 'user-management',
       component: GestionUtilisateurs,
+      meta: { requiresAuth: true, roles: ['ADMINISTRATEUR'] }
+    },
+    {
+      path: '/parametrage-formation',
+      name: 'parametrage-formation',
+      component: ParametrageFormation,
       meta: { requiresAuth: true, roles: ['ADMINISTRATEUR'] }
     },
     {
