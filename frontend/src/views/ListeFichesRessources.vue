@@ -75,14 +75,13 @@
               {{ $t('common.modify') }}
             </router-link>
 
-            <button
-                type="button"
+            <router-link
                 class="action-button secondary"
-                v-if="canDuplicateList(sheet)"
-                @click="duplicateSheet(sheet.id)"
+                v-if="canEditList(sheet)"
+                :to="{ name: 'fiche-ressource', query: { id: sheet.id, mode: 'edit' } }"
             >
-              {{ $t('common.duplicate') }}
-            </button>
+              {{ $t('common.continueSheet') }}
+            </router-link>
 
             <button
                 type="button"
