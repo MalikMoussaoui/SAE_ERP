@@ -1,37 +1,35 @@
 package com.unilim.erp.service;
 
-import com.unilim.erp.dto.NotificationDTO;
-import com.unilim.erp.entities.AppUser;
-import com.unilim.erp.repositories.ResourceSheetRepository;
-import com.unilim.erp.domain.ResourceSheetStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
+import com.unilim.erp.dto.NotificationDTO;
+
 @Service
-@RequiredArgsConstructor
 public class NotificationService {
 
-    private final ResourceSheetRepository resourceSheetRepository;
-
-    @Transactional(readOnly = true)
-    public List<NotificationDTO> getPendingNotificationsForUser(AppUser user) {
+    public List<NotificationDTO> getPendingNotificationsForUser() {
         List<NotificationDTO> notifications = new ArrayList<>();
 
-        if ("ROLE_DIRECTOR".equals(user.getRole().getName())) {
-             resourceSheetRepository.findByStatus(ResourceSheetStatus.PENDING).forEach(sheet -> {
-                 notifications.add(NotificationDTO.builder()
-                         .type("RESOURCE_SHEET")
-                         .message("La fiche ressource " + sheet.getName() + " est en attente de validation.")
-                         .actionUrl("/resources/" + sheet.getId())
-                         .urgency("HIGH")
-                         .entityId(sheet.getId())
-                         .build());
-             });
-        }
+        // Notification de test pour valider l'affichage Front-End
+        // Tu pourras ensuite ajouter tes vraies requêtes SQL ici (ex: tacRepository.findAll())
+        notifications.add(NotificationDTO.builder()
+                .type("SYSTEME")
+                .message("Bienvenue ! Pensez à vérifier vos tâches en attente.")
+                .actionUrl("/")
+                .urgency("LOW")
+                .entityId(1L)
+                .build());
+
+        notifications.add(NotificationDTO.builder()
+                .type("SAE")
+                .message("La SAE 'Conception' nécessite votre attention.")
+                .actionUrl("/saes")
+                .urgency("HIGH")
+                .entityId(2L)
+                .build());
 
         return notifications;
     }
