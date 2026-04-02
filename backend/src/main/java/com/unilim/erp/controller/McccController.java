@@ -54,6 +54,15 @@ public class McccController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{id}/submit")
+    public ResponseEntity<?> submit(@PathVariable UUID id) {
+        // Here we just toggle the boolean. Normally only the teacher would submit,
+        // but since MCCC is admin-only, admin submits it.
+        McccDto existing = mcccService.getById(id);
+        existing.setSubmitted(true);
+        return ResponseEntity.ok(mcccService.update(id, existing));
+    }
+
     private boolean isAdmin() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         AppUser user = appUserRepository.findByEmail(email).orElse(null);

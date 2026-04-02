@@ -40,6 +40,7 @@
             </h3>
             <div class="header-tags">
               <span v-if="sheet.validated" class="badge-validated">{{ $t('common.validated') }}</span>
+              <span v-else-if="sheet.submitted" class="badge-submitted">Soumise</span>
               <span class="chip">{{ sheet.departement || sheet.departmentName }}</span>
             </div>
           </div>
@@ -253,6 +254,7 @@ export default {
     },
     canEditList(sheet) {
       if (sheet.validated && this.userRole !== 'ADMINISTRATEUR') return false;
+      if (sheet.submitted && this.userRole !== 'ADMINISTRATEUR' && this.userRole !== 'RH' && this.userRole !== 'RESPONSABLE_PEDAGOGIQUE') return false;
       return true;
     },
     canDeleteList(sheet) {
@@ -388,6 +390,16 @@ export default {
   border-radius: 999px;
   background: #e6f4ea;
   color: #1e8e3e;
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.badge-submitted {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fdf5e6;
+  color: #c97b00;
   font-weight: 700;
   font-size: 0.85rem;
   white-space: nowrap;

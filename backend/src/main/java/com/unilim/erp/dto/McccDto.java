@@ -16,4 +16,5 @@ public class McccDto {
     private Map<String, Object> form;
     private List<Map<String, Object>> ressourcesRows;
     private LocalDateTime savedAt;
+    private boolean isSubmitted;
 }

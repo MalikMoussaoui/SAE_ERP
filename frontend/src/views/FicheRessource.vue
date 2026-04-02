@@ -363,8 +363,11 @@
             <button v-if="canValidate && !form.isValidated && editingId" class="btn btn-success" type="button" @click="validateResource">
               {{ $t('common.validate') }}
             </button>
+            <button v-if="canSubmit && editingId" class="btn btn-primary" style="background:#c97b00;border:none;" type="button" @click="submitResource">
+              Soumettre à la direction
+            </button>
             
-            <button class="btn btn-primary" type="button" @click="saveResource" v-if="hasEditingRights">
+            <button class="btn btn-primary" type="button" @click="saveResource" v-if="hasEditingRights && !isReadOnly">
               {{ $t('resourceSheet.save') }}
             </button>
         </template>
@@ -407,7 +410,8 @@ export default {
         typeEnseignement: '',
         modalitesEvaluation: '',
         description: '',
-        isValidated: false
+        isValidated: false,
+        isSubmitted: false
       },
       stepErrorMessage: '',
       showValidationErrors: false,
@@ -538,6 +542,10 @@ export default {
       }
 
       return false;
+    },
+    canSubmit() {
+      const email = localStorage.getItem('userEmail') || '';
+      return this.editingId && this.form.createdBy && this.form.createdBy === email && !this.form.isSubmitted && !this.form.isValidated;
     }
   },
   methods: {
@@ -863,6 +871,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         modalitesEvaluation: '',
         description: '',
         isValidated: false,
+        isSubmitted: false,
         createdBy: ''
       };
       this.sequencesRows = [{ id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }];
@@ -893,6 +902,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         this.form.ue = data.ue || '';
         this.form.description = data.description || data.objectives || '';
         this.form.isValidated = data.validated || data.isValidated || false;
+        this.form.isSubmitted = data.submitted || data.isSubmitted || false;
         this.form.hCM = data.hCM !== undefined ? data.hCM : (data.hoursCm || 0);
         this.form.hTD = data.hTD !== undefined ? data.hTD : (data.hoursTd || 0);
         this.form.hTP = data.hTP !== undefined ? data.hTP : (data.hoursTp || 0);
@@ -928,6 +938,10 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
 
         if (mode !== 'view') {
           this.isReadOnly = !this.hasEditingRights;
+          const role = localStorage.getItem('userRole');
+          if (this.form.isSubmitted && role !== 'ADMINISTRATEUR' && role !== 'RH' && role !== 'RESPONSABLE_PEDAGOGIQUE') {
+             this.isReadOnly = true;
+          }
         }
 
       } catch (e) {
@@ -1068,6 +1082,32 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
           show: true,
           title: 'Erreur',
           message: "Impossible de valider la fiche.",
+          type: 'error',
+          confirmLabel: 'Fermer',
+          showCancel: false
+        };
+      }
+    },
+    async submitResource() {
+      if (!this.editingId) return;
+      try {
+        await axios.post(`/resource-sheets/${this.editingId}/submit`);
+        this.form.isSubmitted = true;
+        this.isReadOnly = true;
+        this.modal = {
+          show: true,
+          title: 'Succès',
+          message: 'Fiche soumise avec succès ! Elle est désormais verrouillée pour édition en attendant la validation.',
+          type: 'success',
+          confirmLabel: 'OK',
+          showCancel: false
+        };
+      } catch (e) {
+        console.error("Erreur soumission", e);
+        this.modal = {
+          show: true,
+          title: 'Erreur',
+          message: "Impossible de soumettre la fiche.",
           type: 'error',
           confirmLabel: 'Fermer',
           showCancel: false
