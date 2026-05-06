@@ -116,11 +116,7 @@ docker compose ps
 
 ## 📸 Aperçus
 
->
-> Pour ajouter des images :
-> 1. Crée un dossier `docs/screenshots/` à la racine
-> 2. Place tes captures dedans
-> 3. Référence-les ici : `![Description](docs/screenshots/nom-image.png)`
+`![le dashboard](docs/screenshots/dashboard)`
 
 ---
 
