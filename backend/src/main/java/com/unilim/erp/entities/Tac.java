@@ -1,8 +1,8 @@
 package com.unilim.erp.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -10,6 +10,9 @@ import java.util.UUID;
 @Table(name = "tac_entry")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Tac {
 
     @Id
@@ -48,33 +51,4 @@ public class Tac {
 
     @Column(columnDefinition = "TEXT")
     private String commentary;
-
-    public Tac() {
-    }
-
-    public Tac(
-            Department department,
-            LocalDate date,
-            String observation,
-            String origin,
-            String thematic,
-            String correction,
-            String analyseCauses,
-            String action,
-            LocalDate dueDate,
-            String status,
-            String commentary
-    ) {
-        this.department = department;
-        this.date = date;
-        this.observation = observation;
-        this.origin = origin;
-        this.thematic = thematic;
-        this.correction = correction;
-        this.analyseCauses = analyseCauses;
-        this.action = action;
-        this.dueDate = dueDate;
-        this.status = status;
-        this.commentary = commentary;
-    }
 }

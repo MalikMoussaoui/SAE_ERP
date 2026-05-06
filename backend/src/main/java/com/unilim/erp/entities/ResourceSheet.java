@@ -1,89 +1,78 @@
 package com.unilim.erp.entities;
 
-import com.unilim.erp.domain.ResourceSheetStatus;
-import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.LinkedHashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "resource_sheet")
 @Getter
 @Setter
-public class ResourceSheet{
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ResourceSheet {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="department_id")
-    private Department department;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="ue_id")
+    private String titre;
+    private String code;
+    private String semestre;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "ue_id")
     private Ue ue;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="resource_id")
-    private Resource resource;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
-    @ManyToOne(fetch= FetchType.LAZY)
-    @JoinColumn(name="sae_id")
-    private Sae sae;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ResourceSheetStatus status = ResourceSheetStatus.DRAFT;
+    @Column(name = "h_cm")
+    private double hCM;
 
-    @Column(nullable = false)
-    private String objectives;
+    @Column(name = "h_td")
+    private double hTD;
 
-    @Column(nullable=false)
-    private String prerequisites;
+    @Column(name = "h_tp")
+    private double hTP;
 
-    @Column(nullable=false)
-    private String modalities;
+    private String typeEvaluation;
+    private double coefficientRessource;
+    private String evaluationsPrevues;
 
-    @Column(name = "hours_cm", nullable = false)
-    private int hoursCm;
+    private double noteMinimale;
+    private String compensation;
+    private String rattrapage;
+    private String modaliteRattrapage;
 
-    @Column(name = "hours_td", nullable = false)
-    private int hoursTd;
+    private String responsablePedagogique;
+    private String intervenants;
+    @Column(columnDefinition = "TEXT")
+    private String retourEquipePedagogique;
+    private String typeEnseignement;
+    @Column(columnDefinition = "TEXT")
+    private String sequencesRowsJson;
 
-    @Column(name = "hours_tp", nullable = false)
-    private int hoursTp;
+    @Column(name = "created_by")
+    private String createdBy;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "responsible_id")
-    private AppUser responsible;
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
-    @Version
-    @Column(nullable=false)
-    private int version;
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
-    @Column(name = "created_at",nullable=false)
-    private Instant createdAt = Instant.now();
+    @Column(name = "is_submitted", nullable = false)
+    private boolean isSubmitted = false;
 
-    @Column(name = "updated_at",nullable=false)
-    private Instant updatedAt = Instant.now();
-
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "resource_sheet_competency", joinColumns = @JoinColumn(name = "resource_sheet_id"),
-            inverseJoinColumns = @JoinColumn(name = "competency_id")
-    )
-    private Set<Competency> competencies = new LinkedHashSet<>();
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = Instant.now();
-    }
-
+    @Column(name = "is_validated", nullable = false)
+    private boolean isValidated = false;
 }
-
-
-

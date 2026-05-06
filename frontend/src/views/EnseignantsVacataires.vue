@@ -1,0 +1,298 @@
+<template>
+  <DashboardLayout>
+    <template #header>
+      <div class="header-welcome">
+        <h1 class="page-title">{{ $t('teachers.title') }}</h1>
+      </div>
+    </template>
+
+    <div class="page-surface">
+      <div class="toolbar">
+        <div class="search-wrapper">
+          <svg class="search-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+            <circle cx="9" cy="9" r="6"></circle>
+            <line x1="13.5" y1="13.5" x2="18" y2="18"></line>
+          </svg>
+          <input
+            type="text"
+            :placeholder="$t('teachers.searchPlaceholder')"
+            class="search-input"
+            v-model="searchQuery"
+          />
+        </div>
+
+        <div class="filters-wrapper">
+          <select class="filter-select" v-model="selectedPoste">
+            <option value="">{{ $t('teachers.filterByPosition') }}</option>
+            <option value="Professeur">{{ $t('teachers.professor') }}</option>
+            <option value="Vacataire">{{ $t('teachers.contractor') }}</option>
+          </select>
+          <select class="filter-select" v-model="selectedDept">
+            <option value="">{{ $t('teachers.filterByDept') }}</option>
+            <option v-for="dept in departements" :key="dept.id" :value="dept.label">{{ dept.label }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="table-card">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>{{ $t('teachers.table.name') }}</th>
+                <th>{{ $t('teachers.table.departments') }}</th>
+                <th>{{ $t('teachers.table.position') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(person, index) in filteredEnseignants" :key="index">
+                <td>{{ person.name }}</td>
+                <td>{{ person.dept }}</td>
+                <td>{{ person.poste }}</td>
+              </tr>
+              <tr v-if="filteredEnseignants.length === 0">
+                <td colspan="3" class="empty-state">{{ $t('teachers.noResult') }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </DashboardLayout>
+</template>
+
+<script>
+import DashboardLayout from '@/components/DashboardLayout.vue';
+import axios from 'axios';
+
+export default {
+  name: 'EnseignantsVacatairesView',
+  components: {
+    DashboardLayout
+  },
+  data() {
+    return {
+      searchQuery: '',
+      selectedPoste: '',
+      selectedDept: '',
+      enseignants: [],
+      departements: []
+    };
+  },
+  async mounted() {
+    await this.fetchDepartments();
+    this.fetchEnseignants();
+  },
+  methods: {
+    async fetchDepartments() {
+      try {
+        const response = await axios.get('/departments');
+        this.departements = response.data;
+      } catch (error) {
+        console.error("Erreur chargement départements:", error);
+      }
+    },
+    async fetchEnseignants() {
+      try {
+        const role = localStorage.getItem('userRole') || '';
+        const userDept = localStorage.getItem('userDepartement') || '';
+
+        let url = '/app-users/teachers';
+        if (role !== 'ADMINISTRATEUR' && role !== 'RH' && userDept) {
+          url += `?dept=${encodeURIComponent(userDept)}`;
+        }
+
+        const response = await axios.get(url);
+
+        this.enseignants = response.data.map(user => {
+
+          let posteAffiche = 'Autre';
+          if (user.role === 'TEACHER' || user.role === 'ENSEIGNANT') posteAffiche = 'Professeur';
+          else if (user.role === 'VACATAIRE') posteAffiche = 'Vacataire';
+          else if (user.poste) posteAffiche = user.poste;
+
+          const deptAffiche = user.dept || user.department || 'Non défini';
+
+          return {
+            name: user.displayName || user.name || user.email,
+            dept: deptAffiche,
+            poste: posteAffiche
+          };
+        });
+
+      } catch (error) {
+        console.error("Erreur lors du chargement des enseignants :", error);
+      }
+    }
+  },
+  computed: {
+    filteredEnseignants() {
+      const searchLower = this.searchQuery.toLowerCase();
+
+      return this.enseignants.filter((person) => {
+        // Sécurités null-check (au cas où des champs seraient vides en base)
+        const personName = person.name ? person.name.toLowerCase() : '';
+        const personDept = person.dept ? person.dept.toLowerCase() : '';
+        const personPoste = person.poste ? person.poste.toLowerCase() : '';
+
+        const matchesSearch =
+          personName.includes(searchLower) ||
+          personDept.includes(searchLower) ||
+          personPoste.includes(searchLower);
+
+        const matchesPoste = this.selectedPoste === '' || person.poste === this.selectedPoste;
+        const matchesDept = this.selectedDept === '' || person.dept === this.selectedDept;
+
+        return matchesSearch && matchesPoste && matchesDept;
+      });
+    }
+  }
+};
+</script>
+
+<style scoped>
+.page-title {
+  font-family: var(--font-primary, 'Poppins', sans-serif);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--color-text-header, #222);
+  margin: 0;
+}
+
+.page-surface {
+  background: var(--color-card-bg, white);
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.search-wrapper {
+  position: relative;
+  width: 380px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-muted, #aaa);
+  width: 18px;
+  height: 18px;
+  stroke-width: 2;
+}
+
+.search-input {
+  width: 100%;
+  padding: 10px 15px 10px 42px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border, #ccc);
+  background-color: var(--color-card-bg, white);
+  outline: none;
+  font-family: var(--font-secondary, 'Montserrat', sans-serif);
+  font-size: 0.95rem;
+  color: var(--color-text-body, #555);
+}
+
+.search-input::placeholder {
+  color: var(--color-text-muted, #bbb);
+}
+
+.filters-wrapper {
+  display: flex;
+  gap: 10px;
+}
+
+.filter-select {
+  padding: 10px 12px;
+  border: 1px solid var(--color-border, #ccc);
+  border-radius: 5px;
+  background-color: var(--color-card-bg, white);
+  color: var(--color-text-body, #555);
+  font-family: var(--font-secondary, 'Montserrat', sans-serif);
+  cursor: pointer;
+  outline: none;
+  min-width: 180px;
+}
+
+.table-card {
+  background: var(--color-card-bg, white);
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 20px;
+  padding: 15px;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
+  overflow: hidden;
+}
+
+.table-scroll {
+  max-height: 460px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+th {
+  background-color: var(--color-sidebar-bg, #f1f1f1);
+  color: var(--color-text-header, #333);
+  font-weight: 600;
+  text-align: left;
+  padding: 12px 18px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+td {
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--color-border, #eee);
+  color: var(--color-text-body, #444);
+}
+
+tr:nth-child(even) {
+  background-color: rgba(0,0,0,0.02);
+}
+
+html[data-theme="dark"] tr:nth-child(even) {
+  background-color: rgba(255,255,255,0.02);
+}
+
+tr:hover {
+  background-color: var(--color-hover-bg, #fdfdfd);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: var(--color-text-muted, #888);
+}
+
+.table-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.table-scroll::-webkit-scrollbar-track {
+  background: var(--color-sidebar-bg, #f1f1f1);
+  border-radius: 10px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted, #ccc);
+  border-radius: 10px;
+}
+
+.table-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-body, #aaa);
+}
+</style>

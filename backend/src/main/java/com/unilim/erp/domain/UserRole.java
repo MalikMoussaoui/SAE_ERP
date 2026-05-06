@@ -1,10 +1,11 @@
 package com.unilim.erp.domain;
 
 public enum UserRole {
-    ENSEIGNANT,
+    TEACHER,
     VACATAIRE,
     REFERENT,
     RESPONSABLE_PEDAGOGIQUE,
     RH,
     ADMINISTRATEUR,
+    DIRECTION
 }

@@ -1,2 +1,15 @@
+# Dépendances (Le plus important)
+node_modules/
+frontend/node_modules/
 
-frontend/node_modules/.vite/deps/_metadata.json
+# Build et distribution
+dist/
+frontend/dist/
+target/
+backend/target/
+
+# Logs et fichiers système
+.DS_Store
+*.log
+
+.idea/

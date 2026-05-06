@@ -2,6 +2,7 @@ package com.unilim.erp.service;
 
 import com.unilim.erp.entities.Tac;
 import com.unilim.erp.repositories.TacRepository; // CORRECTED: 'repositories' (plural) to match your folder structure
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -9,14 +10,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class TacService {
 
     private final TacRepository tacRepository;
 
-    public TacService(TacRepository tacRepository) {
-        this.tacRepository = tacRepository;
-    }
 
     public List<Tac> getAllEntries() {
         return tacRepository.findAll();
@@ -28,6 +27,7 @@ public class TacService {
     }
 
     public Tac createEntry(Tac entry) {
+        entry.setId(null);
         return tacRepository.save(entry);
     }
 

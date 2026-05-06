@@ -1,14 +1,45 @@
 import { createApp } from 'vue'
+import { createI18n } from 'vue-i18n'
+import axios from 'axios'
 import App from './App.vue'
+import router from './router'
+import { messages } from './locales/translations'
 
-// 1. On importe le "GPS" (le routeur)
-import router from './router' 
+const i18n = createI18n({
+    legacy: true,
+    globalInjection: true,
+    locale: 'fr',
+    fallbackLocale: 'fr',
+    messages: messages
+})
 
-// On crée l'application
+axios.defaults.baseURL = 'http://localhost:8080/api';
+// axios.defaults.baseURL = 'http://164.81.120.78:8080/api';
+
+axios.interceptors.request.use(request => {
+    const isAuthLogin = typeof request.url === 'string' && request.url.includes('/auth/login');
+    if (isAuthLogin) {
+        delete request.headers.Authorization;
+        return request;
+    }
+    const token = localStorage.getItem('user-token');
+    if (token) {
+        // On ajoute l'en-tete "Authorization: Bearer un_token_super_long..."
+        request.headers.Authorization = `Bearer ${token}`;
+    }
+    return request;
+}, error => {
+    return Promise.reject(error);
+});
+
 const app = createApp(App)
 
-// 2. On dit à Vue d'utiliser le "GPS"
-app.use(router) 
+const token = localStorage.getItem('user-token')
+if (token) {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`
+}
 
-// 3. On "monte" l'application dans la page
+app.use(router)
+app.use(i18n)
+
 app.mount('#app')

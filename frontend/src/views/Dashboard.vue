@@ -1,397 +1,214 @@
-<template>
-  <div class="dashboard-layout" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
-
-    <nav class="sidebar">
-      <div class="sidebar-header">
-        <img src="@/assets/Logo_G.png" alt="Logo GestIUT" class="sidebar-logo" />
-        <h3 class="sidebar-title">IUT Gestion</h3>
-        <button @click="toggleSidebar" class="toggle-button">«</button>
+﻿<template>
+  <DashboardLayout>
+    <template #header>
+      <div class="header-welcome">
+        <h2>{{ $t('dashboard.greeting') }} {{ userName }}</h2>
+        <h1>{{ $t('dashboard.title') }}</h1>
       </div>
+    </template>
 
-      <ul class="nav-links">
-        <li>
-          <a href="#" class="active">
-            <img src="@/assets/TableauDeBord.png" alt="Tableau de bord" class="nav-icon" />
-            <span class="nav-text">Tableau de bord</span>
-          </a>
-        </li>
-        
-        <li>
-          <a href="#">
-            <img src="@/assets/FicheRessource.png" alt="Fiches ressources" class="nav-icon" />
-            <span class="nav-text">Fiches ressources</span>
-          </a>
-        </li>
-        
-        <li>
-          <a href="#">
-            <img src="@/assets/MCC.png" alt="MCCC" class="nav-icon" />
-            <span class="nav-text">MCCC</span>
-          </a>
-        </li>
-        
-        <li>
-          <a href="#">
-            <img src="@/assets/TAC.png" alt="TAC" class="nav-icon" />
-            <span class="nav-text">TAC</span>
-          </a>
-        </li>
-        
-        <li>
-          <a href="#">
-            <img src="@/assets/EnseignantVacataire.png" alt="Enseignants & Vacataires" class="nav-icon" />
-            <span class="nav-text">Enseignants & Vacataires</span>
-          </a>
-        </li>
-
-        <li>
-          <a href="#" @click.prevent="$router.push('/gestion-utilisateurs')">
-            <img src="@/assets/GestionRole.png" alt="Gestion des rôles" class="nav-icon" />
-            <span class="nav-text">Gestion des rôle</span>
-          </a>
-        </li>
-        
-        <li>
-          <a href="#">
-            <img src="@/assets/Parametre.png" alt="Paramètres" class="nav-icon" />
-            <span class="nav-text">Paramètres</span>
-          </a>
-        </li>
-      </ul>
-    </nav>
-
-    <main class="main-content">
-      <header class="header">
-        <div class="header-welcome">
-          <h2>Bonjour, [Nom] [Prenom]</h2>
-          <h1>Tableau de bord</h1>
-        </div>
-        <div class="user-info">
-          <span>
-            <img src="@/assets/Bonhomme.png" alt="Admin" class="user-icon" />
-            Administrateur
-          </span>
-          <a href="#" @click.prevent="logout">Déconnexion</a>
-        </div>
-      </header>
-
+    <div class="page-surface">
       <section class="content-cards">
+        
         <div class="card">
-          <h3>Remplir la fiche</h3>
-          <p>Algorithmique avancée</p>
-          <p class="subtitle">Semestre 3</p>
-          <button class="btn-primary">Compléter</button>
+          <h3>{{ $t('dashboard.fillSheet') }}</h3>
+
+          <template v-if="latestSheet">
+            <p>{{ latestSheet.titre || 'Sans titre' }}</p>
+            <p class="subtitle">{{ latestSheet.code }} - {{ latestSheet.semestre }}</p>
+            <button @click="goToSheet(latestSheet.id)" class="btn-primary">
+              {{ $t('dashboard.complete') }}
+            </button>
+          </template>
+
+          <template v-else>
+            <p>Aucune fiche trouvée</p>
+            <p class="subtitle">Commencez par créer une ressource</p>
+            <button @click="$router.push('/fiche-ressource')" class="btn-primary">
+              Créer une fiche
+            </button>
+          </template>
         </div>
+
         <div class="card card-notifications">
-          <div class="icon-success">
-            <span>✔</span>
+          
+          <div v-if="notificationsLoading" class="loading-state">
+            <p>Chargement...</p>
           </div>
-          <h3>Notifications</h3>
-          <p>Aucun notification</p>
+
+          <template v-else-if="unreadCount === 0">
+            <div class="icon-success">
+              <span>OK</span>
+            </div>
+            <h3>{{ $t('dashboard.notifications') }}</h3>
+            <p>{{ $t('dashboard.noNotifications') }}</p>
+          </template>
+
+          <template v-else>
+            <div class="icon-warning">
+              <span>!</span>
+            </div>
+            <h3>{{ $t('dashboard.notifications') }} ({{ unreadCount }})</h3>
+            
+            <div class="notification-list-container">
+              <ul class="notification-list">
+                <li v-for="notif in notifications" :key="notif.entityId" class="notification-item">
+                  <router-link :to="notif.actionUrl" class="notification-link">
+                    <span :class="['urgency-dot', notif.urgency.toLowerCase()]"></span>
+                    <span class="notif-content">
+                      {{ notif.label }}
+                    </span>
+                  </router-link>
+                </li>
+              </ul>
+            </div>
+          </template>
+
         </div>
+
       </section>
-    </main>
-  </div>
+    </div>
+  </DashboardLayout>
 </template>
 
 <script>
+import DashboardLayout from '@/components/DashboardLayout.vue';
+import axios from 'axios';
+
 export default {
   name: 'DashboardView',
+  components: {
+    DashboardLayout
+  },
   data() {
     return {
-      isSidebarCollapsed: false
+      userName: '',
+      latestSheet: null,
+      // Nouvelles variables pour les notifications
+      notifications: [],
+      notificationsLoading: false
     };
   },
+  computed: {
+    unreadCount() {
+      return this.notifications.length;
+    }
+  },
+  async mounted() {
+    this.userName = localStorage.getItem('userName') || 'Utilisateur';
+    
+    // On charge les stats et les notifications en même temps
+    await Promise.all([
+      this.fetchStats(),
+      this.fetchNotifications()
+    ]);
+  },
   methods: {
-    logout() {
-      localStorage.removeItem('user-token');
-      this.$router.push('/connexion');
+    async fetchStats() {
+      try {
+        const response = await axios.get('/dashboard/stats');
+        this.latestSheet = response.data.latestSheet;
+      } catch (error) {
+        this.latestSheet = null;
+      }
     },
-    toggleSidebar() {
-      this.isSidebarCollapsed = !this.isSidebarCollapsed;
+    
+    // Nouvelle méthode locale pour récupérer les notifications
+    async fetchNotifications() {
+      this.notificationsLoading = true;
+      try {
+        const response = await axios.get('/resource-sheets');
+        this.notifications = response.data
+          .filter(sheet => !sheet.validated && !sheet.submitted)
+          .sort((a, b) => {
+            const aTime = a.updatedAt || a.updated_at || a.createdAt || a.created_at || '';
+            const bTime = b.updatedAt || b.updated_at || b.createdAt || b.created_at || '';
+            return new Date(bTime).getTime() - new Date(aTime).getTime();
+          })
+          .slice(0, 10)
+          .map(sheet => ({
+            entityId: sheet.id,
+            actionUrl: { name: 'fiche-ressource', query: { id: sheet.id, mode: 'edit' } },
+            urgency: 'high',
+            label: this.formatDraftLabel(sheet)
+          }));
+      } catch (error) {
+        console.error("Erreur notifications:", error);
+        this.notifications = [];
+      } finally {
+        this.notificationsLoading = false;
+      }
+    },
+    formatDraftLabel(sheet) {
+      const code = sheet.code || 'Sans code';
+      const ue = sheet.ue || 'Sans UE';
+      return `${code} - ${ue}`;
+    },
+
+    goToSheet(id) {
+      this.$router.push(`/fiche-ressource/${id}`);
     }
   }
 }
 </script>
 
 <style scoped>
-.dashboard-layout {
-  --font-primary: 'Poppins', sans-serif;
-  --font-secondary: 'Montserrat', sans-serif;
-  --color-primary: #C00000;
-  --color-primary-dark: #a00000;
-  --color-grey-light: #f8f9fa;
-  --color-grey-dark: #333;
-  --color-text: #555;
-  --color-border: #eee;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
-  --sidebar-width-open: 260px;
-  --sidebar-width-closed: 80px;
-  --sidebar-transition-duration: 0.3s;
-
-  display: flex;
-  min-height: 100vh;
-  background-color: #fcfcfc;
-  font-family: var(--font-secondary);
-  overflow-x: hidden;
-}
-
-.sidebar {
-  width: var(--sidebar-width-open);
-  flex-shrink: 0;
-  background-color: var(--color-grey-light);
-  border-right: 1px solid var(--color-border);
-  box-sizing: border-box;
-  padding: 1.5rem;
-  position: relative;
-  transition: width var(--sidebar-transition-duration) ease,
-              padding var(--sidebar-transition-duration) ease;
-}
-
-.sidebar-header {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
-  position: relative;
-  transition: justify-content var(--sidebar-transition-duration) ease;
-}
-
-.sidebar-logo {
-  height: 45px;
-  width: auto;
-  flex-shrink: 0;
-  transition: opacity var(--sidebar-transition-duration) ease;
-}
-
-.sidebar-title {
-  margin: 0;
-  font-family: var(--font-primary);
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #333;
-  white-space: nowrap;
-  overflow: hidden;
-  opacity: 1;
-  width: auto;
-  transition: opacity var(--sidebar-transition-duration) ease,
-              width var(--sidebar-transition-duration) ease;
-}
-
-.toggle-button {
-  position: absolute;
-  top: 50%;
-  right: -25px;
-  transform: translateY(-50%);
-  background-color: white;
-  border: 1px solid var(--color-border);
-  border-left: none;
-  border-radius: 0 50% 50% 0;
-  width: 25px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 1.2rem;
-  color: var(--color-text);
-  z-index: 10;
-  transition: transform var(--sidebar-transition-duration) ease,
-              right var(--sidebar-transition-duration) ease;
-}
-.toggle-button:hover {
-  background-color: #eee;
-}
-
-.nav-links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.nav-links li {
-  margin-bottom: 0.5rem;
-}
-
-.nav-links a {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 0.75rem 1rem;
-  text-decoration: none;
-  color: var(--color-text);
-  font-weight: 500;
-  border-radius: 8px;
-  transition: background-color 0.2s ease, color 0.2s ease,
-              justify-content var(--sidebar-transition-duration) ease,
-              padding var(--sidebar-transition-duration) ease;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.nav-icon {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  margin-right: 12px;
-  flex-shrink: 0;
-  transition: margin-right var(--sidebar-transition-duration) ease;
-}
-
-.nav-text {
-  opacity: 1;
-  width: auto;
-  overflow: hidden;
-  white-space: nowrap;
-  transition: opacity var(--sidebar-transition-duration) ease,
-              width var(--sidebar-transition-duration) ease;
-}
-
-.nav-links a:hover {
-  background-color: #e9ecef;
-}
-
-.nav-links a.active {
-  background-color: #e6f0ff;
-  color: #0056b3;
-  font-weight: 600;
-}
-
-.dashboard-layout.sidebar-collapsed .sidebar {
-  width: var(--sidebar-width-closed);
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-
-.dashboard-layout.sidebar-collapsed .sidebar-title {
-  opacity: 0;
-  width: 0;
-}
-
-.dashboard-layout.sidebar-collapsed .toggle-button {
-  transform: translateY(-50%) rotate(180deg);
-  right: -25px;
-  border-left: 1px solid var(--color-border);
-}
-
-.dashboard-layout.sidebar-collapsed .nav-text {
-  opacity: 0;
-  width: 0;
-}
-
-.dashboard-layout.sidebar-collapsed .nav-icon {
-  margin-right: 0;
-}
-.dashboard-layout.sidebar-collapsed .nav-links a {
-  justify-content: center;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-}
-
-.main-content {
-  flex-grow: 1;
-  background-color: #fcfcfc;
-  box-sizing: border-box;
-  padding: 2rem 3rem;
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 1.5rem;
-  margin-bottom: 2rem;
-}
-
 .header-welcome h1 {
-  font-family: var(--font-primary);
+  font-family: var(--font-primary, 'Poppins', sans-serif);
   font-size: 2rem;
   font-weight: 700;
-  color: var(--color-grey-dark);
+  color: var(--color-text-header, #333);
   margin: 0.25rem 0 0 0;
 }
-
 .header-welcome h2 {
   font-size: 1.25rem;
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--color-text-body, #555);
   margin: 0;
 }
-
-.user-info {
-  display: flex;
-  align-items: center;
-  font-size: 0.9rem;
-  color: var(--color-text);
-  gap: 1.5rem;
+.page-surface {
+  background: var(--color-card-bg, #ffffff);
+  border: 1px solid var(--color-border, #ddd);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: var(--shadow, 0 4px 6px rgba(0,0,0,0.05));
 }
-
-.user-info span {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.user-icon {
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-
-.user-info a {
-  color: var(--color-primary);
-  text-decoration: none;
-  font-weight: 600;
-}
-.user-info a:hover {
-  text-decoration: underline;
-}
-
 .content-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
+  margin-bottom: 2rem;
 }
-
 .card {
-  background: #ffffff;
+  background: var(--color-card-bg, #ffffff);
   padding: 2rem;
   border-radius: 20px;
-  box-shadow: var(--shadow);
-  border: 1px solid #eef;
+  box-shadow: var(--shadow, 0 10px 30px rgba(0, 0, 0, 0.07));
+  border: 1px solid var(--color-border, #eef);
+  display: flex;
+  flex-direction: column;
 }
-
 .card h3 {
-  font-family: var(--font-primary);
+  font-family: var(--font-primary, 'Poppins', sans-serif);
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-grey-dark);
+  color: var(--color-text-header, #333);
   margin: 0 0 0.5rem 0;
 }
-
 .card p {
   font-size: 1rem;
-  color: var(--color-text);
+  color: var(--color-text-body, #555);
   margin: 0.25rem 0;
 }
-
 .card p.subtitle {
   font-size: 0.9rem;
   color: #888;
   margin-bottom: 1.5rem;
 }
-
 .card-notifications {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
   text-align: center;
 }
-
 .icon-success {
   width: 50px;
   height: 50px;
@@ -401,28 +218,96 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: bold;
   margin-bottom: 1rem;
 }
-
 .btn-primary {
   width: 100%;
   padding: 14px;
   border: none;
   border-radius: 10px;
-  background-color: var(--color-primary);
+  background-color: var(--color-primary, #C00000);
   color: white;
   font-size: 1.1rem;
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.3s, box-shadow 0.3s;
-  margin-top: 1rem;
-  font-family: var(--font-primary);
+  margin-top: auto;
+  font-family: var(--font-primary, 'Poppins', sans-serif);
 }
-
 .btn-primary:hover {
-  background-color: var(--color-primary-dark);
+  background-color: var(--color-primary-dark, #a00000);
   box-shadow: 0 5px 15px rgba(192, 0, 0, 0.3);
 }
+.icon-warning {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #ffc107;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+.loading-state {
+  color: #888;
+  margin: auto;
+}
+.notification-list-container {
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 1rem;
+  border-top: 1px solid #eee;
+  text-align: left;
+}
+.notification-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+.notification-list-container::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+.notification-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.notification-item {
+  border-bottom: 1px solid #f5f5f5;
+}
+.notification-item:last-child {
+  border-bottom: none;
+}
+.notification-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 8px;
+  text-decoration: none;
+  color: var(--color-text-body, #333);
+  transition: background-color 0.2s;
+  border-radius: 6px;
+}
+.notification-link:hover {
+  background-color: #f9f9f9;
+}
+.notif-content {
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+.urgency-dot {
+  display: inline-block;
+  min-width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+.urgency-dot.high { background-color: #dc3545; }
+.urgency-dot.medium { background-color: #ffc107; }
+.urgency-dot.low { background-color: #17a2b8; }
 </style>

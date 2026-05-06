@@ -1,6 +1,7 @@
 package com.unilim.erp.service;
 
 import com.unilim.erp.entities.Competency;
+import com.unilim.erp.exceptions.CompetencyNotFoundException;
 import com.unilim.erp.repositories.CompetencyRepository;
 import org.springframework.stereotype.Service;
 
@@ -29,12 +30,12 @@ public class CompetencyService {
     }
 
     public Competency update(UUID id, Competency competency) {
-        if (competencyRepository.existsById(id)) {
-            competency.setId(id);
-            return competencyRepository.save(competency);
-        } else {
-            throw new RuntimeException("Compétence non trouvée");
+        // on teste dabord l'exeption
+        if (!competencyRepository.existsById(id)) {
+            throw new CompetencyNotFoundException(id);
         }
+        competency.setId(id);
+        return competencyRepository.save(competency);
     }
 
     public void delete(UUID id) {

@@ -2,13 +2,16 @@ package com.unilim.erp.entities;
 
 import jakarta.persistence.*;
 import java.util.UUID;
-import lombok.Getter;
-import lombok.Setter;
+
+import lombok.*;
 
 @Entity
 @Table(name = "sae")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Sae {
 
     @Id
@@ -25,16 +28,7 @@ public class Sae {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "total_hours", nullable = false)
-    private int totalHours;
+    @Column(name = "hours_sae", nullable = false)
+    private int hours;
 
-    public Sae() {
-    }
-
-    public Sae(Ue ue, String title, String description, int totalHours) {
-        this.ue = ue;
-        this.title = title;
-        this.description = description;
-        this.totalHours = 0;
-    }
 }

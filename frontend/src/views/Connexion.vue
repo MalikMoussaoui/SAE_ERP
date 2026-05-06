@@ -3,91 +3,131 @@
     <img src="@/assets/logo_iut.png" alt="Logo Université de Limoges" class="main-logo" />
 
     <div class="login-card">
-      
       <div v-if="isLoading" class="loading-overlay">
         <div class="spinner"></div>
       </div>
+
       <img src="@/assets/GestIUT_logo.png" alt="Logo GestIUT" class="app-title-logo" />
 
-      <h2>Veuillez vous authentifier</h2>
+      <h2>{{ $t('login.title') }}</h2>
 
       <form @submit.prevent="handleLogin">
-        
         <div class="input-group">
           <img src="@/assets/Bonhomme.png" alt="Utilisateur" class="icon-img" />
-          <input v-model="username" type="text" placeholder="Nom d'utilisateur" required />
-        </div>
-        
-        <div class="input-group">
-          <img src="@/assets/Cadenas.png" alt="Mot de passe" class="icon-img" />
-          <input v-model="password" type="password" placeholder="Mot de passe" required />
+          <input v-model="username" type="text" :placeholder="$t('login.usernamePlaceholder')" required />
         </div>
 
-        <button type="submit">Se Connecter</button>
+        <div class="input-group">
+          <img src="@/assets/Cadenas.png" alt="Mot de passe" class="icon-img" />
+          <input v-model="password" type="password" :placeholder="$t('login.passwordPlaceholder')" required />
+        </div>
+
+        <button type="submit" :disabled="isLoading">
+          {{ isLoading ? $t('common.connecting') : $t('login.connect') }}
+        </button>
       </form>
+
       <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
   </div>
 </template>
 
 <script>
-// import axios from 'axios'; // Pas besoin pour la simulation
+// 1. IMPORT D'AXIOS
+import axios from 'axios';
+import logoG from '@/assets/Logo_G.png';
 
 export default {
   name: 'LoginScreen',
   data() {
     return {
-      username: '',
+      username: '', // Utilisé comme email pour le backend
       password: '',
       errorMessage: '',
-      isLoading: false // L'état pour afficher/cacher le spinner
-    }; 
-  }, // <-- La virgule est importante ici
-  
+      isLoading: false
+    };
+  },
   methods: {
     async handleLogin() {
-      this.errorMessage = ''; 
-      this.isLoading = true; // On active le spinner
+      this.errorMessage = '';
+      this.isLoading = true;
 
       try {
-        // --- SIMULATION (puisqu'il n'y a pas de back-end) ---
-        
-        // On simule une petite attente (500ms) pour que le spinner s'affiche
-        await new Promise(resolve => setTimeout(resolve, 500)); 
+        const response = await axios.post('/auth/login', {
+          email: this.username,
+          password: this.password
+        });
 
-        if (this.username === 'admin' && this.password === 'password') {
-          
-          localStorage.setItem('user-token', 'fake-token-for-simulation');
-          
-          // On attend 2 secondes AVANT de rediriger
-          setTimeout(() => {
-            this.$router.push('/dashboard'); 
-          }, 2000); // 2000ms = 2 secondes
-
-        } else {
-          throw new Error('Nom d\'utilisateur ou mot de passe incorrect.');
+        const token = response.data.token;
+        localStorage.setItem('user-token', token);
+        if (response.data.role) {
+          localStorage.setItem('userRole', response.data.role);
         }
+        if (response.data.name) {
+          localStorage.setItem('userName', response.data.name);
+        }
+        localStorage.setItem('userEmail', this.username);
+        if (response.data.departement) {
+          localStorage.setItem('userDepartement', response.data.departement);
+        }
+        axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+        // Redirection vers le dashboard
+        this.$router.push('/dashboard');
 
       } catch (error) {
-        this.errorMessage = error.message;
-        this.isLoading = false; // On cache le spinner si erreur
+        // 4. GESTION DES ERREURS
+        console.error("Erreur de connexion:", error);
+
+        if (error.response) {
+          // Erreur venant du serveur
+          this.errorMessage = this.$t('login.error');
+        } else if (error.request) {
+          // Le serveur n'a pas répondu
+          this.errorMessage = this.$t('common.error.serverUnreachable');
+        } else {
+          this.errorMessage = this.$t('common.error.generic');
+        }
+      } finally {
+        this.isLoading = false;
       }
     }
+  },
+  created() {
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
+    document.title = "Gest'IUT";
+  },
+  mounted() {
+    const theme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', theme);
   }
 };
 </script>
 
 <style scoped>
-/* Importez vos polices (ex: Google Fonts) dans votre index.html ou main.css */
-/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Montserrat:wght@500&display=swap'); */
-
 .page-container {
+  /* --- VARIABLES DE THEME (Mode Clair par défaut) --- */
+  --bg-color: #f8f9fa;
+  --card-bg: #ffffff;
+  --text-main: #333;
+  --color-primary: #C00000;
+  --color-primary-dark: #a00000;
+  --color-primary-rgb: 192, 0, 0;
+  --text-muted: rgba(51, 51, 51, 0.6); /* Remplace color #333 + opacity 60% */
+  --input-border: #ddd;
+  --input-focus: #C00000;
+  --shadow-color: rgba(0, 0, 0, 0.07);
+  --icon-filter: none;
+  --overlay-bg: rgba(255, 255, 255, 0.9);
+  --spinner-border: #f3f3f3;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background-color: #f8f9fa;
+  background-color: var(--bg-color);
   font-family: 'Montserrat', sans-serif;
   padding: 2rem 0;
   box-sizing: border-box;
@@ -99,15 +139,15 @@ export default {
 }
 
 .login-card {
-  background: #ffffff;
+  background: var(--card-bg);
   padding: 2.5rem 3rem;
   border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 10px 30px var(--shadow-color);
   text-align: center;
   width: 100%;
   max-width: 420px;
   box-sizing: border-box;
-  position: relative; /* <-- NÉCESSAIRE pour l'overlay */
+  position: relative;
 }
 
 .app-title-logo {
@@ -122,11 +162,11 @@ export default {
 h2 {
   font-size: 1.3rem;
   font-weight: 600;
-  color: #333;
+  color: var(--text-main);
   margin-bottom: 2rem;
   font-family: 'Poppins', sans-serif;
   margin-top: 1.5rem;
-  opacity: 60%;
+  opacity: 0.6;
 }
 
 .input-group {
@@ -139,12 +179,13 @@ h2 {
   width: 100%;
   padding: 12px 12px 12px 40px; /* Espace à gauche pour l'icône */
   border: none;
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--input-border);
   font-size: 1rem;
   transition: border-color 0.3s;
   background-color: transparent;
   box-sizing: border-box;
   font-family: 'Montserrat', sans-serif;
+  color: var(--text-main);
 }
 
 /* Corrige le fond jaune de l'autocomplétion Chrome */
@@ -152,25 +193,24 @@ h2 {
 .input-group input:-webkit-autofill:hover,
 .input-group input:-webkit-autofill:focus,
 .input-group input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 30px white inset !important;
-  box-shadow: 0 0 0 30px white inset !important;
-  -webkit-text-fill-color: #333 !important;
+  -webkit-box-shadow: 0 0 0 30px var(--card-bg, white) inset !important;
+  box-shadow: 0 0 0 30px var(--card-bg, white) inset !important;
+  -webkit-text-fill-color: var(--text-main, #333) !important;
 }
 
 .input-group input:focus {
   outline: none;
-  border-bottom-color: #C00000;
+  border-bottom-color: var(--color-primary);
 }
 
-/* Style pour vos images d'icônes */
 .input-group .icon-img {
   position: absolute;
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  width: 20px; 
-  height: 20px; 
-  opacity: 1;
+  width: 20px;
+  height: 20px;
+  filter: var(--icon-filter);
 }
 
 button {
@@ -178,7 +218,7 @@ button {
   padding: 14px;
   border: none;
   border-radius: 10px;
-  background-color: #C00000;
+  background-color: var(--color-primary);
   color: white;
   font-size: 1.1rem;
   font-weight: 600;
@@ -189,8 +229,8 @@ button {
 }
 
 button:hover {
-  background-color: #a00000;
-  box-shadow: 0 5px 15px rgba(192, 0, 0, 0.3);
+  background-color: var(--color-primary-dark);
+  box-shadow: 0 5px 15px rgba(var(--color-primary-rgb, 192, 0, 0), 0.3);
 }
 
 button:focus {
@@ -198,15 +238,12 @@ button:focus {
 }
 
 .error-message {
-  color: #C00000;
+  color: var(--color-primary);
   margin-top: 1.5rem;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   font-weight: 500;
 }
-
-
-/* --- STYLES DU SPINNER AJOUTÉS --- */
 
 .loading-overlay {
   position: absolute;
@@ -228,11 +265,40 @@ button:focus {
   border: 5px solid #f3f3f3; /* Le cercle gris clair */
   border-top: 5px solid #C00000; /* Le bout rouge */
   border-radius: 50%;
-  animation: spin 2.4s linear infinite; /* L'animation de rotation */
+  animation: spin 2.4s linear infinite;
 }
 
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+</style>
+
+<style>
+/* --- DEFINITION DU MODE SOMBRE (GLOBAL) --- */
+/* Sorti du scoped pour garantir la priorité sur html[data-theme="dark"] */
+
+html[data-theme="dark"] .page-container {
+  --bg-color: #121212;
+  --card-bg: #1e1e1e;
+  --text-main: #f5f5f5;
+  --text-muted: rgba(245, 245, 245, 0.9);
+  --input-border: #555;
+  --shadow-color: rgba(0, 0, 0, 0.5);
+  --icon-filter: brightness(0) invert(1);
+  --overlay-bg: rgba(30, 30, 30, 0.9);
+  --spinner-border: #444;
+  --color-primary: #C00000; /* Rouge standard conservé */
+  --color-primary-dark: #a00000;
+}
+
+html[data-theme="dark"] .input-group input:-webkit-autofill,
+html[data-theme="dark"] .input-group input:-webkit-autofill:hover,
+html[data-theme="dark"] .input-group input:-webkit-autofill:focus,
+html[data-theme="dark"] .input-group input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 30px #1e1e1e inset !important;
+  box-shadow: 0 0 0 30px #1e1e1e inset !important;
+  -webkit-text-fill-color: #f5f5f5 !important;
 }
 </style>

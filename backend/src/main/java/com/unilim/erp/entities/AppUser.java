@@ -1,20 +1,24 @@
 package com.unilim.erp.entities;
 
-
 import com.unilim.erp.domain.UserRole;
 import com.unilim.erp.domain.UserStatus;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.Instant;
 import java.util.UUID;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "app_user")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class AppUser {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -32,6 +36,10 @@ public class AppUser {
     @Column
     private String phone;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "department_id")
+    private Department department;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
     private UserRole role;
@@ -40,31 +48,11 @@ public class AppUser {
     @Column(nullable=false)
     private UserStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="department_id")
-    private Department department;
-
     @Column(nullable = false,updatable = false)
     private Instant createdAt = Instant.now();
-    public AppUser() {
-    }
 
-    public AppUser(UUID id,String email, String passwordHash, String displayName, String phone, UserRole role, UserStatus status, Department department, Instant createdAt) {
-        this.id = id;
-        this.email = email;
-        this.passwordHash = passwordHash;
-        this.displayName = displayName;
-        this.phone = phone;
-        this.role = role;
-        this.status = status;
-        this.department = department;
-        this.createdAt = createdAt;
-    }
-
-
-
-
-
-
+    @ManyToMany(mappedBy = "teachers")
+    @JsonIgnore
+    private Set<Course> courses = new HashSet<>();
 
 }

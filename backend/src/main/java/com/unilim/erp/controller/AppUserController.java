@@ -5,6 +5,7 @@ import com.unilim.erp.service.AppUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.unilim.erp.dto.AppUserDto;
 
 import java.util.List;
 import java.util.UUID;
@@ -45,6 +46,11 @@ public class AppUserController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
+    }
+
+    @GetMapping("/teachers")
+    public ResponseEntity<List<AppUserDto>> getTeachers(@RequestParam(required = false) String dept) {
+        return ResponseEntity.ok(service.getTeachersAndVacataires(dept));
     }
 
     @DeleteMapping("/{id}")

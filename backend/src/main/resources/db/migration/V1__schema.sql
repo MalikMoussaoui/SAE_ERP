@@ -2,7 +2,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE department (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    label TEXT NOT NULL,
+    label TEXT NOT NULL
 );
 
 CREATE TABLE app_user (
@@ -12,8 +12,7 @@ CREATE TABLE app_user (
     display_name TEXT NOT NULL,
     phone TEXT,
     role TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'ACTIF',
-    department_id UUID REFERENCES department(id),
+    status TEXT NOT NULL DEFAULT 'ACTIVE',
     created_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
@@ -44,26 +43,50 @@ CREATE TABLE sae (
     ue_id UUID REFERENCES ue(id),
     title TEXT NOT NULL,
     description TEXT,
-    total_hours INT NOT NULL
+    hours_sae INT NOT NULL
 );
 
 CREATE TABLE resource_sheet (
+     id UUID PRIMARY KEY,
+     status VARCHAR(255),
+     titre VARCHAR(255),
+     code VARCHAR(50),
+     semestre VARCHAR(10),
+     ue VARCHAR(100),
+     departement VARCHAR(255),
+     description TEXT,
+     h_cm DOUBLE PRECISION,
+     h_td DOUBLE PRECISION,
+     h_tp DOUBLE PRECISION,
+     type_evaluation VARCHAR(100),
+     coefficient_ressource DOUBLE PRECISION,
+     evaluations_prevues VARCHAR(255),
+     note_minimale DOUBLE PRECISION,
+     compensation VARCHAR(10),
+     rattrapage VARCHAR(10),
+     modalite_rattrapage VARCHAR(255),
+     responsable_pedagogique VARCHAR(255),
+     intervenants VARCHAR(255),
+     type_enseignement VARCHAR(50),
+     sequences_rows_json TEXT,
+     created_at TIMESTAMP,
+     updated_at TIMESTAMP
+);
+
+
+CREATE TABLE course (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    department_id UUID REFERENCES department(id),
-    ue_id UUID REFERENCES ue(id),
-    resource_id UUID REFERENCES resource(id),
+    id_resource_sheet UUID REFERENCES resource_sheet(id),
     sae_id UUID REFERENCES sae(id),
-    status TEXT NOT NULL DEFAULT 'DRAFT',
-    objectives TEXT NOT NULL,
-    prerequisites TEXT NOT NULL,
-    modalities TEXT NOT NULL,
-    hours_cm INT NOT NULL DEFAULT 0,
-    hours_td INT NOT NULL DEFAULT 0,
-    hours_tp INT NOT NULL DEFAULT 0,
-    responsible_id UUID REFERENCES app_user(id),
-    version INT NOT NULL DEFAULT 0,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    updated_at TIMESTAMP NOT NULL DEFAULT now()
+    resource_id UUID REFERENCES resource(id),
+    hours INT NOT NULL DEFAULT 0
+);
+
+
+CREATE TABLE list_prof_course (
+  id_course UUID REFERENCES course(id) ON DELETE CASCADE,
+  id_prof UUID REFERENCES app_user(id) ON DELETE CASCADE,
+  PRIMARY KEY (id_course, id_prof)
 );
 
 CREATE TABLE resource_sheet_competency (
@@ -92,4 +115,15 @@ CREATE TABLE feedback (
     author_id UUID REFERENCES app_user(id),
     date DATE NOT NULL DEFAULT CURRENT_DATE,
     commentary TEXT NOT NULL
+);
+
+CREATE TABLE mccc (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    department TEXT,
+    ue TEXT,
+    years TEXT,
+    semester TEXT,
+    form TEXT,
+    ressources_rows TEXT,
+    saved_at TIMESTAMP DEFAULT now()
 );

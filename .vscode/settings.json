@@ -1,3 +1,36 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.maven.enabled": true,
+    "cSpell.enabledLanguageIds": [
+        "markdown",
+        "plaintext",
+        "json",
+        "yaml",
+        "yml",
+        "vue",
+        "javascript",
+        "typescript"
+    ],
+    "cSpell.allowCompoundWords": true,
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-21",
+            "path": "C:\\Program Files\\Eclipse Adoptium\\jdk-21.0.9.10-hotspot",
+            "default": true
+        }
+    ],
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "askForPassword": true,
+            "driver": "PostgreSQL",
+            "username": "erp",
+            "database": "erp",
+            "name": "Database_ERP"
+        }
+    ]
 }
