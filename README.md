@@ -21,10 +21,27 @@ Le projet a été **commandité par Mme Sarlot (IUT du Limousin)** et **déploy�
 
 ## ✨ Fonctionnalités principales
 
-- 🔐 **Authentification sécurisée** : connexion par JWT, gestion des rôles (administrateur, formateur, stagiaire…)
-- 📄 **Génération automatique de documents** : conventions, attestations, fiches d'émargement
-- 📊 **Tableaux de bord** : vue d'ensemble des formations, statistiques
-- 🗂️ **Gestion documentaire centralisée**
+L'application est structurée en **6 modules fonctionnels** :
+ 
+### 🔐 1. Authentification & gestion des utilisateurs
+- Connexion / déconnexion sécurisées via **JWT** et **Spring Security**
+- Inscription et gestion des profils utilisateurs (nom, email, téléphone)
+- **Gestion des rôles** : Enseignant, Vacataire, RH, Chef de département, Admin — avec droits spécifiques par rôle
+- Rattachement de chaque utilisateur à son département d'origine
+### 📚 2. Maquette pédagogique (référentiel)
+- **Départements** : création et assignation d'un chef de département
+- **Unités d'Enseignement (UE)** : création, rattachement à un semestre, définition des objectifs
+- **Ressources et SAÉ** : définition des volumes horaires (CM, TD, TP, Projet) rattachés aux UE
+- **Référentiel de compétences** visées par la formation
+### 📄 3. Fiches ressources (cœur de l'ERP)
+- Création et édition de fiches : objectifs, prérequis, modalités, heures prévues
+- **Cycle de vie** : statut brouillon (DRAFT) → validation → archivage
+- **Liaison aux compétences** (relation many-to-many)
+- Assignation d'un enseignant responsable à chaque fiche
+### ⏱️ 5. Suivi des services faits
+- Déclaration par les enseignants et vacataires des heures réellement effectuées
+- Rattachement de chaque service fait à une fiche ressource précise
+
 
 ---
 
@@ -111,13 +128,6 @@ docker compose up -d
 docker compose ps
 ```
 
-
----
-
-## 📸 Aperçus
-
-`![le dashboard](docs/screenshots/dashboard)`
-
 ---
 
 ## 👥 Équipe
@@ -133,7 +143,7 @@ Projet réalisé en équipe de 5 étudiants en BUT Informatique à l'IUT du Limo
 
 Projet réalisé dans le cadre du **BUT Informatique** à l'**IUT du Limousin** — Université de Limoges.
 
-- **Année** : 2024 – 2025 (BUT2)
+- **Année** : 2025 – 2026 (BUT2)
 - **Module** : SAÉ (Situation d'Apprentissage et d'Évaluation)
 - **Commanditaire** : Mme Sarlot (IUT du Limousin)
 
