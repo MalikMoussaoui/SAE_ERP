@@ -17,6 +17,9 @@
 
     <div class="page-surface resource-surface">
       <div v-if="isReadOnly" class="pdf-actions">
+        <button type="button" class="btn btn-secondary" @click="quitResource">
+          {{ $t('common.quitSheet') }}
+        </button>
         <button v-if="canDuplicate && editingId" type="button" class="btn btn-secondary" @click="duplicateResource">
           {{ $t('common.duplicate') }}
         </button>
@@ -345,6 +348,9 @@
       <!-- Navigation -->
       <div v-if="!showAllSteps" class="step-navigation">
         <span v-if="stepErrorMessage" class="step-error">{{ stepErrorMessage }}</span>
+        <button type="button" class="btn btn-secondary" @click="quitResource">
+          {{ $t('common.quitSheet') }}
+        </button>
         <button v-if="currentStep > 1" @click="prevStep" class="btn btn-secondary">
           {{ $t('resourceSheet.back') }}
         </button>
@@ -363,8 +369,11 @@
             <button v-if="canValidate && !form.isValidated && editingId" class="btn btn-success" type="button" @click="validateResource">
               {{ $t('common.validate') }}
             </button>
+            <button v-if="canSubmit && editingId" class="btn btn-primary" style="background:#c97b00;border:none;" type="button" @click="submitResource">
+              Soumettre à la direction
+            </button>
             
-            <button class="btn btn-primary" type="button" @click="saveResource" v-if="hasEditingRights">
+            <button class="btn btn-primary" type="button" @click="saveResource" v-if="hasEditingRights && !isReadOnly">
               {{ $t('resourceSheet.save') }}
             </button>
         </template>
@@ -407,7 +416,8 @@ export default {
         typeEnseignement: '',
         modalitesEvaluation: '',
         description: '',
-        isValidated: false
+        isValidated: false,
+        isSubmitted: false
       },
       stepErrorMessage: '',
       showValidationErrors: false,
@@ -538,6 +548,10 @@ export default {
       }
 
       return false;
+    },
+    canSubmit() {
+      const email = localStorage.getItem('userEmail') || '';
+      return this.editingId && this.form.createdBy && this.form.createdBy === email && !this.form.isSubmitted && !this.form.isValidated;
     }
   },
   methods: {
@@ -863,6 +877,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         modalitesEvaluation: '',
         description: '',
         isValidated: false,
+        isSubmitted: false,
         createdBy: ''
       };
       this.sequencesRows = [{ id: 1, label: '', type: 'CM', duration: 0, notes: '', showDetails: false }];
@@ -877,7 +892,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
       if (!id) {
         this.editingId = null;
         this.resetForm();
-        return;
+        return false;
       }
 
       try {
@@ -893,6 +908,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
         this.form.ue = data.ue || '';
         this.form.description = data.description || data.objectives || '';
         this.form.isValidated = data.validated || data.isValidated || false;
+        this.form.isSubmitted = data.submitted || data.isSubmitted || false;
         this.form.hCM = data.hCM !== undefined ? data.hCM : (data.hoursCm || 0);
         this.form.hTD = data.hTD !== undefined ? data.hTD : (data.hoursTd || 0);
         this.form.hTP = data.hTP !== undefined ? data.hTP : (data.hoursTp || 0);
@@ -928,6 +944,10 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
 
         if (mode !== 'view') {
           this.isReadOnly = !this.hasEditingRights;
+          const role = localStorage.getItem('userRole');
+          if (this.form.isSubmitted && role !== 'ADMINISTRATEUR' && role !== 'RH' && role !== 'RESPONSABLE_PEDAGOGIQUE') {
+             this.isReadOnly = true;
+          }
         }
 
       } catch (e) {
@@ -935,18 +955,19 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
       }
     },
 
-    async saveResource() {
+    async persistResource(options = {}) {
+      const { redirectToList = false, showSuccessModal = true } = options;
       const token = localStorage.getItem('user-token');
       // on teste si la personne est bien connecté
       if (!token) {
         alert("Vous devez être connecté pour enregistrer.");
-        return;
+        return false;
       }
 
       const role = localStorage.getItem('userRole');
       if (role === 'VACATAIRE' && !this.editingId) {
         this.errorMessage = "Accès refusé. Les vacataires ne peuvent pas créer de nouvelle fiche.";
-        return;
+        return false;
       }
       const authConfig = { headers: { Authorization: `Bearer ${token}` } };
 
@@ -971,22 +992,35 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
       };
 
       try {
+        let response;
         if (isEditing) { //cas pour edition
-          await axios.put(`/resource-sheets/${currentId}`, payload, authConfig);
+          response = await axios.put(`/resource-sheets/${currentId}`, payload, authConfig);
         } else { // pour la creation
-          await axios.post('/resource-sheets', payload, authConfig);
+          response = await axios.post('/resource-sheets', payload, authConfig);
+        }
+
+        const savedId = response?.data?.id;
+        if (!isEditing && savedId) {
+          this.editingId = savedId;
+          this.$router.replace({ name: 'fiche-ressource', params: { id: savedId } });
         }
 
         // message de succès
+        if (redirectToList) {
+          await this.$router.push({ name: 'liste-fiches-ressources' });
+          return true;
+        }
+        if (showSuccessModal) {
         this.modal = {
           show: true,
           title: 'Succès',
           message: isEditing ? 'Fiche modifiée avec succès !' : 'Fiche créée avec succès !',
           type: 'success',
-          confirmLabel: 'Retour à la liste',
+          confirmLabel: 'Fermer',
           showCancel: false
         };
-        // message d'erreur
+        }
+        return true;
       } catch (e) {
         console.error("Erreur sauvegarde", e);
         this.modal = {
@@ -997,7 +1031,18 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
           confirmLabel: 'Fermer',
           showCancel: false
         };
+        return false;
       }
+    },
+    async saveResource() {
+      await this.persistResource({ redirectToList: false, showSuccessModal: true });
+    },
+    async quitResource() {
+      if (this.isReadOnly || !this.hasEditingRights) {
+        await this.$router.push({ name: 'liste-fiches-ressources' });
+        return;
+      }
+      await this.persistResource({ redirectToList: true, showSuccessModal: false });
     },
     confirmDelete() {
       this.modal = {
@@ -1024,7 +1069,7 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
       this.modal.show = false;
       if (this.modal.action === 'delete') {
         this.deleteResource();
-      } else if (this.modal.type === 'success') {
+      } else if (this.modal.action === 'goToList') {
         this.$router.push({ name: 'liste-fiches-ressources' });
       }
     },
@@ -1041,7 +1086,8 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
           message: 'Fiche dupliquée avec succès !',
           type: 'success',
           confirmLabel: 'Retour à la liste',
-          showCancel: false
+          showCancel: false,
+          action: 'goToList'
         };
       } catch (e) {
         console.error("Erreur duplication", e);
@@ -1068,6 +1114,32 @@ body { font-family: Arial, Helvetica, sans-serif; color: var(--text); margin: 0;
           show: true,
           title: 'Erreur',
           message: "Impossible de valider la fiche.",
+          type: 'error',
+          confirmLabel: 'Fermer',
+          showCancel: false
+        };
+      }
+    },
+    async submitResource() {
+      if (!this.editingId) return;
+      try {
+        await axios.post(`/resource-sheets/${this.editingId}/submit`);
+        this.form.isSubmitted = true;
+        this.isReadOnly = true;
+        this.modal = {
+          show: true,
+          title: 'Succès',
+          message: 'Fiche soumise avec succès ! Elle est désormais verrouillée pour édition en attendant la validation.',
+          type: 'success',
+          confirmLabel: 'OK',
+          showCancel: false
+        };
+      } catch (e) {
+        console.error("Erreur soumission", e);
+        this.modal = {
+          show: true,
+          title: 'Erreur',
+          message: "Impossible de soumettre la fiche.",
           type: 'error',
           confirmLabel: 'Fermer',
           showCancel: false

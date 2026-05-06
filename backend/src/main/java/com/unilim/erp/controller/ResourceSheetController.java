@@ -129,6 +129,11 @@ public class ResourceSheetController {
                                 (Object) "Accès refusé : la fiche est validée et ne peut être modifiée que par un administrateur.");
                     }
 
+                    if (existingSheet.isSubmitted() && !isGlobalAdmin && !isResponsable) {
+                        return ResponseEntity.status(403).body(
+                                (Object) "Accès refusé : la fiche est verrouillée (soumise). L'édition est réservée au responsable pédagogique ou admin.");
+                    }
+
                     if (!isGlobalAdmin && !isResponsable && !isIntervenant && !isCreator) {
                         return ResponseEntity.status(403).body(
                                 (Object) "Accès refusé : vous devez être responsable, intervenant ou créateur pour modifier cette fiche.");
@@ -222,9 +227,10 @@ public class ResourceSheetController {
 
             if (isGlobalAdmin || isResponsable) {
                 entity.setValidated(dto.isValidated());
+                entity.setSubmitted(dto.isSubmitted());
             } else if (entity.getId() == null) {
-
                 entity.setValidated(false);
+                entity.setSubmitted(false);
             }
         }
     }
@@ -257,6 +263,7 @@ public class ResourceSheetController {
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
         dto.setValidated(entity.isValidated());
+        dto.setSubmitted(entity.isSubmitted());
 
         return dto;
     }
@@ -323,6 +330,34 @@ public class ResourceSheetController {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Erreur interne: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/{id}/submit")
+    public ResponseEntity<?> submitResourceSheet(@PathVariable UUID id) {
+        String currentEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        AppUser currentUser = appUserRepository.findByEmail(currentEmail).orElse(null);
+
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        return resourceSheetRepository.findById(id)
+                .map(existingSheet -> {
+                    boolean isCreator = existingSheet.getCreatedBy() != null
+                            && existingSheet.getCreatedBy().equalsIgnoreCase(currentEmail);
+                    String roleName = currentUser.getRole().name();
+                    boolean isGlobalAdmin = roleName.equals("ADMINISTRATEUR") || roleName.equals("RH");
+                    boolean isResponsable = isUserMatchedInField(currentUser, existingSheet.getResponsablePedagogique());
+
+                    if (!isCreator && !isGlobalAdmin && !isResponsable) {
+                        return ResponseEntity.status(403).body((Object) "Accès refusé : vous ne pouvez pas soumettre cette fiche.");
+                    }
+                    
+                    existingSheet.setSubmitted(true);
+                    ResourceSheet updatedSheet = resourceSheetRepository.save(existingSheet);
+                    return ResponseEntity.ok((Object) mapToDto(updatedSheet));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping("/{id}/validate")

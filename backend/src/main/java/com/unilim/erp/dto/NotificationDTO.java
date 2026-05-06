@@ -14,5 +14,5 @@ public class NotificationDTO {
     private String message;
     private String actionUrl;
     private String urgency;
-    private Long entityId;
+    private String entityId;
 }

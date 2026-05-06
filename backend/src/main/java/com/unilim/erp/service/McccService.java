@@ -71,6 +71,7 @@ public class McccService {
         dto.setYears(entity.getYears());
         dto.setSemester(entity.getSemester());
         dto.setSavedAt(entity.getSavedAt());
+        dto.setSubmitted(entity.isSubmitted());
 
         try {
             if (entity.getForm() != null) {
@@ -110,6 +111,7 @@ public class McccService {
         }
         entity.setYears(dto.getYears());
         entity.setSemester(dto.getSemester());
+        entity.setSubmitted(dto.isSubmitted());
 
         try {
             if (dto.getForm() != null) {

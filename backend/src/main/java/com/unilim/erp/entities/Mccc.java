@@ -34,6 +34,9 @@ public class Mccc {
     @Column(name = "saved_at", nullable = false)
     private LocalDateTime savedAt = LocalDateTime.now();
 
+    @Column(name = "is_submitted", nullable = false)
+    private boolean isSubmitted = false;
+
     @PreUpdate
     @PrePersist
     public void updateTimestamps() {

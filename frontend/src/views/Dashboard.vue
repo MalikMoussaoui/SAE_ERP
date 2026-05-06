@@ -56,7 +56,7 @@
                   <router-link :to="notif.actionUrl" class="notification-link">
                     <span :class="['urgency-dot', notif.urgency.toLowerCase()]"></span>
                     <span class="notif-content">
-                      <strong>{{ notif.type }}</strong> : {{ notif.message }}
+                      {{ notif.label }}
                     </span>
                   </router-link>
                 </li>
@@ -106,11 +106,7 @@ export default {
   methods: {
     async fetchStats() {
       try {
-        const response = await axios.get('http://localhost:8080/api/dashboard/stats', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
+        const response = await axios.get('/dashboard/stats');
         this.latestSheet = response.data.latestSheet;
       } catch (error) {
         this.latestSheet = null;
@@ -121,18 +117,32 @@ export default {
     async fetchNotifications() {
       this.notificationsLoading = true;
       try {
-        const response = await axios.get('http://localhost:8080/api/notifications/pending', {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-        this.notifications = response.data;
+        const response = await axios.get('/resource-sheets');
+        this.notifications = response.data
+          .filter(sheet => !sheet.validated && !sheet.submitted)
+          .sort((a, b) => {
+            const aTime = a.updatedAt || a.updated_at || a.createdAt || a.created_at || '';
+            const bTime = b.updatedAt || b.updated_at || b.createdAt || b.created_at || '';
+            return new Date(bTime).getTime() - new Date(aTime).getTime();
+          })
+          .slice(0, 10)
+          .map(sheet => ({
+            entityId: sheet.id,
+            actionUrl: { name: 'fiche-ressource', query: { id: sheet.id, mode: 'edit' } },
+            urgency: 'high',
+            label: this.formatDraftLabel(sheet)
+          }));
       } catch (error) {
         console.error("Erreur notifications:", error);
         this.notifications = [];
       } finally {
         this.notificationsLoading = false;
       }
+    },
+    formatDraftLabel(sheet) {
+      const code = sheet.code || 'Sans code';
+      const ue = sheet.ue || 'Sans UE';
+      return `${code} - ${ue}`;
     },
 
     goToSheet(id) {

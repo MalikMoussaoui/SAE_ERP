@@ -36,6 +36,7 @@ public class ResourceSheetDto {
     private String createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean isSubmitted;
     private boolean isValidated;
 
     public ResourceSheetDto() {
@@ -247,5 +248,13 @@ public class ResourceSheetDto {
 
     public void setValidated(boolean validated) {
         isValidated = validated;
+    }
+
+    public boolean isSubmitted() {
+        return isSubmitted;
+    }
+
+    public void setSubmitted(boolean submitted) {
+        isSubmitted = submitted;
     }
 }
